@@ -79,7 +79,25 @@
 
 ---
 
-## 阶段2：机器学习基础 课程映射
+## 阶段3：深度学习核心 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-the-perceptron` | 01 感知机 |
+| `02-multi-layer-networks` | 02 多层神经网络 |
+| `03-backpropagation` | 03 反向传播 |
+| `04-activation-functions` | 04 激活函数 |
+| `05-loss-functions` | 05 损失函数 |
+| `06-optimizers` | 06 优化器 |
+| `07-regularization` | 07 深度学习正则化 |
+| `08-weight-initialization` | 08 权重初始化 |
+| `09-learning-rate-schedules` | 09 学习率调度 |
+| `10-mini-framework` | 10 构建迷你框架 |
+| `11-intro-to-pytorch` | 11 PyTorch入门 |
+| `12-intro-to-jax` | 12 JAX入门 |
+| `13-debugging-neural-networks` | 13 神经网络调试 |
+
+---
 
 | 原英文目录名 | 中文显示名称 |
 |-------------|-------------|

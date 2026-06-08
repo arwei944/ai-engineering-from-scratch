@@ -52,7 +52,22 @@
 | 21 图论 (21-graph-theory) | [📄 中文文档](phases/01-math-foundations/21-graph-theory/docs/zh.md) |
 | 22 随机过程 (22-stochastic-processes) | [📄 中文文档](phases/01-math-foundations/22-stochastic-processes/docs/zh.md) |
 
-### ✅ 阶段2：机器学习基础（18门课程全部完成）
+### ✅ 阶段3：深度学习核心（13门课程全部完成）
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 感知机 (01-the-perceptron) | [📄 中文文档](phases/03-deep-learning-core/01-the-perceptron/docs/zh.md) |
+| 02 多层神经网络 (02-multi-layer-networks) | [📄 中文文档](phases/03-deep-learning-core/02-multi-layer-networks/docs/zh.md) |
+| 03 反向传播 (03-backpropagation) | [📄 中文文档](phases/03-deep-learning-core/03-backpropagation/docs/zh.md) |
+| 04 激活函数 (04-activation-functions) | [📄 中文文档](phases/03-deep-learning-core/04-activation-functions/docs/zh.md) |
+| 05 损失函数 (05-loss-functions) | [📄 中文文档](phases/03-deep-learning-core/05-loss-functions/docs/zh.md) |
+| 06 优化器 (06-optimizers) | [📄 中文文档](phases/03-deep-learning-core/06-optimizers/docs/zh.md) |
+| 07 深度学习正则化 (07-regularization) | [📄 中文文档](phases/03-deep-learning-core/07-regularization/docs/zh.md) |
+| 08 权重初始化 (08-weight-initialization) | [📄 中文文档](phases/03-deep-learning-core/08-weight-initialization/docs/zh.md) |
+| 09 学习率调度 (09-learning-rate-schedules) | [📄 中文文档](phases/03-deep-learning-core/09-learning-rate-schedules/docs/zh.md) |
+| 10 构建迷你框架 (10-mini-framework) | [📄 中文文档](phases/03-deep-learning-core/10-mini-framework/docs/zh.md) |
+| 11 PyTorch入门 (11-intro-to-pytorch) | [📄 中文文档](phases/03-deep-learning-core/11-intro-to-pytorch/docs/zh.md) |
+| 12 JAX入门 (12-intro-to-jax) | [📄 中文文档](phases/03-deep-learning-core/12-intro-to-jax/docs/zh.md) |
+| 13 神经网络调试 (13-debugging-neural-networks) | [📄 中文文档](phases/03-deep-learning-core/13-debugging-neural-networks/docs/zh.md) |
 | 课程 | 中文文档链接 |
 |------|-------------|
 | 01 什么是机器学习 (01-what-is-machine-learning) | [📄 中文文档](phases/02-ml-fundamentals/01-what-is-machine-learning/docs/zh.md) |
