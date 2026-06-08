@@ -219,6 +219,23 @@
 | 14 评估FID与CLIP分数 (14-evaluation-fid-clip-score) | [📄 中文文档](phases/08-generative-ai/14-evaluation-fid-clip-score/docs/zh.md) |
 | 15 视觉自回归VAR (19-visual-autoregressive-var) | [📄 中文文档](phases/08-generative-ai/19-visual-autoregressive-var/docs/zh.md) |
 
+### ✅ 阶段9：强化学习（12门课程全部完成）
+
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 MDP状态动作奖励 (01-mdps-states-actions-rewards) | [📄 中文文档](phases/09-reinforcement-learning/01-mdps-states-actions-rewards/docs/zh.md) |
+| 02 动态规划 (02-dynamic-programming) | [📄 中文文档](phases/09-reinforcement-learning/02-dynamic-programming/docs/zh.md) |
+| 03 蒙特卡洛方法 (03-monte-carlo-methods) | [📄 中文文档](phases/09-reinforcement-learning/03-monte-carlo-methods/docs/zh.md) |
+| 04 Q-Learning与SARSA (04-q-learning-sarsa) | [📄 中文文档](phases/09-reinforcement-learning/04-q-learning-sarsa/docs/zh.md) |
+| 05 DQN深度Q网络 (05-dqn) | [📄 中文文档](phases/09-reinforcement-learning/05-dqn/docs/zh.md) |
+| 06 策略梯度与REINFORCE (06-policy-gradients-reinforce) | [📄 中文文档](phases/09-reinforcement-learning/06-policy-gradients-reinforce/docs/zh.md) |
+| 07 Actor-Critic与A2C/A3C (07-actor-critic-a2c-a3c) | [📄 中文文档](phases/09-reinforcement-learning/07-actor-critic-a2c-a3c/docs/zh.md) |
+| 08 PPO近端策略优化 (08-ppo) | [📄 中文文档](phases/09-reinforcement-learning/08-ppo/docs/zh.md) |
+| 09 奖励建模与RLHF (09-reward-modeling-rlhf) | [📄 中文文档](phases/09-reinforcement-learning/09-reward-modeling-rlhf/docs/zh.md) |
+| 10 多智能体强化学习 (10-multi-agent-rl) | [📄 中文文档](phases/09-reinforcement-learning/10-multi-agent-rl/docs/zh.md) |
+| 11 仿真到现实迁移 (11-sim-to-real-transfer) | [📄 中文文档](phases/09-reinforcement-learning/11-sim-to-real-transfer/docs/zh.md) |
+| 12 游戏强化学习 (12-rl-for-games) | [📄 中文文档](phases/09-reinforcement-learning/12-rl-for-games/docs/zh.md) |
+
 ---
 
 <p align="center">

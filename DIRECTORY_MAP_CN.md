@@ -282,3 +282,22 @@
 | `13-flow-matching-rectified-flows` | 13 流匹配与整流流 |
 | `14-evaluation-fid-clip-score` | 14 评估FID与CLIP分数 |
 | `19-visual-autoregressive-var` | 15 视觉自回归VAR |
+
+---
+
+## 阶段9：强化学习 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-mdps-states-actions-rewards` | 01 MDP状态动作奖励 |
+| `02-dynamic-programming` | 02 动态规划 |
+| `03-monte-carlo-methods` | 03 蒙特卡洛方法 |
+| `04-q-learning-sarsa` | 04 Q-Learning与SARSA |
+| `05-dqn` | 05 DQN深度Q网络 |
+| `06-policy-gradients-reinforce` | 06 策略梯度与REINFORCE |
+| `07-actor-critic-a2c-a3c` | 07 Actor-Critic与A2C/A3C |
+| `08-ppo` | 08 PPO近端策略优化 |
+| `09-reward-modeling-rlhf` | 09 奖励建模与RLHF |
+| `10-multi-agent-rl` | 10 多智能体强化学习 |
+| `11-sim-to-real-transfer` | 11 仿真到现实迁移 |
+| `12-rl-for-games` | 12 游戏强化学习 |
