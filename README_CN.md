@@ -199,6 +199,26 @@
 | 15 注意力变体 (15-attention-variants) | [📄 中文文档](phases/07-transformers-deep-dive/15-attention-variants/docs/zh.md) |
 | 16 推测解码 (16-speculative-decoding) | [📄 中文文档](phases/07-transformers-deep-dive/16-speculative-decoding/docs/zh.md) |
 
+### ✅ 阶段8：生成式AI（15门课程全部完成）
+
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 生成模型分类体系与历史 (01-generative-models-taxonomy-history) | [📄 中文文档](phases/08-generative-ai/01-generative-models-taxonomy-history/docs/zh.md) |
+| 02 自编码器与VAE (02-autoencoders-vae) | [📄 中文文档](phases/08-generative-ai/02-autoencoders-vae/docs/zh.md) |
+| 03 GAN生成器与判别器 (03-gans-generator-discriminator) | [📄 中文文档](phases/08-generative-ai/03-gans-generator-discriminator/docs/zh.md) |
+| 04 条件GAN与Pix2Pix (04-conditional-gans-pix2pix) | [📄 中文文档](phases/08-generative-ai/04-conditional-gans-pix2pix/docs/zh.md) |
+| 05 StyleGAN (05-stylegan) | [📄 中文文档](phases/08-generative-ai/05-stylegan/docs/zh.md) |
+| 06 从零实现扩散模型DDPM (06-diffusion-ddpm-from-scratch) | [📄 中文文档](phases/08-generative-ai/06-diffusion-ddpm-from-scratch/docs/zh.md) |
+| 07 隐空间扩散与Stable Diffusion (07-latent-diffusion-stable-diffusion) | [📄 中文文档](phases/08-generative-ai/07-latent-diffusion-stable-diffusion/docs/zh.md) |
+| 08 ControlNet与LoRA条件化 (08-controlnet-lora-conditioning) | [📄 中文文档](phases/08-generative-ai/08-controlnet-lora-conditioning/docs/zh.md) |
+| 09 图像修复、扩展与编辑 (09-inpainting-outpainting-editing) | [📄 中文文档](phases/08-generative-ai/09-inpainting-outpainting-editing/docs/zh.md) |
+| 10 视频生成 (10-video-generation) | [📄 中文文档](phases/08-generative-ai/10-video-generation/docs/zh.md) |
+| 11 音频生成 (11-audio-generation) | [📄 中文文档](phases/08-generative-ai/11-audio-generation/docs/zh.md) |
+| 12 3D生成 (12-3d-generation) | [📄 中文文档](phases/08-generative-ai/12-3d-generation/docs/zh.md) |
+| 13 流匹配与整流流 (13-flow-matching-rectified-flows) | [📄 中文文档](phases/08-generative-ai/13-flow-matching-rectified-flows/docs/zh.md) |
+| 14 评估FID与CLIP分数 (14-evaluation-fid-clip-score) | [📄 中文文档](phases/08-generative-ai/14-evaluation-fid-clip-score/docs/zh.md) |
+| 15 视觉自回归VAR (19-visual-autoregressive-var) | [📄 中文文档](phases/08-generative-ai/19-visual-autoregressive-var/docs/zh.md) |
+
 ---
 
 <p align="center">

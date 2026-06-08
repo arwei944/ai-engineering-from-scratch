@@ -260,3 +260,25 @@
 | `14-build-a-transformer-capstone` | 14 构建Transformer顶点项目 |
 | `15-attention-variants` | 15 注意力变体 |
 | `16-speculative-decoding` | 16 推测解码 |
+
+---
+
+## 阶段8：生成式AI 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-generative-models-taxonomy-history` | 01 生成模型分类体系与历史 |
+| `02-autoencoders-vae` | 02 自编码器与VAE |
+| `03-gans-generator-discriminator` | 03 GAN生成器与判别器 |
+| `04-conditional-gans-pix2pix` | 04 条件GAN与Pix2Pix |
+| `05-stylegan` | 05 StyleGAN |
+| `06-diffusion-ddpm-from-scratch` | 06 从零实现扩散模型DDPM |
+| `07-latent-diffusion-stable-diffusion` | 07 隐空间扩散与Stable Diffusion |
+| `08-controlnet-lora-conditioning` | 08 ControlNet与LoRA条件化 |
+| `09-inpainting-outpainting-editing` | 09 图像修复、扩展与编辑 |
+| `10-video-generation` | 10 视频生成 |
+| `11-audio-generation` | 11 音频生成 |
+| `12-3d-generation` | 12 3D生成 |
+| `13-flow-matching-rectified-flows` | 13 流匹配与整流流 |
+| `14-evaluation-fid-clip-score` | 14 评估FID与CLIP分数 |
+| `19-visual-autoregressive-var` | 15 视觉自回归VAR |
