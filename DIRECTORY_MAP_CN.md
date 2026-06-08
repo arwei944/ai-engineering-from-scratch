@@ -330,3 +330,25 @@
 | 22-async-hogwild-inference | 异步Hogwild推理 |
 | 25-speculative-decoding | 推测解码 |
 | 34-gradient-checkpointing | 梯度检查点 |
+
+## 阶段11：LLM工程（11-llm-engineering）
+
+| 英文目录名 | 中文名称 |
+|-----------|---------|
+| 01-prompt-engineering | 提示词工程 |
+| 02-few-shot-cot | 少样本与思维链 |
+| 03-structured-outputs | 结构化输出 |
+| 04-embeddings | 嵌入 |
+| 05-context-engineering | 上下文工程 |
+| 06-rag | 检索增强生成RAG |
+| 07-advanced-rag | 高级RAG |
+| 08-fine-tuning-lora | 微调与LoRA |
+| 09-function-calling | 函数调用 |
+| 10-evaluation | LLM评估 |
+| 11-caching-cost | 缓存与成本优化 |
+| 12-guardrails | 护栏机制 |
+| 13-production-app | 生产级应用 |
+| 14-model-context-protocol | 模型上下文协议MCP |
+| 15-prompt-caching | 提示词缓存 |
+| 16-langgraph-state-machines | LangGraph状态机 |
+| 17-agent-framework-tradeoffs | 智能体框架权衡 |

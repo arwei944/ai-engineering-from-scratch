@@ -265,6 +265,28 @@
 | 23 推测解码 (25-speculative-decoding) | [📄 中文文档](phases/10-llms-from-scratch/25-speculative-decoding/docs/zh.md) |
 | 24 梯度检查点 (34-gradient-checkpointing) | [📄 中文文档](phases/10-llms-from-scratch/34-gradient-checkpointing/docs/zh.md) |
 
+### ✅ 阶段11：LLM工程（17门课程全部完成）
+
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 提示词工程 (01-prompt-engineering) | [📄 中文文档](phases/11-llm-engineering/01-prompt-engineering/docs/zh.md) |
+| 02 少样本与思维链 (02-few-shot-cot) | [📄 中文文档](phases/11-llm-engineering/02-few-shot-cot/docs/zh.md) |
+| 03 结构化输出 (03-structured-outputs) | [📄 中文文档](phases/11-llm-engineering/03-structured-outputs/docs/zh.md) |
+| 04 嵌入 (04-embeddings) | [📄 中文文档](phases/11-llm-engineering/04-embeddings/docs/zh.md) |
+| 05 上下文工程 (05-context-engineering) | [📄 中文文档](phases/11-llm-engineering/05-context-engineering/docs/zh.md) |
+| 06 检索增强生成RAG (06-rag) | [📄 中文文档](phases/11-llm-engineering/06-rag/docs/zh.md) |
+| 07 高级RAG (07-advanced-rag) | [📄 中文文档](phases/11-llm-engineering/07-advanced-rag/docs/zh.md) |
+| 08 微调与LoRA (08-fine-tuning-lora) | [📄 中文文档](phases/11-llm-engineering/08-fine-tuning-lora/docs/zh.md) |
+| 09 函数调用 (09-function-calling) | [📄 中文文档](phases/11-llm-engineering/09-function-calling/docs/zh.md) |
+| 10 LLM评估 (10-evaluation) | [📄 中文文档](phases/11-llm-engineering/10-evaluation/docs/zh.md) |
+| 11 缓存与成本优化 (11-caching-cost) | [📄 中文文档](phases/11-llm-engineering/11-caching-cost/docs/zh.md) |
+| 12 护栏机制 (12-guardrails) | [📄 中文文档](phases/11-llm-engineering/12-guardrails/docs/zh.md) |
+| 13 生产级应用 (13-production-app) | [📄 中文文档](phases/11-llm-engineering/13-production-app/docs/zh.md) |
+| 14 模型上下文协议MCP (14-model-context-protocol) | [📄 中文文档](phases/11-llm-engineering/14-model-context-protocol/docs/zh.md) |
+| 15 提示词缓存 (15-prompt-caching) | [📄 中文文档](phases/11-llm-engineering/15-prompt-caching/docs/zh.md) |
+| 16 LangGraph状态机 (16-langgraph-state-machines) | [📄 中文文档](phases/11-llm-engineering/16-langgraph-state-machines/docs/zh.md) |
+| 17 智能体框架权衡 (17-agent-framework-tradeoffs) | [📄 中文文档](phases/11-llm-engineering/17-agent-framework-tradeoffs/docs/zh.md) |
+
 ---
 
 <p align="center">
