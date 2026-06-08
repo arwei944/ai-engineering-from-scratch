@@ -1,36 +1,36 @@
-# 统计学 for Machine Learning
+# 统计学 为了 Machine Learning
 
-> 统计学 is how you know if your model actually works or just got lucky.
+> 统计学 是 how you know if your 模型 actually works 或 just got lucky.
 
-**类型:** 实现
+**Type:** Build
 **Language:** Python
-**前置要求:** 阶段1, Lessons 06 (Probability and Distributions), 07 (Bayes' Theorem)
+**Prerequisites:** Phase 1, Lessons 06 (概率 和 Distributions), 07 (Bayes' Theorem)
 **Time:** ~120 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Compute descriptive statistics, Pearson/Spearman correlation, and covariance matrices from scratch
-- Perform hypothesis tests (t-test, chi-squared) and interpret p-values and confidence intervals correctly
-- Use bootstrap resampling to construct confidence intervals for any metric without distributional assumptions
-- Distinguish statistical significance from practical significance using effect size measures
+- Compute descriptive 统计学, Pearson/Spearman correlation, 和 covariance 矩阵 从 scratch
+- Perform hypothesis tests (t-test, chi-squared) 和 interpret p-values 和 confidence intervals correctly
+- Use bootstrap resampling 到 construct confidence intervals 为了 any metric without distributional assumptions
+- Distinguish statistical significance 从 practical significance using effect size measures
 
-## 问题引入
+## Problem
 
-You trained two models. Model A scores 0.87 on your test set. Model B scores 0.89. You deploy Model B. Three weeks later, production metrics are worse than before. What happened?
+You trained two 模型. 模型 scores 0.87 在 your test set. 模型 B scores 0.89. You deploy 模型 B. Three weeks later, production metrics 是 worse than before. What happened?
 
-Model B did not actually outperform Model A. The 0.02 difference was noise. Your test set was too small, or the variance too high, or both. You shipped randomness dressed up as improvement.
+模型 B did not actually outperform 模型 . 0.02 difference was noise. Your test set was too small, 或 variance too high, 或 both. You shipped randomness dressed up 作为 improvement.
 
-This happens constantly. Kaggle leaderboard shakeups. Papers that fail to reproduce. A/B tests that declare winners based on a few hundred samples. The root cause is always the same: someone skipped the statistics.
+This happens constantly. Kaggle leaderboard shakeups. Papers fail 到 reproduce. /B tests declare winners based 在 few hundred samples. root cause 是 always same: someone skipped 统计学.
 
-统计学 gives you the tools to distinguish signal from noise. It tells you when a difference is real, how confident you should be, and how much data you need before you can trust a result. Every ML pipeline, every model comparison, every experiment needs statistics. Without it, you are guessing.
+统计学 gives you tools 到 distinguish signal 从 noise. It tells you when difference 是 real, how confident you should be, 和 how much 数据 you need before you can trust result. Every ML pipeline, every 模型 comparison, every experiment needs 统计学. Without it, you 是 guessing.
 
-## 概念讲解
+## Concept
 
-### Descriptive 统计学: Summarizing Your Data
+### Descriptive 统计学: Summarizing Your 数据
 
-Before you model anything, you need to know what your data looks like. Descriptive statistics compress a dataset into a few numbers that capture its shape.
+Before you 模型 anything, you need 到 know what your 数据 looks like. Descriptive 统计学 compress 数据集 into few numbers capture its shape.
 
-**Measures of central tendency** answer "where is the middle?"
+**Measures 的 central tendency** answer "where 是 middle?"
 
 ```
 Mean:   sum of all values / count
@@ -44,9 +44,9 @@ Mode:   most frequent value
         Useful for categorical data. For continuous data, rarely informative.
 ```
 
-The mean is the balance point. The median is the halfway mark. When they diverge, your distribution is skewed. Income distributions have mean >> median (right skew from billionaires). Loss distributions during training often have mean << median (left skew from easy samples).
+mean 是 balance point. median 是 halfway mark. When they diverge, your distribution 是 skewed. Income distributions have mean >> median (right skew 从 billionaires). Loss distributions during 训练 often have mean << median (left skew 从 easy samples).
 
-**Measures of spread** answer "how dispersed is the data?"
+**Measures 的 spread** answer "how dispersed 是 数据?"
 
 ```
 Variance:   average squared deviation from the mean
@@ -64,7 +64,7 @@ IQR:        Q3 - Q1 (interquartile range)
             Robust to outliers. Used for box plots and outlier detection.
 ```
 
-**Percentiles** divide sorted data into 100 equal parts. The 25th percentile (Q1) means 25% of values fall below this point. The 50th percentile is the median. The 75th percentile is Q3.
+**Percentiles** divide sorted 数据 into 100 equal parts. 25th percentile (Q1) means 25% 的 values fall below 这个 point. 50th percentile 是 median. 75th percentile 是 Q3.
 
 ```
 For latency monitoring:
@@ -73,20 +73,20 @@ For latency monitoring:
   P99 = 99th percentile       (tail latency, often 10x the median)
 ```
 
-In ML, you care about percentiles for inference latency, prediction confidence distributions, and understanding error distributions. A model with low average error but terrible P99 error might be useless for safety-critical applications.
+In ML, you care about percentiles 为了 inference latency, prediction confidence distributions, 和 understanding error distributions. 模型 使用 low average error but terrible P99 error might be useless 为了 safety-critical applications.
 
-**Sample vs population statistics.** When computing variance from a sample, divide by (n-1) instead of n. This is Bessel's correction. It compensates for the fact that your sample mean is not the true population mean. With n in the denominator, you systematically underestimate the true variance. With (n-1), the estimate is unbiased.
+**Sample vs population 统计学.** When computing variance 从 sample, divide 通过 (n-1) instead 的 n. 这是 Bessel's correction. It compensates 为了 fact your sample mean 是 not true population mean. With n 在 denominator, you systematically underestimate true variance. With (n-1), estimate 是 unbiased.
 
 ```
 Population variance: sigma^2 = (1/N) * sum((x_i - mu)^2)
 Sample variance:     s^2     = (1/(n-1)) * sum((x_i - x_bar)^2)
 ```
 
-In practice: if n is large (thousands of samples), the difference is negligible. If n is small (dozens of samples), it matters.
+In practice: if n 是 large (thousands 的 samples), difference 是 negligible. If n 是 small (dozens 的 samples), it matters.
 
 ### Correlation: How Variables Move Together
 
-Correlation measures the strength and direction of a linear relationship between two variables.
+Correlation measures strength 和 direction 的 linear relationship between two variables.
 
 **Pearson correlation coefficient** measures linear association:
 
@@ -100,7 +100,7 @@ r =  0:  no linear relationship (but there might be a nonlinear one!)
 Range: [-1, 1]
 ```
 
-Pearson assumes the relationship is linear and both variables are roughly normally distributed. It is sensitive to outliers. A single extreme point can drag r from 0.1 to 0.9.
+Pearson assumes relationship 是 linear 和 both variables 是 roughly normally distributed. 它是 sensitive 到 outliers. single extreme point can drag r 从 0.1 到 0.9.
 
 **Spearman rank correlation** measures monotonic association:
 
@@ -112,7 +112,7 @@ Spearman catches any monotonic relationship, not just linear.
 If y = x^3, Pearson gives r < 1 but Spearman gives rho = 1.
 ```
 
-**When to use each:**
+**When 到 use each:**
 
 ```
 Pearson:    Both variables are continuous and roughly normal.
@@ -125,11 +125,11 @@ Spearman:   Ordinal data (rankings, ratings).
             Outliers are present.
 ```
 
-**The golden rule:** correlation does not imply causation. Ice cream sales and drowning deaths are correlated because both increase in summer. Your model's accuracy and the number of parameters are correlated, but adding parameters does not automatically improve accuracy (see: overfitting).
+** golden rule:** correlation does not imply causation. Ice cream sales 和 drowning deaths 是 correlated because both increase 在 summer. Your 模型's 准确率 和 number 的 参数 是 correlated, but adding 参数 does not automatically improve 准确率 (see: 过拟合).
 
-### Covariance Matrix
+### Covariance 矩阵
 
-The covariance between two variables measures how they vary together:
+covariance between two variables measures how they vary together:
 
 ```
 Cov(X, Y) = (1/n) * sum((x_i - x_bar)(y_i - y_bar))
@@ -139,7 +139,7 @@ Cov(X, Y) < 0:  when X increases, Y tends to decrease
 Cov(X, Y) = 0:  no linear co-movement
 ```
 
-For d features, the covariance matrix C is a d x d matrix where C[i][j] = Cov(feature_i, feature_j). The diagonal entries C[i][i] are the variances of each feature.
+For d 特征, covariance 矩阵 C 是 d x d 矩阵 where C[i][j] = Cov(feature_i, feature_j). diagonal entries C[i][i] 是 variances 的 each 特征.
 
 ```
 C = | Var(x1)      Cov(x1,x2)  Cov(x1,x3) |
@@ -153,15 +153,15 @@ Properties:
   - Off-diagonal = covariances
 ```
 
-**Connection to PCA.** PCA eigendecomposes the covariance matrix. The eigenvectors are the principal components (directions of maximum variance). The eigenvalues tell you how much variance each component captures. This is exactly what Lesson 10 covered, but now you see why the covariance matrix is the right thing to decompose: it encodes all pairwise linear relationships in your data.
+**Connection 到 PCA.** PCA eigendecomposes covariance 矩阵. eigenvectors 是 principal components (directions 的 maximum variance). eigenvalues tell you how much variance each component captures. 这是 exactly what Lesson 10 covered, but now you see why covariance 矩阵 是 right thing 到 decompose: it encodes all pairwise linear relationships 在 your 数据.
 
-**Connection to correlation.** The correlation matrix is the covariance matrix of standardized variables (each divided by its standard deviation). Correlation normalizes covariance so all values fall in [-1, 1].
+**Connection 到 correlation.** correlation 矩阵 是 covariance 矩阵 的 standardized variables (each divided 通过 its standard deviation). Correlation normalizes covariance so all values fall 在 [-1, 1].
 
-### Hypothesis Testing
+### Hypothesis 测试
 
-Hypothesis testing is a framework for making decisions under uncertainty. You start with a claim, collect data, and determine if the data is consistent with the claim.
+Hypothesis 测试 是 framework 为了 making decisions under uncertainty. You start 使用 claim, collect 数据, 和 determine if 数据 是 consistent 使用 claim.
 
-**The setup:**
+** setup:**
 
 ```
 Null hypothesis (H0):        the default assumption, usually "no effect"
@@ -172,7 +172,7 @@ Example:
   H1: Model B has higher accuracy than Model A
 ```
 
-**The p-value** is the probability of seeing data as extreme as what you observed, assuming H0 is true. It is NOT the probability that H0 is true. This is the single most common misunderstanding in statistics.
+** p-value** 是 概率 的 seeing 数据 作为 extreme 作为 what you observed, assuming H0 是 true. 它是 NOT 概率 H0 是 true. 这是 single most common misunderstanding 在 统计学.
 
 ```
 p-value = P(data this extreme | H0 is true)
@@ -184,7 +184,7 @@ If p-value >= alpha:
     This does NOT mean H0 is true.
 ```
 
-**Confidence intervals** give a range of plausible values for a parameter:
+**Confidence intervals** give range 的 plausible values 为了 参数:
 
 ```
 95% confidence interval for the mean:
@@ -197,13 +197,13 @@ computed intervals would contain the true mean. It does NOT mean there
 is a 95% probability the true mean is in this specific interval.
 ```
 
-The width of the confidence interval tells you about precision. Wide intervals mean high uncertainty. Narrow intervals mean your estimate is precise (but not necessarily accurate, if your data is biased).
+width 的 confidence interval tells you about 精确率. Wide intervals mean high uncertainty. Narrow intervals mean your estimate 是 precise (but not necessarily accurate, if your 数据 是 biased).
 
-### The t-test
+### t-test
 
-The t-test compares means. There are several flavors.
+t-test compares means. 有 several flavors.
 
-**One-sample t-test:** is the population mean different from a hypothesized value?
+**One-sample t-test:** 是 population mean different 从 hypothesized value?
 
 ```
 t = (x_bar - mu_0) / (s / sqrt(n))
@@ -211,7 +211,7 @@ t = (x_bar - mu_0) / (s / sqrt(n))
 degrees of freedom = n - 1
 ```
 
-**Two-sample t-test (independent):** are two group means different?
+**Two-sample t-test (independent):** 是 two group means different?
 
 ```
 t = (x_bar_1 - x_bar_2) / sqrt(s1^2/n1 + s2^2/n2)
@@ -220,18 +220,18 @@ This is Welch's t-test, which does not assume equal variances.
 Always use Welch's unless you have a specific reason for equal variances.
 ```
 
-**Paired t-test:** when measurements come in pairs (same model evaluated on same data splits):
+**Paired t-test:** when measurements come 在 pairs (same 模型 evaluated 在 same 数据 splits):
 
 ```
 Compute d_i = x_i - y_i for each pair
 Then run a one-sample t-test on the d_i values against mu_0 = 0
 ```
 
-In ML, the paired t-test is common: you run both models on the same 10 cross-validation folds and compare their scores pairwise.
+In ML, paired t-test 是 common: you run both 模型 在 same 10 cross-验证 folds 和 compare their scores pairwise.
 
 ### Chi-squared Test
 
-The chi-squared test checks if observed frequencies match expected frequencies. Useful for categorical data.
+chi-squared test checks if observed frequencies match expected frequencies. Useful 为了 categorical 数据.
 
 ```
 chi^2 = sum((observed - expected)^2 / expected)
@@ -248,9 +248,9 @@ With 1 degree of freedom, chi^2 = 8 gives p < 0.005.
 The difference is significant.
 ```
 
-### A/B Testing for ML Models
+### /B 测试 为了 ML Models
 
-A/B testing in ML is not the same as web A/B testing. Model comparison has specific challenges:
+/B 测试 在 ML 是 not same 作为 web /B 测试. 模型 comparison has specific challenges:
 
 ```
 1. Same test set:    Both models must be evaluated on identical data.
@@ -266,7 +266,7 @@ A/B testing in ML is not the same as web A/B testing. Model comparison has speci
                      your comparison is biased. Hold out a final test set.
 ```
 
-**The procedure:**
+** procedure:**
 
 ```
 1. Define your metric and significance level (alpha = 0.05)
@@ -281,7 +281,7 @@ A/B testing in ML is not the same as web A/B testing. Model comparison has speci
 
 ### Statistical Significance vs Practical Significance
 
-A result can be statistically significant but practically meaningless. With enough data, even a trivial difference becomes statistically significant.
+result can be statistically significant but practically meaningless. With enough 数据, even trivial difference becomes statistically significant.
 
 ```
 Example:
@@ -295,7 +295,7 @@ Practically significant? A 0.03% improvement is not worth the
 engineering cost of deploying a new model.
 ```
 
-**Effect size** quantifies how big the difference is, independent of sample size:
+**Effect size** quantifies how big difference 是, independent 的 sample size:
 
 ```
 Cohen's d = (mean_1 - mean_2) / pooled_std
@@ -305,11 +305,11 @@ d = 0.5:  medium effect
 d = 0.8:  large effect
 ```
 
-Always report both the p-value and the effect size. The p-value tells you if the difference is real. The effect size tells you if it matters.
+Always report both p-value 和 effect size. p-value tells you if difference 是 real. effect size tells you if it matters.
 
 ### Multiple Comparison Problem
 
-When you test many hypotheses, some will be "significant" by chance. If you test 20 things at alpha = 0.05, you expect 1 false positive even when nothing is real.
+When you test many hypotheses, some will be "significant" 通过 chance. If you test 20 things 在 alpha = 0.05, you expect 1 false positive even when nothing 是 real.
 
 ```
 P(at least one false positive) = 1 - (1 - alpha)^m
@@ -320,7 +320,7 @@ P(false positive) = 1 - 0.95^20 = 0.64
 You have a 64% chance of at least one false positive.
 ```
 
-**Bonferroni correction:** divide alpha by the number of tests.
+**Bonferroni correction:** divide alpha 通过 number 的 tests.
 
 ```
 Adjusted alpha = alpha / m = 0.05 / 20 = 0.0025
@@ -329,13 +329,13 @@ Only reject H0 if p-value < 0.0025.
 Conservative but simple. Works when tests are independent.
 ```
 
-In ML, this matters when you compare a model across multiple metrics, test many hyperparameter configurations, or evaluate on multiple datasets.
+In ML, 这个 matters when you compare 模型 across multiple metrics, test many 超参数 configurations, 或 evaluate 在 multiple 数据集.
 
 ### Bootstrap Methods
 
-Bootstrapping estimates the sampling distribution of a statistic by resampling your data with replacement. No assumptions about the underlying distribution required.
+Bootstrapping estimates sampling distribution 的 statistic 通过 resampling your 数据 使用 replacement. No assumptions about underlying distribution required.
 
-**The algorithm:**
+** 算法:**
 
 ```
 1. You have n data points
@@ -354,7 +354,7 @@ Sort the B bootstrap statistics
 95% CI = [2.5th percentile, 97.5th percentile]
 ```
 
-**Why bootstrap matters for ML:**
+**Why bootstrap matters 为了 ML:**
 
 ```
 - Test set accuracy is a point estimate. Bootstrap gives you
@@ -366,7 +366,7 @@ Sort the B bootstrap statistics
 - No closed-form formula needed.
 ```
 
-**Bootstrap for model comparison:**
+**Bootstrap 为了 模型 comparison:**
 
 ```
 1. You have predictions from Model A and Model B on the same test set
@@ -379,11 +379,11 @@ Sort the B bootstrap statistics
 4. If the CI does not contain 0, the difference is significant
 ```
 
-This is more robust than the paired t-test because it makes no distributional assumptions.
+这是 more robust than paired t-test because it makes no distributional assumptions.
 
 ### Parametric vs Non-parametric Tests
 
-**Parametric tests** assume a specific distribution (usually normal):
+**Parametric tests** assume specific distribution (usually normal):
 
 ```
 t-test:         assumes normally distributed data (or large n by CLT)
@@ -400,7 +400,7 @@ Spearman rho:       correlation on ranks (replaces Pearson)
 Kruskal-Wallis:     compares multiple groups (replaces ANOVA)
 ```
 
-**When to use non-parametric:**
+**When 到 use non-parametric:**
 
 ```
 - Small sample size (n < 30) and data is clearly non-normal
@@ -409,7 +409,7 @@ Kruskal-Wallis:     compares multiple groups (replaces ANOVA)
 - Skewed distributions
 ```
 
-**When to use parametric:**
+**When 到 use parametric:**
 
 ```
 - Large sample size (CLT makes the test statistic approximately normal)
@@ -417,22 +417,22 @@ Kruskal-Wallis:     compares multiple groups (replaces ANOVA)
 - More statistical power (better at detecting real differences)
 ```
 
-In ML experiments, you typically have small n (5 or 10 cross-validation folds), so non-parametric tests like Wilcoxon signed-rank are often more appropriate than t-tests.
+In ML experiments, you typically have small n (5 或 10 cross-验证 folds), so non-parametric tests like Wilcoxon signed-rank 是 often more appropriate than t-tests.
 
 ### Central Limit Theorem: Practical Implications
 
-The CLT says the distribution of sample means approaches a normal distribution as n grows, regardless of the underlying population distribution.
+CLT says distribution 的 sample means approaches normal distribution 作为 n grows, regardless 的 underlying population distribution.
 
 ```
 If X_1, X_2, ..., X_n are iid with mean mu and variance sigma^2:
 
-    X_bar ~ 范数al(mu, sigma^2 / n)    as n -> infinity
+    X_bar ~ Normal(mu, sigma^2 / n)    as n -> infinity
 
 Works for n >= 30 in most cases.
 For highly skewed distributions, you might need n >= 100.
 ```
 
-**Why this matters for ML:**
+**Why 这个 matters 为了 ML:**
 
 ```
 1. Justifies confidence intervals and t-tests on aggregated metrics
@@ -453,64 +453,64 @@ For highly skewed distributions, you might need n >= 100.
 - Does NOT apply to dependent data (time series without correction).
 ```
 
-### Common Statistical Mistakes in ML Papers
+### Common Statistical Mistakes 在 ML Papers
 
-1. **Testing on the training set.** Guarantees overfitting. Always hold out data the model never sees during training.
+1. **测试 在 训练 set.** Guarantees 过拟合. Always hold out 数据 模型 never sees during 训练.
 
-2. **No confidence intervals.** Reporting a single accuracy number without uncertainty makes results unreproducible and unverifiable.
+2. **No confidence intervals.** Reporting single 准确率 number without uncertainty makes results unreproducible 和 unverifiable.
 
-3. **Ignoring multiple comparisons.** Testing 50 configurations and reporting the best one without correction inflates false positive rates.
+3. **Ignoring multiple comparisons.** 测试 50 configurations 和 reporting best one without correction inflates false positive rates.
 
-4. **Confusing statistical and practical significance.** A p-value of 0.001 on a 0.01% accuracy improvement is not meaningful.
+4. **Confusing statistical 和 practical significance.** p-value 的 0.001 在 0.01% 准确率 improvement 是 not meaningful.
 
-5. **Using accuracy on imbalanced data.** 99% accuracy on a dataset with 99% negative class means the model learned nothing. Use precision, recall, F1, or AUC.
+5. **Using 准确率 在 imbalanced 数据.** 99% 准确率 在 数据集 使用 99% negative class means 模型 learned nothing. Use 精确率, 召回率, F1, 或 AUC.
 
-6. **Cherry-picking metrics.** Reporting only the metric where your model wins. Honest evaluation reports all relevant metrics.
+6. **Cherry-picking metrics.** Reporting only metric where your 模型 wins. Honest evaluation reports all relevant metrics.
 
-7. **Leaking information across train/test splits.** 范数alizing before splitting, or using future data to predict the past.
+7. **Leaking information across train/test splits.** Normalizing before splitting, 或 using future 数据 到 predict past.
 
-8. **Small test sets with no variance estimates.** Evaluating on 100 samples and claiming 2% improvement is noise, not signal.
+8. **Small test sets 使用 no variance estimates.** Evaluating 在 100 samples 和 claiming 2% improvement 是 noise, not signal.
 
-9. **Assuming independence when data is not independent.** Medical images from the same patient, multiple sentences from the same document. Observations within a group are correlated.
+9. **Assuming independence when 数据 是 not independent.** Medical images 从 same patient, multiple sentences 从 same document. Observations within group 是 correlated.
 
-10. **P-hacking.** Trying different tests, subsets, or exclusion criteria until you get p < 0.05. The result is an artifact of the search.
+10. **P-hacking.** Trying different tests, subsets, 或 exclusion criteria until you get p < 0.05. result 是 artifact 的 search.
 
 ## Building It
 
-You will implement:
+你将实现:
 
-1. **Descriptive statistics from scratch** (mean, median, mode, standard deviation, percentiles, IQR)
-2. **Correlation functions** (Pearson and Spearman, with the covariance matrix)
+1. **Descriptive 统计学 从 scratch** (mean, median, mode, standard deviation, percentiles, IQR)
+2. **Correlation 函数** (Pearson 和 Spearman, 使用 covariance 矩阵)
 3. **Hypothesis tests** (one-sample t-test, two-sample t-test, chi-squared test)
-4. **Bootstrap confidence intervals** (for any statistic, no assumptions needed)
-5. **A/B test simulator** (generate data, test, check for Type I and Type II errors)
-6. **Statistical vs practical significance demo** (showing that large n makes everything "significant")
+4. **Bootstrap confidence intervals** (为了 any statistic, no assumptions needed)
+5. **/B test simulator** (generate 数据, test, check 为了 Type I 和 Type II errors)
+6. **Statistical vs practical significance demo** (showing large n makes everything "significant")
 
-All from scratch, using only `math` and `random`. No numpy, no scipy.
+All 从 scratch, using only `math` 和 `random`. No numpy, no scipy.
 
-## 关键术语
+## Key Terms
 
 | Term | Definition |
 |---|---|
-| Mean | Sum of values divided by count. Sensitive to outliers. |
-| Median | Middle value of sorted data. Robust to outliers. |
-| Standard deviation | Square root of variance. Measures spread in original units. |
-| Percentile | Value below which a given percentage of data falls. |
-| IQR | Interquartile range. Q3 minus Q1. The spread of the middle 50%. |
+| Mean | Sum 的 values divided 通过 count. Sensitive 到 outliers. |
+| Median | Middle value 的 sorted 数据. Robust 到 outliers. |
+| Standard deviation | Square root 的 variance. Measures spread 在 original units. |
+| Percentile | Value below which given percentage 的 数据 falls. |
+| IQR | Interquartile range. Q3 minus Q1. spread 的 middle 50%. |
 | Pearson correlation | Measures linear association between two variables. Range [-1, 1]. |
 | Spearman correlation | Measures monotonic association using ranks. |
-| Covariance matrix | Matrix of pairwise covariances between all features. |
-| Null hypothesis | Default assumption of no effect or no difference. |
-| p-value | Probability of data this extreme given the null hypothesis is true. |
-| Confidence interval | Range of plausible values for a parameter at a given confidence level. |
-| t-test | Tests whether means differ significantly. Uses the t-distribution. |
-| Chi-squared test | Tests whether observed frequencies differ from expected frequencies. |
-| Effect size | Magnitude of a difference, independent of sample size. Cohen's d is common. |
-| Bonferroni correction | Divides significance threshold by number of tests to control false positives. |
-| Bootstrap | Resampling with replacement to estimate sampling distributions. |
-| Type I error | False positive. Rejecting H0 when it is true. |
-| Type II error | False negative. Failing to reject H0 when it is false. |
-| Statistical power | Probability of correctly rejecting a false H0. Power = 1 minus Type II error rate. |
-| Central limit theorem | Sample means converge to a normal distribution as sample size grows. |
-| Parametric test | Assumes a specific distribution for the data (usually normal). |
-| Non-parametric test | Makes no distributional assumptions. Works on ranks or signs. |
+| Covariance 矩阵 | 矩阵 的 pairwise covariances between all 特征. |
+| Null hypothesis | Default assumption 的 no effect 或 no difference. |
+| p-value | 概率 的 数据 这个 extreme given null hypothesis 是 true. |
+| Confidence interval | Range 的 plausible values 为了 参数 在 given confidence level. |
+| t-test | Tests whether means differ significantly. Uses t-distribution. |
+| Chi-squared test | Tests whether observed frequencies differ 从 expected frequencies. |
+| Effect size | Magnitude 的 difference, independent 的 sample size. Cohen's d 是 common. |
+| Bonferroni correction | Divides significance threshold 通过 number 的 tests 到 control false positives. |
+| Bootstrap | Resampling 使用 replacement 到 estimate sampling distributions. |
+| Type I error | False positive. Rejecting H0 when it 是 true. |
+| Type II error | False negative. Failing 到 reject H0 when it 是 false. |
+| Statistical power | 概率 的 correctly rejecting false H0. Power = 1 minus Type II error rate. |
+| Central limit theorem | Sample means converge 到 normal distribution 作为 sample size grows. |
+| Parametric test | Assumes specific distribution 为了 数据 (usually normal). |
+| Non-parametric test | Makes no distributional assumptions. Works 在 ranks 或 signs. |

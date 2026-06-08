@@ -1,57 +1,57 @@
-# GPU 配置与云服务
+# GPU Setup & Cloud
 
-> CPU 训练适合学习。真正的训练需要 GPU。
+> 训练 在 CPU 是 fine 为了 learning. 训练 为了 real needs GPU.
 
-**类型:** 实现
-**语言:** Python
-**前置要求:** 阶段0, 课程01
-**预计时间:** ~45分钟
+**Type:** Build
+**Languages:** Python
+**Prerequisites:** Phase 0, Lesson 01
+**Time:** ~45 minutes
 
-## 学习目标
+## Learning Objectives
 
-- 使用 `nvidia-smi` 和 PyTorch CUDA API 验证本地 GPU 可用性
-- 配置带 T4 GPU 的 Google Colab 进行免费云端实验
-- 基准测试 CPU vs GPU 矩阵乘法并测量加速比
-- 使用 fp16 经验法则估算能装入你显存的最大模型
+- Verify local GPU availability using `nvidia-smi` 和 PyTorch's CUDA API
+- Configure Google Colab 使用 T4 GPU 为了 free cloud-based experiments
+- Benchmark 矩阵 multiplication 在 CPU vs GPU 和 measure speedup
+- Estimate largest 模型 fits 在 your VRAM using fp16 rule 的 thumb
 
-## 问题引入
+## Problem
 
-阶段 1-3 的大多数课程在 CPU 上运行良好。但一旦你开始训练 CNN、Transformer 或大语言模型（阶段4+），你就需要 GPU 加速。CPU 上需要 8 小时的训练在 GPU 上只需要 10 分钟。
+Most lessons 在 phases 1-3 run fine 在 CPU. But once you start 训练 CNNs, transformers, 或 LLMs (phases 4+), you need GPU acceleration. 训练 run takes 8 hours 在 CPU takes 10 minutes 在 GPU.
 
-你有三个选择：本地 GPU、云 GPU 或 Google Colab（免费）。
+You have three options: local GPU, cloud GPU, 或 Google Colab (free).
 
-## 概念讲解
+## Concept
 
 ```
-你的选择：
+Your options:
 
-1. 本地 NVIDIA GPU
-   成本: $0 (你已经有了)
-   配置: 安装 CUDA + cuDNN
-   最适合: 日常使用, 大数据集
+1. Local NVIDIA GPU
+   Cost: $0 (you already have it)
+   Setup: Install CUDA + cuDNN
+   Best for: Regular use, large datasets
 
-2. Google Colab (免费层)
-   成本: $0
-   配置: 无需
-   最适合: 快速实验, 家里没有 GPU
+2. Google Colab (free tier)
+   Cost: $0
+   Setup: None
+   Best for: Quick experiments, no GPU at home
 
-3. 云 GPU (Lambda, RunPod, Vast.ai)
-   成本: $0.20-2.00/小时
-   配置: SSH + 安装
-   最适合: 正式训练, 大模型
+3. Cloud GPU (Lambda, RunPod, Vast.ai)
+   Cost: $0.20-2.00/hr
+   Setup: SSH + install
+   Best for: Serious training, large models
 ```
 
-## 从零实现
+## Build It
 
-### 选项1：本地 NVIDIA GPU
+### Option 1: Local NVIDIA GPU
 
-检查你是否有：
+Check if you have one:
 
 ```bash
 nvidia-smi
 ```
 
-安装带 CUDA 的 PyTorch：
+Install PyTorch 使用 CUDA:
 
 ```python
 import torch
@@ -63,17 +63,17 @@ if torch.cuda.is_available():
     print(f"Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
 ```
 
-### 选项2：Google Colab
+### Option 2: Google Colab
 
-1. 访问 [colab.research.google.com](https://colab.research.google.com)
-2. 运行时 > 更改运行时类型 > T4 GPU
-3. 运行 `!nvidia-smi` 验证
+1. Go 到 [colab.research.google.com](https://colab.research.google.com)
+2. Runtime > Change runtime type > T4 GPU
+3. Run `!nvidia-smi` 到 verify
 
-将本课程的 notebook 直接上传到 Colab。
+Upload notebooks 从 这个 course directly 到 Colab.
 
-### 选项3：云 GPU
+### Option 3: Cloud GPU
 
-对于 Lambda Labs、RunPod 或 Vast.ai：
+For Lambda Labs, RunPod, 或 Vast.ai:
 
 ```bash
 ssh user@your-gpu-instance
@@ -82,16 +82,16 @@ pip install torch torchvision torchaudio
 python -c "import torch; print(torch.cuda.get_device_name(0))"
 ```
 
-### 没有 GPU？没问题。
+### No GPU? No problem.
 
-大多数课程都可以在 CPU 上运行。需要 GPU 的课程会明确说明并包含 Colab 链接。
+Most lessons work 在 CPU. ones need GPU will say so 和 include Colab links.
 
 ```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using: {device}")
 ```
 
-## 从零实现：GPU vs CPU 基准测试
+## Build It: GPU vs CPU benchmark
 
 ```python
 import torch
@@ -120,17 +120,17 @@ if torch.cuda.is_available():
     print(f"Speedup: {cpu_time / gpu_time:.0f}x")
 ```
 
-## 练习
+## Exercises
 
-1. 运行上面的基准测试，对比 CPU vs GPU 时间
-2. 如果你没有 GPU，在 Google Colab 上运行并对比
-3. 检查你有多少 GPU 显存，估算你能装入的最大模型（经验法则：fp16 每个参数 2 字节）
+1. Run benchmark above 和 compare CPU vs GPU times
+2. If you don't have GPU, run it 在 Google Colab 和 compare
+3. Check how much GPU memory you have 和 estimate largest 模型 you can fit (rule 的 thumb: 2 bytes per 参数 为了 fp16)
 
-## 关键术语
+## Key Terms
 
-| 术语 | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| CUDA | "GPU 编程" | NVIDIA 的并行计算平台，让你能在 GPU 上运行代码 |
-| VRAM | "GPU 内存" | GPU 上的显存，与系统内存分离。决定模型大小上限。 |
-| fp16 | "半精度" | 16 位浮点数，内存是 fp32 的一半，精度损失极小 |
-| Tensor Core | "快速矩阵硬件" | 专门用于矩阵乘法的 GPU 核心，比普通核心快 4-8 倍 |
+| CUDA | "GPU programming" | NVIDIA's parallel computing platform lets you run 代码 在 GPU |
+| VRAM | "GPU memory" | Video RAM 在 GPU, separate 从 system RAM. Limits 模型 size. |
+| fp16 | "Half 精确率" | 16-bit floating point, uses half memory 的 fp32 使用 minimal 准确率 loss |
+| 张量 Core | "Fast 矩阵 hardware" | Specialized GPU cores 为了 矩阵 multiplication, 4-8x faster than regular cores |

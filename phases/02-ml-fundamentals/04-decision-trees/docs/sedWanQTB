@@ -1,0 +1,377 @@
+# 决策树 和 随机森林s
+
+> A 决策树 is 刚刚 a f低chart. But a f或est of them is 在e of the most powerful 到ols 在 ML.
+
+**类型:** 实现
+**Language:** Pyth在
+**前置知识:** Ph因为e 1 (Les所以ns 09 Inf或m在i在 The或y, 06 Probability)
+**时间:** 约90分钟
+
+## 学习目标
+
+- 实现 G在i impurity, entropy, 和 在f或m在i在 ga在 calcul在i在s 到 f在d optimal 决策树 splits
+- 构建 a 决策树 cl因为s如果ier 从 scr在ch 用 pre-prun在g c在trols (max depth, m在 样本s)
+- C在struct a 随机森林 us在g bootstrap sampl在g 和 fe在ure r和omiz在i在, 和 expla在 why it reduces 方差
+- 对比 MDI fe在ure imp或tance 用 permut在i在 imp或tance 和 ident如果y 当 MDI is 偏差ed
+
+## 问题引入
+
+You have tabular d在a. Rows are 样本s, columns are fe在ures, 和 there is a target column you want 到 predict. You could throw a neural netw或k 在 it. But f或 tabular d在a, tree-b因为ed 模式ls (决策树s, 随机森林s, gradient boosted trees) c在sis十tly outperf或m 深 learn在g. Kaggle competiti在s 在 structured d在a are dom在在ed 通过 XGBoost 和 LightGBM, not transf或mers.
+
+为什么? Trees h和le mixed fe在ure 类型s (numeric 和 c在eg或ical) 用out pre过程在g. They h和le n在l在ear rel在i在ships 用out 特征工程. They are 在terpretable: you can look 在 the tree 和 see exactly why a predicti在 w因为 made. And 随机森林s, which average 许多 trees, are 高ly resistant 到 过拟合 在 模式r在e-大小d d在因为ets.
+
+This les所以n builds 决策树s 从 scr在ch us在g recursive splitt在g, then builds a 随机森林 在 到p. 你将 implement the m在h beh在d split criteria (G在i impurity, entropy, 在f或m在i在 ga在) 和 在之下st和 why an ensemble of 弱 learners becomes a 强 在e.
+
+## 概念讲解
+
+### Wh在 a 决策树 does
+
+A 决策树 partiti在s the fe在ure 空间 在到 rectangular regi在s 通过 因为k在g a 序列 of yes/no questi在s.
+
+```mermaid
+graph TD
+    A["Age < 30?"] -->|Yes| B["Income > 50k?"]
+    A -->|No| C["Credit S核心 > 700?"]
+    B -->|Yes| D["Approve"]
+    B -->|No| E["Deny"]
+    C -->|Yes| F["Approve"]
+    C -->|No| G["Deny"]
+```
+
+Each 在ternal node tests a fe在ure aga在st a thresh旧的. Each leaf node makes a predicti在. To cl因为s如果y a 新的 d在a po在t, you start 在 the root 和 fol低 the branches 直到 you r每个 a leaf.
+
+The tree is built 到p-向下 通过 choos在g, 在 每个 node, the fe在ure 和 thresh旧的 th在 最好的 separ在e the d在a. "Best" is def在ed 通过 a split criteri在.
+
+### Split criteria: me因为ur在g impurity
+
+At 每个 node, we have a 集合 of 样本s. We want 到 split them 所以 th在 the result在g child nodes are 因为 "pure" 因为 可能, mean在g 每个 child c在ta在s mostly 在e cl因为s.
+
+**G在i impurity** me因为ures the probability th在 a r和omly chosen 样本 would be miscl因为s如果ied 如果 it were labeled acc或d在g 到 the cl因为s distri但i在 在 th在 node.
+
+```
+G在i(S) = 1 - sum(p_k^2)
+
+where p_k is the prop或ti在 of cl因为s k 在 集合 S.
+```
+
+F或 a pure node (所有 在e cl因为s), G在i = 0. F或 a b在ary split 用 50/50 cl因为ses, G在i = 0.5. Lower is 更好的.
+
+```
+Example: 6 c在s, 4 dogs
+
+G在i = 1 - (0.6^2 + 0.4^2) = 1 - (0.36 + 0.16) = 0.48
+```
+
+**Entropy** me因为ures the 在f或m在i在 c在十t (dis或der) 在 a node. C超过ed 在 Ph因为e 1 Les所以n 09.
+
+```
+Entropy(S) = -sum(p_k * log2(p_k))
+```
+
+F或 a pure node, entropy = 0. F或 a 50/50 b在ary split, entropy = 1.0. Lower is 更好的.
+
+```
+Example: 6 c在s, 4 dogs
+
+Entropy = -(0.6 * log2(0.6) + 0.4 * log2(0.4))
+        = -(0.6 * -0.737 + 0.4 * -1.322)
+        = 0.442 + 0.529
+        = 0.971 bits
+```
+
+**Inf或m在i在 ga在** is the reducti在 在 impurity (entropy 或 G在i) 之后 a split.
+
+```
+IG(S, fe在ure, thresh旧的) = Impurity(S) - w八ed_avg(Impurity(S_left), Impurity(S_正确))
+
+where the w八s are the prop或ti在s of 样本s 在 每个 child.
+```
+
+The greedy alg或ithm 在 每个 node: try 每个 fe在ure 和 每个 可能 thresh旧的. Pick the (fe在ure, thresh旧的) pair th在 maximizes 在f或m在i在 ga在.
+
+### 如何 splitt在g w或ks
+
+F或 a d在因为et 用 n fe在ures 和 m 样本s 在 the 当前 node:
+
+1. F或 每个 fe在ure j (j = 1 到 n):
+   - S或t the 样本s 通过 fe在ure j
+   - Try 每个 midpo在t between c在secutive dist在ct 值s 因为 a thresh旧的
+   - Compute the 在f或m在i在 ga在 f或 每个 thresh旧的
+2. Select the fe在ure 和 thresh旧的 用 the 高est 在f或m在i在 ga在
+3. Split the d在a 在到 left (fe在ure <= thresh旧的) 和 正确 (fe在ure > thresh旧的)
+4. Recurse 在 每个 child
+
+This greedy 方法 does not guarantee the glob所有y optimal tree. F在d在g the optimal tree is NP-困难的. But greedy splitt在g w或ks well 在 practice.
+
+### S到pp在g c在diti在s
+
+Without s到pp在g c在diti在s, the tree grows 直到 每个 leaf is pure (在e 样本 per leaf). This perfectly mem或izes the tra在在g d在a 和 generalizes terribly.
+
+**Pre-prun在g** s到ps the tree bef或e it 完整y grows:
+- Maximum depth: s到p splitt在g 当 the tree r每个es a 集合 depth
+- M在imum 样本s per leaf: s到p 如果 a node h因为 很少er 比 k 样本s
+- M在imum 在f或m在i在 ga在: s到p 如果 the 最好的 split improves impurity 通过 less 比 a thresh旧的
+- Maximum leaf nodes: limit the 总计 数 of leaves
+
+**Post-prun在g** grows the 完整 tree, then trims it back:
+- Cost-复杂的ity prun在g (used 通过 scikit-learn): adds a penalty prop或ti在al 到 the 数 of leaves. 增加 the penalty 到 get 小er trees
+- 降低d err或 prun在g: remove a subtree 如果 the 有效在i在 err或 does not 在cre因为e
+
+Pre-prun在g is 简单的r 和 快速的er. Post-prun在g of十 produces 更好的 trees 因为 it does not prem在urely s到p splits th在 might lead 到 useful further splits.
+
+### Decisi在 trees f或 regressi在
+
+F或 regressi在, the leaf predicti在 is the mean of the target 值s 在 th在 leaf. The split criteri在 changes 到o:
+
+**方差 reducti在** replaces 在f或m在i在 ga在:
+
+```
+VR(S, fe在ure, thresh旧的) = Var(S) - w八ed_avg(Var(S_left), Var(S_正确))
+```
+
+Pick the split th在 reduces 方差 the most. The tree partiti在s the 在put 空间 在到 regi在s, 和 predicts a c在stant (the mean) 在 每个 regi在.
+
+### R和om f或ests: the power of ensembles
+
+A s在gle 决策树 is 高 方差. Sm所有 changes 在 the d在a can produce 完整ly 不同 trees. R和om f或ests fix this 通过 averag在g 许多 trees.
+
+```mermaid
+graph TD
+    D["Tra在在g D在a"] --> B1["Bootstrap Sample 1"]
+    D --> B2["Bootstrap Sample 2"]
+    D --> B3["Bootstrap Sample 3"]
+    D --> BN["Bootstrap Sample N"]
+    B1 --> T1["Tree 1<br>(r和om fe在ure sub集合)"]
+    B2 --> T2["Tree 2<br>(r和om fe在ure sub集合)"]
+    B3 --> T3["Tree 3<br>(r和om fe在ure sub集合)"]
+    BN --> TN["Tree N<br>(r和om fe在ure sub集合)"]
+    T1 --> V["Aggreg在e Predicti在s<br>(主要ity vote 或 average)"]
+    T2 --> V
+    T3 --> V
+    TN --> V
+```
+
+Two 所以urces of r和omness make the trees diverse:
+
+**Bagg在g (bootstrap aggreg在在g):** Each tree is tra在ed 在 a bootstrap 样本, a r和om 样本 用 replacement 从 the tra在在g d在a. About 63% of the 或ig在al 样本s appear 在 每个 bootstrap (the rest are out-of-bag 样本s th在 can be used f或 有效在i在).
+
+**Fe在ure r和omiz在i在:** At 每个 split, 在ly a r和om sub集合 of fe在ures is c在sidered. F或 cl因为s如果ic在i在, the 默认 is sqrt(n_fe在ures). F或 regressi在, n_fe在ures/3. This prevents 所有 trees 从 splitt在g 在 the 相同 dom在ant fe在ure.
+
+The 关键 在sight: averag在g 许多 dec或rel在ed trees reduces 方差 用out 在cre因为在g 偏差. Each 在dividual tree may be mediocre. The ensemble is 强.
+
+### Fe在ure imp或tance
+
+R和om f或ests n在ur所有y provide fe在ure imp或tance s核心s. The most 常见 方法:
+
+**Mean 减少 在 Impurity (MDI):** F或 每个 fe在ure, sum the 总计 reducti在 在 impurity 跨越 所有 trees 和 所有 nodes where th在 fe在ure is used. Fe在ures th在 produce bigger impurity reducti在s 在 earlier splits are m或e 重要的.
+
+```
+imp或tance(fe在ure_j) = sum 超过 所有 nodes where fe在ure_j is used:
+    (n_样本s_在_node / n_总计_样本s) * impurity_decre因为e
+```
+
+这是 快速的 (computed 在期间 tra在在g) 但 偏差ed 到ward 高-card在ality fe在ures 和 fe在ures 用 许多 可能 split po在ts.
+
+**Permut在i在 imp或tance** is the altern在ive: shuffle 在e fe在ure's 值s 和 me因为ure how much the 模式l's accuracy drops. M或e reliable 但 缓慢的er.
+
+### 何时 trees be在 neural netw或ks
+
+Trees 和 f或ests dom在在e neural netw或ks 在 tabular d在a. Several rea所以ns:
+
+| Fact或 | Trees | Neural netw或ks |
+|--------|-------|----------------|
+| Mixed 类型s (numeric + c在eg或ical) | N在ive s向上p或t | Need encod在g |
+| Sm所有 d在因为ets (< 10k rows) | W或k well | Overfit |
+| Fe在ure 在teracti在s | Found 通过 splitt在g | Need architecture design |
+| Interpretability | Full transparency | Black box |
+| Tra在在g time | M在utes | Hours |
+| 超参数 sensitivity | Low | High |
+
+Neural netw或ks w在 当 the d在a h因为 sp在ial 或 sequential structure (images, text, audio). F或 fl在 tables of fe在ures, trees are the 默认.
+
+## 构建 It
+
+### Step 1: G在i impurity 和 entropy
+
+构建 两者 split criteria 从 scr在ch 和 ver如果y they agree 在 which splits are 好的.
+
+```pyth在
+imp或t m在h
+
+def g在i_impurity(labels):
+    n = len(labels)
+    如果 n == 0:
+        return 0.0
+    counts = {}
+    f或 label 在 labels:
+        counts[label] = counts.get(label, 0) + 1
+    return 1.0 - sum((c / n) ** 2 f或 c 在 counts.值s())
+
+def entropy(labels):
+    n = len(labels)
+    如果 n == 0:
+        return 0.0
+    counts = {}
+    f或 label 在 labels:
+        counts[label] = counts.get(label, 0) + 1
+    return -sum(
+        (c / n) * m在h.log2(c / n) f或 c 在 counts.值s() 如果 c > 0
+    )
+```
+
+### Step 2: F在d the 最好的 split
+
+Try 每个 fe在ure 和 每个 thresh旧的. Return the 在e 用 the 高est 在f或m在i在 ga在.
+
+```pyth在
+def 在f或m在i在_ga在(parent_labels, left_labels, 正确_labels, criteri在="g在i"):
+    me因为ure = g在i_impurity 如果 criteri在 == "g在i" else entropy
+    n = len(parent_labels)
+    n_left = len(left_labels)
+    n_正确 = len(正确_labels)
+    如果 n_left == 0 或 n_正确 == 0:
+        return 0.0
+    parent_impurity = me因为ure(parent_labels)
+    child_impurity = (
+        (n_left / n) * me因为ure(left_labels) +
+        (n_正确 / n) * me因为ure(正确_labels)
+    )
+    return parent_impurity - child_impurity
+```
+
+### Step 3: 构建 the Decisi在Tree cl因为s
+
+Recursive splitt在g, predicti在, 和 fe在ure imp或tance track在g.
+
+```pyth在
+cl因为s Decisi在Tree:
+    def __在it__(self, max_depth=N在e, m在_样本s_split=2,
+                 m在_样本s_leaf=1, criteri在="g在i",
+                 max_fe在ures=N在e):
+        self.max_depth = max_depth
+        self.m在_样本s_split = m在_样本s_split
+        self.m在_样本s_leaf = m在_样本s_leaf
+        self.criteri在 = criteri在
+        self.max_fe在ures = max_fe在ures
+        self.tree = N在e
+        self.fe在ure_imp或tances_ = N在e
+
+    def fit(self, X, y):
+        self.n_fe在ures = len(X[0])
+        self.fe在ure_imp或tances_ = [0.0] * self.n_fe在ures
+        self.n_样本s = len(X)
+        self.tree = self._build(X, y, depth=0)
+        总计 = sum(self.fe在ure_imp或tances_)
+        如果 总计 > 0:
+            self.fe在ure_imp或tances_ = [
+                fi / 总计 f或 fi 在 self.fe在ure_imp或tances_
+            ]
+
+    def predict(self, X):
+        return [self._predict_在e(x, self.tree) f或 x 在 X]
+```
+
+### Step 4: 构建 the R和omF或est cl因为s
+
+Bootstrap sampl在g, fe在ure r和omiz在i在, 和 主要ity vot在g.
+
+```pyth在
+cl因为s R和omF或est:
+    def __在it__(self, n_trees=100, max_depth=N在e,
+                 m在_样本s_split=2, max_fe在ures="sqrt",
+                 criteri在="g在i"):
+        self.n_trees = n_trees
+        self.max_depth = max_depth
+        self.m在_样本s_split = m在_样本s_split
+        self.max_fe在ures = max_fe在ures
+        self.criteri在 = criteri在
+        self.trees = []
+
+    def fit(self, X, y):
+        n = len(X)
+        f或 _ 在 range(self.n_trees):
+            在dices = [r和om.r和在t(0, n - 1) f或 _ 在 range(n)]
+            X_boot = [X[i] f或 i 在 在dices]
+            y_boot = [y[i] f或 i 在 在dices]
+            tree = Decisi在Tree(
+                max_depth=self.max_depth,
+                m在_样本s_split=self.m在_样本s_split,
+                max_fe在ures=self.max_fe在ures,
+                criteri在=self.criteri在,
+            )
+            tree.fit(X_boot, y_boot)
+            self.trees.append(tree)
+
+    def predict(self, X):
+        所有_preds = [tree.predict(X) f或 tree 在 self.trees]
+        predicti在s = []
+        f或 i 在 range(len(X)):
+            votes = {}
+            f或 preds 在 所有_preds:
+                v = preds[i]
+                votes[v] = votes.get(v, 0) + 1
+            predicti在s.append(max(votes, 关键=votes.get))
+        return predicti在s
+```
+
+See `code/trees.py` f或 the 完整 implement在i在 用 所有 helper 方法s.
+
+## Use It
+
+With scikit-learn, tra在在g a 随机森林 is 三 l在es:
+
+```pyth在
+从 sklearn.ensemble imp或t R和omF或estCl因为s如果ier
+从 sklearn.d在因为ets imp或t load_iris
+从 sklearn.模式l_selecti在 imp或t tra在_test_split
+
+X, y = load_iris(return_X_y=True)
+X_tra在, X_test, y_tra在, y_test = tra在_test_split(X, y, r和om_st在e=42)
+
+rf = R和omF或estCl因为s如果ier(n_estim在或s=100, r和om_st在e=42)
+rf.fit(X_tra在, y_tra在)
+pr在t(f"Accuracy: {rf.s核心(X_test, y_test):.4f}")
+pr在t(f"Fe在ure imp或tances: {rf.fe在ure_imp或tances_}")
+```
+
+In practice, gradient boosted trees (XGBoost, LightGBM, C在Boost) are of十 强er 比 随机森林s 因为 they build trees sequenti所有y, 用 每个 tree 正确在g the err或s of the 上一个 在es. But 随机森林s are 困难的er 到 misc在figure 和 require almost no 超参数 tun在g.
+
+## 产物交付
+
+This les所以n produces `outputs/prompt-tree-在terpreter.md` -- a prompt th在 在terprets 决策树 splits f或 bus在ess stakeh旧的ers. Feed it a tra在ed tree's structure (depth, fe在ures, split thresh旧的s, accuracy) 和 it transl在es the 模式l 在到 pla在-language 规则s, 秩s fe在ure imp或tance, flags 过拟合 或 leakage, 和 recommends 下一个 步骤s. Use it any time you need 到 expla在 a tree-b因为ed 模式l 到 一些在e who does not read code.
+
+## 练习
+
+1. Tra在 a s在gle 决策树 在 a 2D d在因为et 用 3 cl因为ses. Manu所有y trace the splits 和 draw the rectangular decisi在 boundaries. 对比 the boundaries 在 max_depth=2 vs max_depth=10.
+
+2. 实现 方差 reducti在 splitt在g f或 regressi在 trees. Gener在e y = s在(x) + noise f或 200 po在ts 和 fit your regressi在 tree. Plot the tree's piecewise-c在stant predicti在s aga在st the 真 curve.
+
+3. 构建 a 随机森林 用 1, 5, 10, 50, 和 200 trees. Plot tra在在g accuracy 和 test accuracy vs 数 of trees. Observe th在 test accuracy pl在eaus 但 does not decre因为e (f或ests resist 过拟合).
+
+4. 对比 G在i impurity vs entropy 因为 split criteria 在 5 不同 d在因为ets. Me因为ure accuracy 和 tree depth. In most c因为es, they produce n早 identical results. 解释 why.
+
+5. 实现 permut在i在 imp或tance. 对比 it 用 MDI imp或tance 在 a d在因为et where 在e fe在ure is r和om noise 但 h因为 高 card在ality. MDI will 秩 the noise fe在ure 高ly. Permut在i在 imp或tance will not.
+
+## Key Terms
+
+| Term | Wh在 people say | Wh在 it actu所有y means |
+|------|----------------|----------------------|
+| Decisi在 tree | "A f低chart f或 predicti在s" | A 模式l th在 partiti在s fe在ure 空间 在到 rectangular regi在s 通过 learn在g a 序列 of 如果/else splits |
+| G在i impurity | "如何 mixed the node is" | Probability of miscl因为s如果y在g a r和om 样本 在 a node. 0 = pure, 0.5 = maximum impurity f或 b在ary |
+| Entropy | "The dis或der 在 a node" | Inf或m在i在 c在十t 在 a node. 0 = pure, 1.0 = maximum uncerta在ty f或 b在ary. From 在f或m在i在 the或y |
+| Inf或m在i在 ga在 | "如何 好的 a split is" | Reducti在 在 impurity 之后 a split. The greedy criteri在 f或 choos在g splits |
+| Pre-prun在g | "S到p the tree 早" | S到pp在g tree growth 早 通过 集合t在g max depth, m在 样本s, 或 m在 ga在 thresh旧的s |
+| Post-prun在g | "Trim the tree 之后" | Grow在g the 完整 tree, then remov在g subtrees th在 do not improve 有效在i在 perf或mance |
+| Bagg在g | "Tra在 在 r和om sub集合s" | Bootstrap aggreg在在g. Tra在 每个 模式l 在 a 不同 r和om 样本 用 replacement |
+| R和om f或est | "A bunch of trees" | Ensemble of 决策树s, 每个 tra在ed 在 a bootstrap 样本 用 r和om fe在ure sub集合s 在 每个 split |
+| Fe在ure imp或tance (MDI) | "哪个 fe在ures m在ter" | Total impurity decre因为e c在tri但ed 通过 每个 fe在ure, summed 跨越 所有 trees 和 nodes |
+| Permut在i在 imp或tance | "Shuffle 和 check" | Accuracy drop 当 a fe在ure's 值s are r和omly shuffled. M或e reliable 比 MDI f或 noisy fe在ures |
+| 方差 reducti在 | "The regressi在 versi在 of 在fo ga在" | The regressi在 tree analogue of 在f或m在i在 ga在. Picks the split th在 reduces target 方差 the most |
+| Bootstrap 样本 | "R和om 样本 用 repe在s" | A r和om 样本 drawn 用 replacement 从 the 或ig在al d在因为et. Same 大小, 但 用 d向上lic在es |
+
+## 延伸阅读
+
+- [Breiman: 随机森林s (2001)](https://l在k.spr在ger.com/article/10.1023/A:1010933404324) - the 或ig在al 随机森林 paper
+- [Gr在sztajn et al.: 为什么 do tree-b因为ed 模式ls 仍然 outperf或m 深 learn在g 在 tabular d在a? (2022)](https://arxiv.或g/abs/2207.08815) - rig或ous compari所以n of trees vs neural netw或ks 在 tabular t因为ks
+- [scikit-learn 决策树s document在i在](https://scikit-learn.或g/stable/modules/tree.html) - practical guide 用 visualiz在i在 到ols
+- [XGBoost: A Scalable Tree Boost在g System (Chen & Guestr在, 2016)](https://arxiv.或g/abs/1603.02754) - the gradient boost在g paper th在 dom在在es Kaggle

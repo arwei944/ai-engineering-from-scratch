@@ -1,28 +1,28 @@
-# 编辑器配置
+# Editor Setup
 
-> Your editor is your co-pilot. Configure it once so it stays out of your way and starts pulling its weight.
+> Your editor 是 your co-pilot. Configure it once so it stays out 的 your way 和 starts pulling its 权重.
 
 **Type:** Build
-**语言:** --
-**前置要求:** 阶段0, 课程01
-**预计时间:** ~20分钟
+**Languages:** --
+**Prerequisites:** Phase 0, Lesson 01
+**Time:** ~20 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Install VS Code with essential extensions for Python, Jupyter, linting, and remote SSH
-- Configure format-on-save, type checking, and notebook output scrolling for AI workflows
-- Set up Remote SSH to edit and debug code on remote GPU machines as if they were local
-- Evaluate editor alternatives (Cursor, Windsurf, Neovim) and their tradeoffs for AI work
+- Install VS 代码 使用 essential extensions 为了 Python, Jupyter, linting, 和 remote SSH
+- Configure format-在-save, type checking, 和 notebook 输出 scrolling 为了 AI workflows
+- Set up Remote SSH 到 edit 和 debug 代码 在 remote GPU machines 作为 if they were local
+- Evaluate editor alternatives (Cursor, Windsurf, Neovim) 和 their tradeoffs 为了 AI work
 
-## 问题引入
+## Problem
 
-You'll spend thousands of hours inside your editor writing Python, running notebooks, debugging training loops, and SSH-ing into GPU boxes. A misconfigured editor turns every session into friction: no autocomplete, no type hints, no inline errors, manual formatting, and a clunky terminal workflow.
+You'll spend thousands 的 hours inside your editor writing Python, running notebooks, debugging 训练 loops, 和 SSH-ing into GPU boxes. misconfigured editor turns every session into friction: no autocomplete, no type hints, no inline errors, manual formatting, 和 clunky terminal workflow.
 
-The right setup takes 20 minutes. Skipping it costs you 20 minutes every day.
+right setup takes 20 minutes. Skipping it costs you 20 minutes every day.
 
-## 概念讲解
+## Concept
 
-An AI engineering editor setup needs five things:
+AI engineering editor setup needs five things:
 
 ```mermaid
 graph TD
@@ -33,25 +33,25 @@ graph TD
     L1["1. Base Editor<br/>VS Code — free, extensible, universal"]
 ```
 
-## 从零实现
+## Build It
 
-### Step 1: Install VS Code
+### Step 1: Install VS 代码
 
-VS Code is the recommended editor. It is free, runs on every OS, has first-class Jupyter notebook support, and the extension ecosystem covers everything you need for AI work.
+VS 代码 是 recommended editor. 它是 free, runs 在 every OS, has first-class Jupyter notebook support, 和 extension ecosystem covers everything you need 为了 AI work.
 
-Download it from [code.visualstudio.com](https://code.visualstudio.com/).
+Download it 从 [代码.visualstudio.com](https://代码.visualstudio.com/).
 
-Verify from the terminal:
+Verify 从 terminal:
 
 ```bash
 code --version
 ```
 
-If `code` is not found on macOS, open VS Code, press `Cmd+Shift+P`, type "Shell Command", and select "Install 'code' command in PATH".
+If `代码` 是 not found 在 macOS, open VS 代码, press `Cmd+Shift+P`, type "Shell Command", 和 select "Install '代码' command 在 PATH".
 
 ### Step 2: Install Essential Extensions
 
-Open the integrated terminal in VS Code (`Ctrl+`` ` or `` Cmd+` ``) and install the extensions that matter for AI work:
+Open integrated terminal 在 VS 代码 (`Ctrl+`` ` 或 `` Cmd+` ``) 和 install extensions matter 为了 AI work:
 
 ```bash
 code --install-extension ms-python.python
@@ -70,20 +70,20 @@ What each one does:
 |-----------|-----|
 | Python | Language support, virtual env detection, run/debug |
 | Pylance | Fast type checking, autocomplete, import resolution |
-| Jupyter | Run notebooks inside VS Code, variable explorer |
+| Jupyter | Run notebooks inside VS 代码, variable explorer |
 | GitLens | See who changed what, inline git blame |
-| Remote SSH | Open a folder on a remote GPU box as if it were local |
-| Debugpy | Step-through debugging for Python |
-| Black Formatter | Auto-format on save, consistent style |
+| Remote SSH | Open folder 在 remote GPU box 作为 if it were local |
+| Debugpy | Step-through debugging 为了 Python |
+| Black Formatter | Auto-format 在 save, consistent style |
 | Ruff | Fast linting, catches common mistakes |
 
-The file `code/.vscode/extensions.json` in this lesson contains the full recommendations list. When you open the project folder, VS Code will prompt you to install them.
+file `代码/.vscode/extensions.json` 在 这个 lesson contains full recommendations list. When you open project folder, VS 代码 will prompt you 到 install them.
 
 ### Step 3: Configure Settings
 
-Copy the settings from `code/.vscode/settings.json` in this lesson, or apply them manually through `Settings > Open Settings (JSON)`.
+Copy settings 从 `代码/.vscode/settings.json` 在 这个 lesson, 或 apply them manually through `Settings > Open Settings (JSON)`.
 
-The key settings for AI work:
+key settings 为了 AI work:
 
 ```jsonc
 {
@@ -95,17 +95,17 @@ The key settings for AI work:
 }
 ```
 
-Why these matter:
+Why 这些 matter:
 
-- **Type checking on basic**: Catches wrong argument types before you run. Saves debugging time on tensor shape mismatches and wrong API parameters.
-- **Format on save**: Never think about formatting again. Black handles it.
-- **Rulers at 88 and 120**: Black wraps at 88. The 120 marker shows when docstrings and comments are getting too long.
-- **Notebook output scrolling**: Training loops print thousands of lines. Without scrolling, the output panel explodes.
-- **Auto-save**: You will forget to save. Your training script will run stale code. Auto-save prevents that.
+- **Type checking 在 basic**: Catches wrong argument types before you run. Saves debugging time 在 张量 shape mismatches 和 wrong API 参数.
+- **Format 在 save**: Never think about formatting again. Black handles it.
+- **Rulers 在 88 和 120**: Black wraps 在 88. 120 marker shows when docstrings 和 comments 是 getting too long.
+- **Notebook 输出 scrolling**: 训练 loops print thousands 的 lines. Without scrolling, 输出 panel explodes.
+- **Auto-save**: You will forget 到 save. Your 训练 script will run stale 代码. Auto-save prevents .
 
 ### Step 4: Terminal Integration
 
-VS Code's integrated terminal is where you run training scripts, monitor GPUs, and manage environments.
+VS 代码's integrated terminal 是 where you run 训练 scripts, monitor GPUs, 和 manage environments.
 
 Set it up properly:
 
@@ -126,18 +126,18 @@ Useful shortcuts:
 | New terminal | `Ctrl+Shift+`` ` | `Ctrl+Shift+`` ` |
 | Split terminal | `Cmd+\` | `Ctrl+\` |
 
-Split terminals are useful: one for running your script, one for monitoring GPU with `nvidia-smi -l 1` or `watch -n 1 nvidia-smi`.
+Split terminals 是 useful: one 为了 running your script, one 为了 monitoring GPU 使用 `nvidia-smi -l 1` 或 `watch -n 1 nvidia-smi`.
 
 ### Step 5: Remote Development (SSH into GPU Boxes)
 
-This is the most important extension for AI work. You will run training on remote machines (cloud VMs, lab servers, Lambda, Vast.ai). Remote SSH lets you open the remote filesystem, edit files, run terminals, and debug as if everything were local.
+这是 most important extension 为了 AI work. You will run 训练 在 remote machines (cloud VMs, lab servers, Lambda, Vast.ai). Remote SSH lets you open remote filesystem, edit files, run terminals, 和 debug 作为 if everything were local.
 
 Setup:
 
-1. Install the Remote SSH extension (done in Step 2).
-2. Press `Ctrl+Shift+P` (or `Cmd+Shift+P`), type "Remote-SSH: Connect to Host".
+1. Install Remote SSH extension (done 在 Step 2).
+2. Press `Ctrl+Shift+P` (或 `Cmd+Shift+P`), type "Remote-SSH: Connect 到 Host".
 3. Enter `user@your-gpu-box-ip`.
-4. VS Code installs its server component on the remote machine automatically.
+4. VS 代码 installs its server component 在 remote machine automatically.
 
 For passwordless access, set up SSH keys:
 
@@ -146,7 +146,7 @@ ssh-keygen -t ed25519 -C "your-email@example.com"
 ssh-copy-id user@your-gpu-box-ip
 ```
 
-Add the host to `~/.ssh/config` for convenience:
+Add host 到 `~/.ssh/config` 为了 convenience:
 
 ```
 Host gpu-box
@@ -156,52 +156,52 @@ Host gpu-box
     ForwardAgent yes
 ```
 
-Now `Remote-SSH: Connect to Host > gpu-box` connects instantly.
+Now `Remote-SSH: Connect 到 Host > gpu-box` connects instantly.
 
 ## Alternatives
 
 ### Cursor
 
-[cursor.com](https://cursor.com) is a VS Code fork with built-in AI code generation. It uses the same extension ecosystem and settings format. If you use Cursor, everything in this lesson still applies. Import the same `settings.json` and `extensions.json`.
+[cursor.com](https://cursor.com) 是 VS 代码 fork 使用 built-在 AI 代码 generation. It uses same extension ecosystem 和 settings format. If you use Cursor, everything 在 这个 lesson still applies. Import same `settings.json` 和 `extensions.json`.
 
 ### Windsurf
 
-[windsurf.com](https://windsurf.com) is another AI-first VS Code fork. Same story: same extensions, same settings format, same Remote SSH support.
+[windsurf.com](https://windsurf.com) 是 another AI-first VS 代码 fork. Same story: same extensions, same settings format, same Remote SSH support.
 
 ### Vim/Neovim
 
-If you already use Vim or Neovim and are productive in it, stay there. The minimum setup for AI Python work:
+If you already use Vim 或 Neovim 和 是 productive 在 it, stay there. minimum setup 为了 AI Python work:
 
-- **pyright** or **pylsp** for type checking (via Mason or manual install)
-- **nvim-lspconfig** for language server integration
-- **jupyter-vim** or **molten-nvim** for notebook-like execution
-- **telescope.nvim** for file/symbol search
-- **none-ls.nvim** with black and ruff for formatting/linting
+- **pyright** 或 **pylsp** 为了 type checking (via Mason 或 manual install)
+- **nvim-lspconfig** 为了 language server integration
+- **jupyter-vim** 或 **molten-nvim** 为了 notebook-like execution
+- **telescope.nvim** 为了 file/symbol search
+- **none-ls.nvim** 使用 black 和 ruff 为了 formatting/linting
 
-If you do not already use Vim, do not start now. The learning curve will compete with learning AI engineering. Use VS Code.
+If you do not already use Vim, do not start now. learning curve will compete 使用 learning AI engineering. Use VS 代码.
 
-## 框架应用
+## Use It
 
-With this setup, your daily workflow looks like:
+With 这个 setup, your daily workflow looks like:
 
-1. Open the project folder in VS Code (or connect via Remote SSH to a GPU box).
-2. Write Python in the editor with autocomplete, type hints, and inline errors.
-3. Run Jupyter notebooks inline with the Jupyter extension.
-4. Use the integrated terminal for training scripts, `uv pip install`, and GPU monitoring.
-5. Review changes with GitLens before committing.
+1. Open project folder 在 VS 代码 (或 connect via Remote SSH 到 GPU box).
+2. Write Python 在 editor 使用 autocomplete, type hints, 和 inline errors.
+3. Run Jupyter notebooks inline 使用 Jupyter extension.
+4. Use integrated terminal 为了 训练 scripts, `uv pip install`, 和 GPU monitoring.
+5. Review changes 使用 GitLens before committing.
 
-## 练习
+## Exercises
 
-1. Install VS Code and all extensions listed in Step 2
-2. Copy the `settings.json` from this lesson into your VS Code config
-3. Open a Python file and verify that Pylance shows type hints and Black formats on save
-4. If you have access to a remote machine, set up Remote SSH and open a folder on it
+1. Install VS 代码 和 all extensions listed 在 Step 2
+2. Copy `settings.json` 从 这个 lesson into your VS 代码 config
+3. Open Python file 和 verify Pylance shows type hints 和 Black formats 在 save
+4. If you have access 到 remote machine, set up Remote SSH 和 open folder 在 it
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| LSP | "Autocomplete engine" | Language Server Protocol: a standard for editors to get type info, completions, and diagnostics from a language-specific server |
-| Pylance | "The Python plugin" | Microsoft's Python language server using Pyright for type checking and IntelliSense |
-| Remote SSH | "Working on the server" | VS Code extension that runs a lightweight server on a remote machine and streams the UI to your local editor |
-| Format on save | "Auto-prettier" | The editor runs a formatter (Black, Ruff) every time you save, so code style is always consistent |
+| LSP | "Autocomplete engine" | Language Server Protocol: standard 为了 editors 到 get type info, completions, 和 diagnostics 从 language-specific server |
+| Pylance | " Python plugin" | Microsoft's Python language server using Pyright 为了 type checking 和 IntelliSense |
+| Remote SSH | "Working 在 server" | VS 代码 extension runs lightweight server 在 remote machine 和 streams UI 到 your local editor |
+| Format 在 save | "Auto-prettier" | editor runs formatter (Black, Ruff) every time you save, so 代码 style 是 always consistent |

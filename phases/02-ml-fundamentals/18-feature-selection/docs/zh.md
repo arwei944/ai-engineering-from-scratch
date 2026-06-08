@@ -1,38 +1,38 @@
-# 特征选择
+# 特征 Selection
 
-> More features is not better. The right features is better.
+> More 特征 是 not better. right 特征 是 better.
 
-**类型:** 实现
+**Type:** Build
 **Language:** Python
-**Prerequisites:** Phase 2, Lessons 01-09, 08 (特征工程)
+**Prerequisites:** Phase 2, Lessons 01-09, 08 (特征 engineering)
 **Time:** ~75 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement filter methods (variance threshold, mutual information, chi-squared) and wrapper methods (RFE, forward selection) from scratch
-- Explain why mutual information captures nonlinear feature-target relationships that correlation misses
-- Compare L1 正则化 (embedded selection) with RFE (wrapper selection) and evaluate their computational tradeoffs
-- Build a 特征选择 流水线 that combines multiple methods and demonstrate improved generalization on held-out data
+- Implement filter methods (variance threshold, mutual information, chi-squared) 和 wrapper methods (RFE, forward selection) 从 scratch
+- Explain why mutual information captures nonlinear 特征-target relationships correlation misses
+- Compare L1 正则化 (embedded selection) 使用 RFE (wrapper selection) 和 evaluate their computational tradeoffs
+- Build 特征 selection pipeline combines multiple methods 和 demonstrate improved generalization 在 held-out 数据
 
-## The Problem
+## Problem
 
-You have 500 features. Your model trains slowly, overfits constantly, and nobody can explain what it learned. You add more features hoping to improve performance. It gets worse.
+You have 500 特征. Your 模型 trains slowly, overfits constantly, 和 nobody can explain what it learned. You add more 特征 hoping 到 improve performance. It gets worse.
 
-This is the curse of dimensionality in action. As the number of features grows, the volume of the feature space explodes. Data points become sparse. Distances between points converge. The model needs exponentially more data to find real patterns. Noise features drown out signal features. 过拟合 becomes the default.
+这是 curse 的 dimensionality 在 action. As number 的 特征 grows, volume 的 特征 space explodes. 数据 points become sparse. Distances between points converge. 模型 needs exponentially more 数据 到 find real patterns. Noise 特征 drown out signal 特征. 过拟合 becomes default.
 
-Feature selection is the antidote. Strip away the noise. Remove the redundancy. Keep the features that carry actual information about the target. The result: faster training, better generalization, and models you can actually explain.
+特征 selection 是 antidote. Strip away noise. Remove redundancy. Keep 特征 carry actual information about target. result: faster 训练, better generalization, 和 模型 you can actually explain.
 
-The goal is not to use all available information. It is to use the right information.
+goal 是 not 到 use all available information. 它是 到 use right information.
 
-## The Concept
+## Concept
 
-### Three Categories of 特征选择
+### Three Categories 的 特征 Selection
 
-Every 特征选择 method falls into one of three categories:
+Every 特征 selection method falls into one 的 three categories:
 
 ```mermaid
 flowchart TD
-    A[特征选择 Methods] --> B[Filter Methods]
+    A[Feature Selection Methods] --> B[Filter Methods]
     A --> C[Wrapper Methods]
     A --> D[Embedded Methods]
 
@@ -45,46 +45,46 @@ flowchart TD
     C --> C2["Forward Selection"]
     C --> C3["Backward Elimination"]
 
-    D --> D1["L1 / Lasso 正则化"]
+    D --> D1["L1 / Lasso Regularization"]
     D --> D2["Tree-based Importance"]
     D --> D3["Elastic Net"]
 ```
 
-**Filter methods** score each feature independently using a statistical measure. They do not use a model. Fast, but they miss feature interactions.
+**Filter methods** score each 特征 independently using statistical measure. They do not use 模型. Fast, but they miss 特征 interactions.
 
-**Wrapper methods** train a model to evaluate feature subsets. They use model performance as the score. Better results, but expensive because they retrain the model many times.
+**Wrapper methods** train 模型 到 evaluate 特征 subsets. They use 模型 performance 作为 score. Better results, but expensive because they retrain 模型 many times.
 
-**Embedded methods** select features as part of model training. L1 正则化 drives weights to zero. Decision trees split on the most useful features. Selection happens during fitting, not as a separate step.
+**Embedded methods** select 特征 作为 part 的 模型 训练. L1 正则化 drives 权重 到 zero. Decision trees split 在 most useful 特征. Selection happens during fitting, not 作为 separate step.
 
 ### Variance Threshold
 
-The simplest filter. If a feature barely varies across samples, it carries almost no information.
+simplest filter. If 特征 barely varies across samples, it carries almost no information.
 
-Consider a feature that is 0.0 for 999 out of 1000 samples. Its variance is near zero. No model can use it to distinguish between classes. Remove it.
+Consider 特征 是 0.0 为了 999 out 的 1000 samples. Its variance 是 near zero. No 模型 can use it 到 distinguish between classes. Remove it.
 
 ```
 variance(x) = mean((x - mean(x))^2)
 ```
 
-Set a threshold (e.g., 0.01). Drop every feature with variance below it. This removes constant or near-constant features without looking at the target variable at all.
+Set threshold (e.g., 0.01). Drop every 特征 使用 variance below it. This removes constant 或 near-constant 特征 without looking 在 target variable 在 all.
 
-When to use it: as a preprocessing step before other methods. It catches obviously useless features at near-zero cost.
+When 到 use it: 作为 preprocessing step before other methods. It catches obviously useless 特征 在 near-zero cost.
 
-Limitation: a feature can have high variance and still be pure noise. Variance threshold is necessary but not sufficient.
+Limitation: 特征 can have high variance 和 still be pure noise. Variance threshold 是 necessary but not sufficient.
 
 ### Mutual Information
 
-Mutual information measures how much knowing the value of feature X reduces uncertainty about target Y.
+Mutual information measures how much knowing value 的 特征 X reduces uncertainty about target Y.
 
 ```
 I(X; Y) = sum_x sum_y p(x, y) * log(p(x, y) / (p(x) * p(y)))
 ```
 
-If X and Y are independent, p(x, y) = p(x) * p(y), so the log term is zero and I(X; Y) = 0. The more X tells you about Y, the higher the mutual information.
+If X 和 Y 是 independent, p(x, y) = p(x) * p(y), so log term 是 zero 和 I(X; Y) = 0. more X tells you about Y, higher mutual information.
 
-Key advantage over correlation: mutual information captures nonlinear relationships. A feature might have zero correlation with the target but high mutual information because the relationship is quadratic or periodic.
+Key advantage over correlation: mutual information captures nonlinear relationships. 特征 might have zero correlation 使用 target but high mutual information because relationship 是 quadratic 或 periodic.
 
-For continuous features, discretize into bins first (histogram-based estimation). The number of bins affects the estimate -- too few bins lose information, too many bins add noise. A common choice: sqrt(n) bins or Sturges' rule (1 + log2(n)).
+For continuous 特征, discretize into bins first (histogram-based estimation). number 的 bins affects estimate -- too few bins lose information, too many bins add noise. common choice: sqrt(n) bins 或 Sturges' rule (1 + log2(n)).
 
 ```mermaid
 flowchart LR
@@ -95,14 +95,14 @@ flowchart LR
     E --> F[Select Top K]
 ```
 
-### Recursive Feature Elimination (RFE)
+### Recursive 特征 Elimination (RFE)
 
-RFE is a wrapper method. It uses a model's own feature importance to iteratively prune:
+RFE 是 wrapper method. It uses 模型's own 特征 importance 到 iteratively prune:
 
-1. Train the model with all features
-2. Rank features by importance (coefficients for linear models, impurity reduction for trees)
-3. Remove the least important feature(s)
-4. Repeat until the desired number of features remains
+1. Train 模型 使用 all 特征
+2. Rank 特征 通过 importance (coefficients 为了 linear 模型, impurity reduction 为了 trees)
+3. Remove least important 特征(s)
+4. Repeat until desired number 的 特征 remains
 
 ```mermaid
 flowchart TD
@@ -114,33 +114,33 @@ flowchart TD
     E -->|Yes| F["Return Selected Features"]
 ```
 
-RFE considers feature interactions because the model sees all remaining features together. Removing one feature changes the importance of others. This makes it more thorough than filter methods.
+RFE considers 特征 interactions because 模型 sees all remaining 特征 together. Removing one 特征 changes importance 的 others. This makes it more thorough than filter methods.
 
-The cost: you train the model N - target times. With 500 features and a target of 10, that is 490 training runs. For expensive models, this is slow. You can speed it up by removing multiple features per step (e.g., remove the bottom 10% each round).
+cost: you train 模型 N - target times. With 500 特征 和 target 的 10, 是 490 训练 runs. For expensive 模型, 这个 是 slow. 你可以 speed it up 通过 removing multiple 特征 per step (e.g., remove bottom 10% each round).
 
 ### L1 (Lasso) 正则化
 
-L1 正则化 adds the absolute value of weights to the loss function:
+L1 正则化 adds absolute value 的 权重 到 损失函数:
 
 ```
 loss = prediction_error + alpha * sum(|w_i|)
 ```
 
-The alpha parameter controls how aggressively features are pruned. Higher alpha means more weights go to exactly zero.
+alpha 参数 controls how aggressively 特征 是 pruned. Higher alpha means more 权重 go 到 exactly zero.
 
-Why exactly zero? The L1 penalty creates a diamond-shaped constraint region in weight space. The optimal solution tends to land at a corner of this diamond, where one or more weights are zero. L2 正则化 (ridge) creates a circular constraint where weights shrink but rarely hit zero.
+Why exactly zero? L1 penalty creates diamond-shaped constraint region 在 权重 space. optimal solution tends 到 land 在 corner 的 这个 diamond, where one 或 more 权重 是 zero. L2 正则化 (ridge) creates circular constraint where 权重 shrink but rarely hit zero.
 
-This is embedded 特征选择: the model learns during training which features to ignore. Features with zero weight are effectively removed.
+这是 embedded 特征 selection: 模型 learns during 训练 which 特征 到 ignore. Features 使用 zero 权重 是 effectively removed.
 
-Advantages: single training run, handles correlated features (picks one and zeros the others), built into most linear model implementations.
+Advantages: single 训练 run, handles correlated 特征 (picks one 和 zeros others), built into most linear 模型 implementations.
 
-Limitation: only works for linear models. Cannot capture nonlinear feature importance.
+Limitation: only works 为了 linear 模型. Cannot capture nonlinear 特征 importance.
 
-### Tree-Based Feature Importance
+### Tree-Based 特征 Importance
 
-Decision trees and their ensembles (random forests, gradient boosting) naturally rank features. Every split reduces impurity (Gini or entropy for classification, variance for regression). Features that produce larger impurity reductions are more important.
+Decision trees 和 their ensembles (random forests, gradient boosting) naturally rank 特征. Every split reduces impurity (Gini 或 entropy 为了 分类, variance 为了 回归). Features produce larger impurity reductions 是 more important.
 
-For a random forest with T trees:
+For random forest 使用 T trees:
 
 ```
 importance(feature_j) = (1/T) * sum over all trees of
@@ -148,39 +148,39 @@ importance(feature_j) = (1/T) * sum over all trees of
         (n_samples * impurity_decrease)
 ```
 
-This gives a normalized importance score for each feature. It handles nonlinear relationships and feature interactions automatically.
+This gives normalized importance score 为了 each 特征. It handles nonlinear relationships 和 特征 interactions automatically.
 
-Caution: tree-based importance is biased toward features with many unique values (high cardinality). A random ID column will appear important because it perfectly splits every sample. Use permutation importance as a sanity check.
+Caution: tree-based importance 是 biased toward 特征 使用 many unique values (high cardinality). random ID column will appear important because it perfectly splits every sample. Use permutation importance 作为 sanity check.
 
 ### Permutation Importance
 
-A model-agnostic method:
+模型-agnostic method:
 
-1. Train the model and record baseline performance on validation data
-2. For each feature: shuffle its values randomly, measure the drop in performance
-3. The bigger the drop, the more important the feature
+1. Train 模型 和 record baseline performance 在 验证 数据
+2. For each 特征: shuffle its values randomly, measure drop 在 performance
+3. bigger drop, more important 特征
 
-If shuffling a feature does not hurt performance, the model does not depend on it. If performance collapses, that feature is critical.
+If shuffling 特征 does not hurt performance, 模型 does not depend 在 it. If performance collapses, 特征 是 critical.
 
-Permutation importance avoids the cardinality bias of tree-based importance. But it is slow: one full evaluation per feature, repeated multiple times for stability.
+Permutation importance avoids cardinality 偏置 的 tree-based importance. But it 是 slow: one full evaluation per 特征, repeated multiple times 为了 stability.
 
 ### Comparison Table
 
-| Method | Type | Speed | Nonlinear | Feature Interactions |
+| Method | Type | Speed | Nonlinear | 特征 Interactions |
 |--------|------|-------|-----------|---------------------|
 | Variance threshold | Filter | Very fast | No | No |
 | Mutual information | Filter | Fast | Yes | No |
 | Correlation filter | Filter | Fast | No | No |
-| RFE | Wrapper | Slow | Depends on model | Yes |
+| RFE | Wrapper | Slow | Depends 在 模型 | Yes |
 | L1 / Lasso | Embedded | Fast | No (linear) | No |
 | Tree importance | Embedded | Medium | Yes | Yes |
-| Permutation importance | Model-agnostic | Slow | Yes | Yes |
+| Permutation importance | 模型-agnostic | Slow | Yes | Yes |
 
 ### Decision Flowchart
 
 ```mermaid
 flowchart TD
-    A[Start: 特征选择] --> B{How many features?}
+    A[Start: Feature Selection] --> B{How many features?}
     B -->|"< 50"| C["Start with variance threshold + mutual information"]
     B -->|"50-500"| D["Variance threshold, then L1 or tree importance"]
     B -->|"> 500"| E["Variance threshold, then mutual info filter, then RFE on survivors"]
@@ -189,7 +189,7 @@ flowchart TD
     D --> F
     E --> F
 
-    F -->|Yes| G["L1 正则化 for final selection"]
+    F -->|Yes| G["L1 regularization for final selection"]
     F -->|No - trees| H["Tree importance + permutation importance"]
     F -->|No - other| I["RFE with your model"]
 
@@ -204,7 +204,7 @@ flowchart TD
 
 ## Build It
 
-### Step 1: Generate synthetic data with known feature structure
+### Step 1: Generate synthetic 数据 使用 known 特征 structure
 
 ```python
 import numpy as np
@@ -243,7 +243,7 @@ def make_feature_selection_data(n_samples=500, seed=42):
     return X, y, feature_names
 ```
 
-We know the ground truth: features 0-4 are informative (plus 3 and 4 are correlated copies of 0 and 1), features 5-9 are correlated with informative features, features 10-19 are pure noise. A good selection method should rank 0-4 highest and 10-19 lowest.
+We know ground truth: 特征 0-4 是 informative (plus 3 和 4 是 correlated copies 的 0 和 1), 特征 5-9 是 correlated 使用 informative 特征, 特征 10-19 是 pure noise. good selection method should rank 0-4 highest 和 10-19 lowest.
 
 ### Step 2: Variance threshold
 
@@ -290,7 +290,7 @@ def mutual_information(X, y, n_bins=10):
     return mi_scores
 ```
 
-### Step 4: Recursive Feature Elimination
+### Step 4: Recursive 特征 Elimination
 
 ```python
 def simple_logistic_importance(X, y, lr=0.1, epochs=100):
@@ -332,7 +332,7 @@ def rfe(X, y, n_features_to_select=5, lr=0.1, epochs=100):
     return selected_mask, rankings
 ```
 
-### Step 5: L1 特征选择
+### Step 5: L1 特征 selection
 
 ```python
 def soft_threshold(w, alpha):
@@ -455,13 +455,13 @@ def _build_tree_importance(X, y, feature_subset, max_depth, depth=0):
     return importances
 ```
 
-### Step 7: Run all methods and compare
+### Step 7: Run all methods 和 compare
 
-The code file runs all five methods on the same synthetic dataset and prints a comparison table showing which features each method selects.
+代码 file runs all five methods 在 same synthetic 数据集 和 prints comparison table showing which 特征 each method selects.
 
 ## Use It
 
-With scikit-learn, 特征选择 is built into the 流水线:
+With scikit-learn, 特征 selection 是 built into pipeline:
 
 ```python
 from sklearn.feature_selection import (
@@ -492,45 +492,45 @@ rf.fit(X, y)
 importances = rf.feature_importances_
 ```
 
-The from-scratch implementations show exactly what happens inside each method. Variance threshold is just computing `var(X, axis=0)` and applying a mask. Mutual information is counting joint and marginal frequencies in a contingency table. RFE is a loop that trains, ranks, and prunes. L1 is gradient descent with a soft-thresholding step. Tree importance accumulates impurity reductions across splits. No magic -- just statistics and loops.
+从-scratch implementations show exactly what happens inside each method. Variance threshold 是 just computing `var(X, axis=0)` 和 applying mask. Mutual information 是 counting joint 和 marginal frequencies 在 contingency table. RFE 是 loop trains, ranks, 和 prunes. L1 是 梯度下降 使用 soft-thresholding step. Tree importance accumulates impurity reductions across splits. No magic -- just 统计学 和 loops.
 
-The sklearn versions add robustness (e.g., mutual_info_classif uses k-NN density estimation instead of binning), speed (C implementations), and 流水线 integration.
+sklearn versions add robustness (e.g., mutual_info_classif uses k-NN density estimation instead 的 binning), speed (C implementations), 和 pipeline integration.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/skill-feature-selector.md` -- a quick reference decision tree for choosing the right 特征选择 method
+- `输出/skill-特征-selector.md` -- quick reference decision tree 为了 choosing right 特征 selection method
 
 ## Exercises
 
-1. **Forward selection**: implement the opposite of RFE. Start with zero features. At each step, add the feature that improves model performance the most. Stop when adding features no longer helps. Compare the selected features against RFE results. Which is faster? Which gives better results?
+1. **Forward selection**: implement opposite 的 RFE. Start 使用 zero 特征. At each step, add 特征 improves 模型 performance most. Stop when adding 特征 no longer helps. Compare selected 特征 against RFE results. Which 是 faster? Which gives better results?
 
-2. **Stability selection**: run L1 特征选择 50 times, each time on a random 80% subsample of the data, with slightly different alpha values. Count how often each feature is selected. Features selected in > 80% of runs are "stable." Compare stable features against single-run L1 selection. Which is more reliable?
+2. **Stability selection**: run L1 特征 selection 50 times, each time 在 random 80% subsample 的 数据, 使用 slightly different alpha values. Count how often each 特征 是 selected. Features selected 在 > 80% 的 runs 是 "stable." Compare stable 特征 against single-run L1 selection. Which 是 more reliable?
 
-3. **Multicollinearity detection**: compute the correlation matrix for all features. Implement a function that, given a correlation threshold (e.g., 0.9), removes one feature from each highly-correlated pair (keeping the one with higher mutual information with the target). Test on the synthetic dataset and verify it removes the redundant correlated features.
+3. **Multicollinearity detection**: compute correlation 矩阵 为了 all 特征. Implement 函数 , given correlation threshold (e.g., 0.9), removes one 特征 从 each highly-correlated pair (keeping one 使用 higher mutual information 使用 target). Test 在 synthetic 数据集 和 verify it removes redundant correlated 特征.
 
-4. **Feature selection 流水线**: chain variance threshold, mutual information filter, and RFE into a single 流水线. First remove near-zero-variance features, then keep the top 50% by mutual information, then run RFE on the survivors. Compare this 流水线 against running RFE alone on all features. Is the 流水线 faster? Is it equally accurate?
+4. **特征 selection pipeline**: chain variance threshold, mutual information filter, 和 RFE into single pipeline. First remove near-zero-variance 特征, then keep top 50% 通过 mutual information, then run RFE 在 survivors. Compare 这个 pipeline against running RFE alone 在 all 特征. Is pipeline faster? Is it equally accurate?
 
-5. **Permutation importance from scratch**: implement permutation importance. For each feature, shuffle its values 10 times, measure the average drop in F1 score. Compare the ranking against tree-based importance. Find cases where they disagree and explain why (hint: correlated features).
+5. **Permutation importance 从 scratch**: implement permutation importance. For each 特征, shuffle its values 10 times, measure average drop 在 F1 score. Compare ranking against tree-based importance. Find cases where they disagree 和 explain why (hint: correlated 特征).
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Filter method | "Score features independently" | A 特征选择 approach that ranks features using a statistical measure without training a model, evaluating each feature in isolation |
-| Wrapper method | "Use the model to pick features" | A 特征选择 approach that evaluates feature subsets by training a model and using its performance as the selection criterion |
-| Embedded method | "The model selects features during training" | Feature selection that happens as part of model fitting, such as L1 正则化 driving weights to zero |
-| Mutual information | "How much one variable tells you about another" | A measure of the reduction in uncertainty about Y given knowledge of X, capturing both linear and nonlinear dependencies |
-| Recursive Feature Elimination | "Train, rank, prune, repeat" | An iterative wrapper method that trains a model, removes the least important feature(s), and repeats until a target count is reached |
-| L1 / Lasso 正则化 | "Penalty that kills features" | Adding the sum of absolute weight values to the loss function, which drives unimportant feature weights to exactly zero |
-| Variance threshold | "Remove constant features" | Dropping features whose variance across samples falls below a specified threshold, filtering out features that carry no information |
-| Feature importance | "Which features matter most" | A score indicating how much each feature contributes to model predictions, computed from split gains (trees) or coefficient magnitudes (linear) |
-| Permutation importance | "Shuffle and measure the damage" | Evaluating feature importance by randomly shuffling each feature's values and measuring the resulting drop in model performance |
-| Curse of dimensionality | "Too many features, not enough data" | The phenomenon where adding features increases the volume of the feature space exponentially, making data sparse and distances meaningless |
+| Filter method | "Score 特征 independently" | 特征 selection approach ranks 特征 using statistical measure without 训练 模型, evaluating each 特征 在 isolation |
+| Wrapper method | "Use 模型 到 pick 特征" | 特征 selection approach evaluates 特征 subsets 通过 训练 模型 和 using its performance 作为 selection criterion |
+| Embedded method | " 模型 selects 特征 during 训练" | 特征 selection happens 作为 part 的 模型 fitting, such 作为 L1 正则化 driving 权重 到 zero |
+| Mutual information | "How much one variable tells you about another" | measure 的 reduction 在 uncertainty about Y given knowledge 的 X, capturing both linear 和 nonlinear dependencies |
+| Recursive 特征 Elimination | "Train, rank, prune, repeat" | iterative wrapper method trains 模型, removes least important 特征(s), 和 repeats until target count 是 reached |
+| L1 / Lasso 正则化 | "Penalty kills 特征" | Adding sum 的 absolute 权重 values 到 损失函数, which drives unimportant 特征 权重 到 exactly zero |
+| Variance threshold | "Remove constant 特征" | Dropping 特征 whose variance across samples falls below specified threshold, filtering out 特征 carry no information |
+| 特征 importance | "Which 特征 matter most" | score indicating how much each 特征 contributes 到 模型 predictions, computed 从 split gains (trees) 或 coefficient magnitudes (linear) |
+| Permutation importance | "Shuffle 和 measure damage" | Evaluating 特征 importance 通过 randomly shuffling each 特征's values 和 measuring resulting drop 在 模型 performance |
+| Curse 的 dimensionality | "Too many 特征, not enough 数据" | phenomenon where adding 特征 increases volume 的 特征 space exponentially, making 数据 sparse 和 distances meaningless |
 
 ## Further Reading
 
-- [An Introduction to Variable and 特征选择 (Guyon & Elisseeff, 2003)](https://jmlr.org/papers/v3/guyon03a.html) -- the foundational survey on 特征选择 methods, still widely referenced
-- [scikit-learn 特征选择 Guide](https://scikit-learn.org/stable/modules/feature_selection.html) -- practical reference for filter, wrapper, and embedded methods with code examples
-- [Stability Selection (Meinshausen & Buhlmann, 2010)](https://arxiv.org/abs/0809.2932) -- combines subsampling with 特征选择 for robust, reproducible results
-- [Beware Default Random Forest Importances (Strobl et al., 2007)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-25) -- demonstrates the cardinality bias in tree-based importance and proposes conditional importance as an alternative
+- [ Introduction 到 Variable 和 特征 Selection (Guyon & Elisseeff, 2003)](https://jmlr.org/papers/v3/guyon03a.html) -- foundational survey 在 特征 selection methods, still widely referenced
+- [scikit-learn 特征 Selection Guide](https://scikit-learn.org/stable/modules/feature_selection.html) -- practical reference 为了 filter, wrapper, 和 embedded methods 使用 代码 examples
+- [Stability Selection (Meinshausen & Buhlmann, 2010)](https://arxiv.org/abs/0809.2932) -- combines subsampling 使用 特征 selection 为了 robust, reproducible results
+- [Beware Default Random Forest Importances (Strobl et al., 2007)](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-25) -- demonstrates cardinality 偏置 在 tree-based importance 和 proposes conditional importance 作为 alternative

@@ -1,54 +1,54 @@
-# 损失函数
+# Loss Functions
 
-> Your network makes a prediction. The ground truth says otherwise. How wrong is it? That number is the loss. Pick the wrong 损失函数 and your model optimizes for the wrong thing entirely.
+> Your network makes prediction. ground truth says otherwise. How wrong 是 it? That number 是 loss. Pick wrong 损失函数 和 your 模型 optimizes 为了 wrong thing entirely.
 
-**类型:** 实现
-**语言:** Python
-**Prerequisites:** Lesson 03.04 (激活函数s)
+**Type:** Build
+**Languages:** Python
+**Prerequisites:** Lesson 03.04 (Activation Functions)
 **Time:** ~75 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement 均方误差, binary cross-entropy, categorical cross-entropy, and contrastive loss (InfoNCE) from scratch with their 梯度s
-- Explain why 均方误差 fails for classification by demonstrating the "predict 0.5 for everything" failure mode
-- Apply label smoothing to cross-entropy and describe how it prevents overconfident predictions
-- Choose the correct 损失函数 for regression, binary classification, multi-class classification, and embedding learning tasks
+- Implement MSE, binary cross-entropy, categorical cross-entropy, 和 contrastive loss (InfoNCE) 从 scratch 使用 their gradients
+- Explain why MSE fails 为了 分类 通过 demonstrating "predict 0.5 为了 everything" failure mode
+- Apply label smoothing 到 cross-entropy 和 describe how it prevents overconfident predictions
+- Choose correct 损失函数 为了 回归, binary 分类, multi-class 分类, 和 embedding learning tasks
 
-## The Problem
+## Problem
 
-A model minimizing 均方误差 on a classification problem will confidently predict 0.5 for everything. It's minimizing loss. It's also useless.
+模型 minimizing MSE 在 分类 problem will confidently predict 0.5 为了 everything. It's minimizing loss. It's also useless.
 
-The 损失函数 is the only thing your model actually optimizes. Not accuracy. Not F1 score. Not whatever metric you report to your manager. The 优化器 takes the 梯度 of the 损失函数 and adjusts 权重s to make that number smaller. If the 损失函数 doesn't capture what you care about, the model will find the mathematically cheapest way to satisfy it, and that way is almost never what you wanted.
+损失函数 是 only thing your 模型 actually optimizes. Not 准确率. Not F1 score. Not whatever metric you report 到 your manager. 优化器 takes gradient 的 损失函数 和 adjusts 权重 到 make number smaller. If 损失函数 doesn't capture what you care about, 模型 will find mathematically cheapest way 到 satisfy it, 和 way 是 almost never what you wanted.
 
-Here is a concrete example. You have a binary classification task. Two classes, 50/50 split. You use 均方误差 as your loss. The model predicts 0.5 for every single input. The average 均方误差 is 0.25, which is the minimum possible without actually learning anything. The model has zero discriminative ability but it has technically minimized your 损失函数. Switch to cross-entropy and the same model is forced to push predictions toward 0 or 1, because -log(0.5) = 0.693 is a terrible loss, while -log(0.99) = 0.01 rewards confident correct predictions. The choice of 损失函数 is the difference between a model that learns and a model that games the metric.
+Here 是 concrete example. You have binary 分类 task. Two classes, 50/50 split. You use MSE 作为 your loss. 模型 predicts 0.5 为了 every single 输入. average MSE 是 0.25, which 是 minimum possible without actually learning anything. 模型 has zero discriminative ability but it has technically minimized your 损失函数. Switch 到 cross-entropy 和 same 模型 是 forced 到 push predictions toward 0 或 1, because -log(0.5) = 0.693 是 terrible loss, while -log(0.99) = 0.01 rewards confident correct predictions. choice 的 损失函数 是 difference between 模型 learns 和 模型 games metric.
 
-It gets worse. In self-supervised learning, you don't even have labels. Contrastive loss defines the learning signal entirely: what counts as similar, what counts as different, and how hard the model should push them apart. Get contrastive loss wrong and your embeddings collapse to a single point -- every input maps to the same vector. Technically zero loss. Completely worthless.
+It gets worse. In self-supervised learning, you don't even have labels. Contrastive loss defines learning signal entirely: what counts 作为 similar, what counts 作为 different, 和 how hard 模型 should push them apart. Get contrastive loss wrong 和 your embeddings collapse 到 single point -- every 输入 maps 到 same 向量. Technically zero loss. Completely worthless.
 
-## The Concept
+## Concept
 
-### 均方误差 (均方误差)
+### Mean Squared Error (MSE)
 
-The default for regression. Compute the squared difference between prediction and target, average over all samples.
-
-```
-均方误差 = (1/n) * sum((y_pred - y_true)^2)
-```
-
-Why squaring matters: it penalizes large errors quadratically. An error of 2 costs 4x as much as an error of 1. An error of 10 costs 100x. This makes 均方误差 sensitive to outliers -- a single wildly wrong prediction dominates the loss.
-
-Real numbers: if your model predicts housing prices and is off by $10,000 on most houses but off by $200,000 on one mansion, 均方误差 will aggressively try to fix that one mansion, potentially hurting performance on the other 99 houses.
-
-The 梯度 of 均方误差 with respect to a prediction is:
+default 为了 回归. Compute squared difference between prediction 和 target, average over all samples.
 
 ```
-d均方误差/dy_pred = (2/n) * (y_pred - y_true)
+MSE = (1/n) * sum((y_pred - y_true)^2)
 ```
 
-Linear in the error. Bigger errors get bigger 梯度s. This is a feature for regression (large errors need large corrections) and a bug for classification (you want to penalize confident wrong answers exponentially, not linearly).
+Why squaring matters: it penalizes large errors quadratically. error 的 2 costs 4x 作为 much 作为 error 的 1. error 的 10 costs 100x. This makes MSE sensitive 到 outliers -- single wildly wrong prediction dominates loss.
+
+Real numbers: if your 模型 predicts housing prices 和 是 off 通过 $10,000 在 most houses but off 通过 $200,000 在 one mansion, MSE will aggressively try 到 fix one mansion, potentially hurting performance 在 other 99 houses.
+
+gradient 的 MSE 使用 respect 到 prediction 是:
+
+```
+dMSE/dy_pred = (2/n) * (y_pred - y_true)
+```
+
+Linear 在 error. Bigger errors get bigger gradients. 这是 特征 为了 回归 (large errors need large corrections) 和 bug 为了 分类 (you want 到 penalize confident wrong answers exponentially, not linearly).
 
 ### Cross-Entropy Loss
 
-The 损失函数 for classification. Rooted in information theory -- it measures the divergence between the predicted probability distribution and the true distribution.
+损失函数 为了 分类. Rooted 在 information theory -- it measures divergence between predicted 概率 distribution 和 true distribution.
 
 **Binary Cross-Entropy (BCE):**
 
@@ -56,100 +56,100 @@ The 损失函数 for classification. Rooted in information theory -- it measures
 BCE = -(y * log(p) + (1 - y) * log(1 - p))
 ```
 
-Where y is the true label (0 or 1) and p is the predicted probability.
+Where y 是 true label (0 或 1) 和 p 是 predicted 概率.
 
-Why -log(p) works: when the true label is 1 and you predict p = 0.99, the loss is -log(0.99) = 0.01. When you predict p = 0.01, the loss is -log(0.01) = 4.6. That 460x difference is why cross-entropy works. It brutally punishes confident wrong predictions while barely penalizing confident correct ones.
+Why -log(p) works: when true label 是 1 和 you predict p = 0.99, loss 是 -log(0.99) = 0.01. When you predict p = 0.01, loss 是 -log(0.01) = 4.6. That 460x difference 是 why cross-entropy works. It brutally punishes confident wrong predictions while barely penalizing confident correct ones.
 
-The 梯度 tells the same story:
+gradient tells same story:
 
 ```
 dBCE/dp = -(y/p) + (1-y)/(1-p)
 ```
 
-When y = 1 and p is near zero, the 梯度 is -1/p which approaches negative infinity. The model gets an enormous signal to fix its mistake. When p is near 1, the 梯度 is tiny. Already correct, nothing to fix.
+When y = 1 和 p 是 near zero, gradient 是 -1/p which approaches negative infinity. 模型 gets enormous signal 到 fix its mistake. When p 是 near 1, gradient 是 tiny. Already correct, nothing 到 fix.
 
 **Categorical Cross-Entropy:**
 
-For multi-class classification with one-hot encoded targets.
+For multi-class 分类 使用 one-hot encoded targets.
 
 ```
 CCE = -sum(y_i * log(p_i))
 ```
 
-Only the true class contributes to the loss (because all other y_i are zero). If there are 10 classes and the correct class gets probability 0.1 (random guessing), the loss is -log(0.1) = 2.3. If the correct class gets probability 0.9, the loss is -log(0.9) = 0.105. The model learns to concentrate probability mass on the right answer.
+Only true class contributes 到 loss (because all other y_i 是 zero). If there 是 10 classes 和 correct class gets 概率 0.1 (random guessing), loss 是 -log(0.1) = 2.3. If correct class gets 概率 0.9, loss 是 -log(0.9) = 0.105. 模型 learns 到 concentrate 概率 mass 在 right answer.
 
-### Why 均方误差 Fails for Classification
+### Why MSE Fails 为了 分类
 
 ```mermaid
 graph TD
-    subgraph "均方误差 on Classification"
-        P1["Predict 0.5 for class 1<br/>均方误差 = 0.25"]
-        P2["Predict 0.9 for class 1<br/>均方误差 = 0.01"]
-        P3["Predict 0.1 for class 1<br/>均方误差 = 0.81"]
+    subgraph "MSE on Classification"
+        P1["Predict 0.5 for class 1<br/>MSE = 0.25"]
+        P2["Predict 0.9 for class 1<br/>MSE = 0.01"]
+        P3["Predict 0.1 for class 1<br/>MSE = 0.81"]
     end
     subgraph "Cross-Entropy on Classification"
         C1["Predict 0.5 for class 1<br/>CE = 0.693"]
         C2["Predict 0.9 for class 1<br/>CE = 0.105"]
         C3["Predict 0.1 for class 1<br/>CE = 2.303"]
     end
-    P3 -->|"均方误差 梯度<br/>flattens near<br/>saturation"| Slow["Slow correction"]
-    C3 -->|"CE 梯度<br/>explodes near<br/>wrong answer"| Fast["Fast correction"]
+    P3 -->|"MSE gradient<br/>flattens near<br/>saturation"| Slow["Slow correction"]
+    C3 -->|"CE gradient<br/>explodes near<br/>wrong answer"| Fast["Fast correction"]
 ```
 
-均方误差 梯度s flatten when predictions are near 0 or 1 (due to sigmoid saturation). Cross-entropy 梯度s compensate for this -- the -log cancels the sigmoid's flat regions, giving strong 梯度s exactly where they are needed most.
+MSE gradients flatten when predictions 是 near 0 或 1 (due 到 sigmoid saturation). Cross-entropy gradients compensate 为了 这个 -- -log cancels sigmoid's flat regions, giving strong gradients exactly where they 是 needed most.
 
 ### Label Smoothing
 
-Standard one-hot labels say "this is 100% class 3 and 0% everything else." That's a strong claim. Label smoothing softens it:
+Standard one-hot labels say "这个 是 100% class 3 和 0% everything else." That's strong claim. Label smoothing softens it:
 
 ```
 smooth_label = (1 - alpha) * one_hot + alpha / num_classes
 ```
 
-With alpha = 0.1 and 10 classes: instead of [0, 0, 1, 0, ...], the target becomes [0.01, 0.01, 0.91, 0.01, ...]. The model targets 0.91 instead of 1.0.
+With alpha = 0.1 和 10 classes: instead 的 [0, 0, 1, 0, ...], target becomes [0.01, 0.01, 0.91, 0.01, ...]. 模型 targets 0.91 instead 的 1.0.
 
-Why this works: a model trying to output exactly 1.0 through a softmax needs to push logits to infinity. This causes overconfidence, hurts generalization, and makes the model brittle to distribution shift. Label smoothing caps the target at 0.9 (with alpha=0.1), keeping logits in a reasonable range. GPT and most modern models use label smoothing or its equivalent.
+Why 这个 works: 模型 trying 到 输出 exactly 1.0 through softmax needs 到 push logits 到 infinity. This causes overconfidence, hurts generalization, 和 makes 模型 brittle 到 distribution shift. Label smoothing caps target 在 0.9 (使用 alpha=0.1), keeping logits 在 reasonable range. GPT 和 most modern 模型 use label smoothing 或 its equivalent.
 
 ### Contrastive Loss
 
-No labels. No classes. Just pairs of inputs and the question: are these similar or different?
+No labels. No classes. Just pairs 的 输入 和 question: 是 这些 similar 或 different?
 
 **SimCLR-style contrastive loss (NT-Xent / InfoNCE):**
 
-Take one image. Create two augmented views of it (crop, rotate, color jitter). These are the "positive pair" -- they should have similar embeddings. Every other image in the 批次 forms a "negative pair" -- they should have different embeddings.
+Take one image. Create two augmented views 的 it (crop, rotate, color jitter). These 是 "positive pair" -- they should have similar embeddings. Every other image 在 批次 forms "negative pair" -- they should have different embeddings.
 
 ```
 L = -log(exp(sim(z_i, z_j) / tau) / sum(exp(sim(z_i, z_k) / tau)))
 ```
 
-Where sim() is cosine similarity, z_i and z_j are the positive pair, the sum is over all negatives, and tau (temperature) controls how sharp the distribution is. Lower temperature = harder negatives = more aggressive separation.
+Where sim() 是 cosine similarity, z_i 和 z_j 是 positive pair, sum 是 over all negatives, 和 tau (temperature) controls how sharp distribution 是. Lower temperature = harder negatives = more aggressive separation.
 
-Real numbers: 批次 size 256 means 255 negatives per positive pair. Temperature tau = 0.07 (SimCLR default). The loss looks like a softmax over similarities -- it wants the positive pair's similarity to be highest among all 256 options.
+Real numbers: 批次 size 256 means 255 negatives per positive pair. Temperature tau = 0.07 (SimCLR default). loss looks like softmax over similarities -- it wants positive pair's similarity 到 be highest among all 256 options.
 
 **Triplet Loss:**
 
-Takes three inputs: anchor, positive (same class), negative (different class).
+Takes three 输入: anchor, positive (same class), negative (different class).
 
 ```
 L = max(0, d(anchor, positive) - d(anchor, negative) + margin)
 ```
 
-The margin (typically 0.2-1.0) enforces a minimum gap between positive and negative distances. If the negative is already far enough away, the loss is zero -- no 梯度, no update. This makes training efficient but requires careful triplet mining (choosing hard negatives that are close to the anchor).
+margin (typically 0.2-1.0) enforces minimum gap between positive 和 negative distances. If negative 是 already far enough away, loss 是 zero -- no gradient, no update. This makes 训练 efficient but requires careful triplet mining (choosing hard negatives 是 close 到 anchor).
 
 ### Focal Loss
 
-For imbalanced datasets. Standard cross-entropy treats all correctly classified examples equally. Focal loss down-权重s easy examples:
+For imbalanced 数据集. Standard cross-entropy treats all correctly classified examples equally. Focal loss down-权重 easy examples:
 
 ```
 FL = -alpha * (1 - p_t)^gamma * log(p_t)
 ```
 
-Where p_t is the predicted probability of the true class and gamma controls the focusing. With gamma = 0, this is standard cross-entropy. With gamma = 2 (the default):
+Where p_t 是 predicted 概率 的 true class 和 gamma controls focusing. With gamma = 0, 这个 是 standard cross-entropy. With gamma = 2 ( default):
 
 - Easy example (p_t = 0.9): 权重 = (0.1)^2 = 0.01. Effectively ignored.
-- Hard example (p_t = 0.1): 权重 = (0.9)^2 = 0.81. Full 梯度 signal.
+- Hard example (p_t = 0.1): 权重 = (0.9)^2 = 0.81. Full gradient signal.
 
-Focal loss was introduced by Lin et al. for object detection, where 99% of candidate regions are background (easy negatives). Without focal loss, the model drowns in easy background examples and never learns to detect objects. With it, the model focuses its capacity on the hard, ambiguous cases that matter.
+Focal loss was introduced 通过 Lin et al. 为了 object detection, where 99% 的 candidate regions 是 background (easy negatives). Without focal loss, 模型 drowns 在 easy background examples 和 never learns 到 detect objects. With it, 模型 focuses its capacity 在 hard, ambiguous cases matter.
 
 ### 损失函数 Decision Tree
 
@@ -160,7 +160,7 @@ flowchart TD
     Start --> Emb{"Learning embeddings?"}
 
     Reg -->|"Yes"| Outliers{"Outlier sensitive?"}
-    Outliers -->|"Yes, penalize outliers"| 均方误差["Use 均方误差"]
+    Outliers -->|"Yes, penalize outliers"| MSE["Use MSE"]
     Outliers -->|"No, robust to outliers"| MAE["Use MAE / Huber"]
 
     Cls -->|"Binary"| BCE["Use Binary CE"]
@@ -170,7 +170,7 @@ flowchart TD
 
     Emb -->|"Paired data"| CL["Use Contrastive Loss"]
     Emb -->|"Triplets available"| TL["Use Triplet Loss"]
-    Emb -->|"Large 批次 self-supervised"| NCE["Use InfoNCE"]
+    Emb -->|"Large batch self-supervised"| NCE["Use InfoNCE"]
 ```
 
 ### Loss Landscape
@@ -178,18 +178,18 @@ flowchart TD
 ```mermaid
 graph LR
     subgraph "Loss Surface Shape"
-        均方误差_S["均方误差<br/>Smooth parabola<br/>Single minimum<br/>Easy to optimize"]
-        CE_S["Cross-Entropy<br/>Steep near wrong answers<br/>Flat near correct answers<br/>Strong 梯度s where needed"]
-        CL_S["Contrastive<br/>Many local minima<br/>Depends on 批次 composition<br/>Temperature controls sharpness"]
+        MSE_S["MSE<br/>Smooth parabola<br/>Single minimum<br/>Easy to optimize"]
+        CE_S["Cross-Entropy<br/>Steep near wrong answers<br/>Flat near correct answers<br/>Strong gradients where needed"]
+        CL_S["Contrastive<br/>Many local minima<br/>Depends on batch composition<br/>Temperature controls sharpness"]
     end
-    均方误差_S -->|"Best for"| Reg2["Regression"]
+    MSE_S -->|"Best for"| Reg2["Regression"]
     CE_S -->|"Best for"| Cls2["Classification"]
     CL_S -->|"Best for"| Emb2["Representation learning"]
 ```
 
 ## Build It
 
-### Step 1: 均方误差 and Its 梯度
+### Step 1: MSE 和 Its Gradient
 
 ```python
 def mse(predictions, targets):
@@ -199,7 +199,7 @@ def mse(predictions, targets):
         total += (p - t) ** 2
     return total / n
 
-def mse_梯度(predictions, targets):
+def mse_gradient(predictions, targets):
     n = len(predictions)
     grads = []
     for p, t in zip(predictions, targets):
@@ -209,7 +209,7 @@ def mse_梯度(predictions, targets):
 
 ### Step 2: Binary Cross-Entropy
 
-The log(0) problem is real. If the model predicts exactly 0 for a positive example, log(0) = negative infinity. Clipping prevents this.
+log(0) problem 是 real. If 模型 predicts exactly 0 为了 positive example, log(0) = negative infinity. Clipping prevents 这个.
 
 ```python
 import math
@@ -222,7 +222,7 @@ def binary_cross_entropy(predictions, targets, eps=1e-15):
         total += -(t * math.log(p_clipped) + (1 - t) * math.log(1 - p_clipped))
     return total / n
 
-def bce_梯度(predictions, targets, eps=1e-15):
+def bce_gradient(predictions, targets, eps=1e-15):
     grads = []
     for p, t in zip(predictions, targets):
         p_clipped = max(eps, min(1 - eps, p))
@@ -230,9 +230,9 @@ def bce_梯度(predictions, targets, eps=1e-15):
     return grads
 ```
 
-### Step 3: Categorical Cross-Entropy with Softmax
+### Step 3: Categorical Cross-Entropy 使用 Softmax
 
-Softmax converts raw logits to probabilities. Then we compute the cross-entropy against one-hot targets.
+Softmax converts raw logits 到 probabilities. Then we compute cross-entropy against one-hot targets.
 
 ```python
 def softmax(logits):
@@ -246,14 +246,14 @@ def categorical_cross_entropy(logits, target_index, eps=1e-15):
     p = max(eps, probs[target_index])
     return -math.log(p)
 
-def cce_梯度(logits, target_index):
+def cce_gradient(logits, target_index):
     probs = softmax(logits)
     grads = list(probs)
     grads[target_index] -= 1.0
     return grads
 ```
 
-The 梯度 of softmax + cross-entropy simplifies beautifully: it's just (predicted probability - 1) for the true class, and (predicted probability) for all other classes. This elegant simplification is not a coincidence -- it's why softmax and cross-entropy are paired.
+gradient 的 softmax + cross-entropy simplifies beautifully: it's just (predicted 概率 - 1) 为了 true class, 和 (predicted 概率) 为了 all other classes. This elegant simplification 是 not coincidence -- it's why softmax 和 cross-entropy 是 paired.
 
 ### Step 4: Label Smoothing
 
@@ -294,9 +294,9 @@ def contrastive_loss(anchor, positive, negatives, temperature=0.07):
     return -math.log(max(1e-15, exp_pos / total_exp))
 ```
 
-### Step 6: 均方误差 vs Cross-Entropy on Classification
+### Step 6: MSE vs Cross-Entropy 在 分类
 
-Train the same network from lesson 04 (circle dataset) with both 损失函数s. Watch cross-entropy converge faster.
+Train same network 从 lesson 04 (circle 数据集) 使用 both loss 函数. Watch cross-entropy converge faster.
 
 ```python
 import random
@@ -390,7 +390,7 @@ class LossComparisonNetwork:
 
 ## Use It
 
-PyTorch provides all standard 损失函数s with numerical stability built in:
+PyTorch provides all standard loss 函数 使用 numerical stability built 在:
 
 ```python
 import torch
@@ -409,46 +409,46 @@ ce_loss = F.cross_entropy(logits, labels)
 ce_smooth = F.cross_entropy(logits, labels, label_smoothing=0.1)
 ```
 
-Use `F.cross_entropy` (not `F.nll_loss` plus manual softmax). It combines log-softmax and negative log-likelihood in one numerically stable operation. Applying softmax separately then taking the log is less stable -- you lose precision in the subtraction of large exponentials.
+Use `F.cross_entropy` (not `F.nll_loss` plus manual softmax). It combines log-softmax 和 negative log-likelihood 在 one numerically stable operation. Applying softmax separately then taking log 是 less stable -- you lose 精确率 在 subtraction 的 large exponentials.
 
-For contrastive learning, most teams use custom implementations or libraries like `lightly` or `pytorch-metric-learning`. The core loop is always the same: compute pairwise similarities, create the softmax over positives and negatives, backpropagate.
+For contrastive learning, most teams use custom implementations 或 libraries like `lightly` 或 `pytorch-metric-learning`. core loop 是 always same: compute pairwise similarities, create softmax over positives 和 negatives, backpropagate.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/prompt-loss-function-selector.md` -- a reusable prompt for choosing the right 损失函数
-- `outputs/prompt-loss-debugger.md` -- a diagnostic prompt for when your loss curve looks wrong
+- `输出/prompt-loss-函数-selector.md` -- reusable prompt 为了 choosing right 损失函数
+- `输出/prompt-loss-debugger.md` -- diagnostic prompt 为了 when your loss curve looks wrong
 
 ## Exercises
 
-1. Implement Huber loss (smooth L1 loss), which is 均方误差 for small errors and MAE for large errors. Train a regression network predicting y = sin(x) with 均方误差 vs Huber when 5% of training targets have random noise added (outliers). Compare final test error.
+1. Implement Huber loss (smooth L1 loss), which 是 MSE 为了 small errors 和 MAE 为了 large errors. Train 回归 network predicting y = sin(x) 使用 MSE vs Huber when 5% 的 训练 targets have random noise added (outliers). Compare final test error.
 
-2. Add focal loss to the binary classification training loop. Create an imbalanced dataset (90% class 0, 10% class 1). Compare standard BCE vs focal loss (gamma=2) on the minority class recall after 200 epochs.
+2. Add focal loss 到 binary 分类 训练 loop. Create imbalanced 数据集 (90% class 0, 10% class 1). Compare standard BCE vs focal loss (gamma=2) 在 minority class 召回率 after 200 轮次.
 
-3. Implement triplet loss with semi-hard negative mining. Generate 2D embedding data for 5 classes. For each anchor, find the hardest negative that is still farther than the positive (semi-hard). Compare 收敛 to random triplet selection.
+3. Implement triplet loss 使用 semi-hard negative mining. Generate 2D embedding 数据 为了 5 classes. For each anchor, find hardest negative 是 still farther than positive (semi-hard). Compare 收敛 到 random triplet selection.
 
-4. Run the 均方误差 vs cross-entropy comparison but track 梯度 magnitudes at each 层 during training. Plot the average 梯度 norm per epoch. Verify that cross-entropy produces larger 梯度s in early epochs when the model is most uncertain.
+4. Run MSE vs cross-entropy comparison but track gradient magnitudes 在 each 层 during 训练. Plot average gradient norm per 轮次. Verify cross-entropy produces larger gradients 在 early 轮次 when 模型 是 most uncertain.
 
-5. Implement KL divergence loss and verify that minimizing KL(true || predicted) gives the same 梯度s as cross-entropy when the true distribution is one-hot. Then try soft targets (like knowledge distillation) where the "true" distribution comes from a teacher model's softmax output.
+5. Implement KL divergence loss 和 verify minimizing KL(true || predicted) gives same gradients 作为 cross-entropy when true distribution 是 one-hot. Then try soft targets (like knowledge distillation) where "true" distribution comes 从 teacher 模型's softmax 输出.
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Loss function | "How wrong the model is" | A differentiable function mapping predictions and targets to a scalar that the 优化器 minimizes |
-| 均方误差 | "Average squared error" | Mean of squared differences between predictions and targets; penalizes large errors quadratically |
-| Cross-entropy | "The classification loss" | Measures divergence between predicted probability distribution and true distribution using -log(p) |
-| Binary cross-entropy | "BCE" | Cross-entropy for two classes: -(y*log(p) + (1-y)*log(1-p)) |
-| Label smoothing | "Softening the targets" | Replacing hard 0/1 targets with soft values (e.g., 0.1/0.9) to prevent overconfidence and improve generalization |
-| Contrastive loss | "Pull together, push apart" | A loss that learns representations by making similar pairs close and dissimilar pairs far in embedding space |
-| InfoNCE | "The CLIP/SimCLR loss" | Normalized temperature-scaled cross-entropy over similarity scores; treats contrastive learning as classification |
-| Focal loss | "The imbalanced data fix" | Cross-entropy 权重ed by (1-p_t)^gamma to down-权重 easy examples and focus on hard ones |
-| Triplet loss | "Anchor-positive-negative" | Pushes anchor closer to positive than negative by at least a margin in embedding space |
-| Temperature | "Sharpness knob" | A scalar divisor on logits/similarities that controls how peaked the resulting distribution is; lower = sharper |
+| Loss 函数 | "How wrong 模型 是" | differentiable 函数 mapping predictions 和 targets 到 scalar 优化器 minimizes |
+| MSE | "Average squared error" | Mean 的 squared differences between predictions 和 targets; penalizes large errors quadratically |
+| Cross-entropy | " 分类 loss" | Measures divergence between predicted 概率 distribution 和 true distribution using -log(p) |
+| Binary cross-entropy | "BCE" | Cross-entropy 为了 two classes: -(y*log(p) + (1-y)*log(1-p)) |
+| Label smoothing | "Softening targets" | Replacing hard 0/1 targets 使用 soft values (e.g., 0.1/0.9) 到 prevent overconfidence 和 improve generalization |
+| Contrastive loss | "Pull together, push apart" | loss learns representations 通过 making similar pairs close 和 dissimilar pairs far 在 embedding space |
+| InfoNCE | " CLIP/SimCLR loss" | Normalized temperature-scaled cross-entropy over similarity scores; treats contrastive learning 作为 分类 |
+| Focal loss | " imbalanced 数据 fix" | Cross-entropy weighted 通过 (1-p_t)^gamma 到 down-权重 easy examples 和 focus 在 hard ones |
+| Triplet loss | "Anchor-positive-negative" | Pushes anchor closer 到 positive than negative 通过 在 least margin 在 embedding space |
+| Temperature | "Sharpness knob" | scalar divisor 在 logits/similarities controls how peaked resulting distribution 是; lower = sharper |
 
 ## Further Reading
 
-- Lin et al., "Focal Loss for Dense Object Detection" (2017) -- introduced focal loss for handling extreme class imbalance in object detection (RetinaNet)
-- Chen et al., "A Simple Framework for Contrastive Learning of Visual Representations" (SimCLR, 2020) -- defined the modern contrastive learning pipeline with NT-Xent loss
-- Szegedy et al., "Rethinking the Inception Architecture" (2016) -- introduced label smoothing as a 正则化 technique, now standard in most large models
-- Hinton et al., "Distilling the Knowledge in a 神经网络" (2015) -- knowledge distillation using soft targets and KL divergence, foundational for model compression
+- Lin et al., "Focal Loss 为了 Dense Object Detection" (2017) -- introduced focal loss 为了 handling extreme class imbalance 在 object detection (RetinaNet)
+- Chen et al., " Simple Framework 为了 Contrastive Learning 的 Visual Representations" (SimCLR, 2020) -- defined modern contrastive learning pipeline 使用 NT-Xent loss
+- Szegedy et al., "Rethinking Inception Architecture" (2016) -- introduced label smoothing 作为 正则化 technique, now standard 在 most large 模型
+- Hinton et al., "Distilling Knowledge 在 神经网络" (2015) -- knowledge distillation using soft targets 和 KL divergence, foundational 为了 模型 compression

@@ -1,53 +1,53 @@
-# 多层神经网络 and Forward Pass
+# Multi-层 Networks 和 Forward Pass
 
-> One neuron draws a line. Stack them, and you can draw anything.
+> One 神经元 draws line. Stack them, 和 you can draw anything.
 
-**类型:** 实现
-**语言:** Python
-**Prerequisites:** Phase 01 (Math Foundations), Lesson 03.01 (The 感知机)
+**Type:** Build
+**Languages:** Python
+**Prerequisites:** Phase 01 (Math Foundations), Lesson 03.01 ( 感知机)
 **Time:** ~90 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Build a multi-层 network from scratch with 层 and Network classes that perform a complete forward pass
-- Trace matrix dimensions through each 层 of a network and identify shape mismatches
-- Explain how stacking nonlinear activations enables a network to learn curved decision boundaries
-- Solve the XOR problem using a 2-2-1 architecture with hand-tuned sigmoid 权重s
+- Build multi-层 network 从 scratch 使用 层 和 Network classes perform complete forward pass
+- Trace 矩阵 dimensions through each 层 的 network 和 identify shape mismatches
+- Explain how stacking nonlinear activations enables network 到 learn curved decision boundaries
+- Solve XOR problem using 2-2-1 architecture 使用 hand-tuned sigmoid 权重
 
-## The Problem
+## Problem
 
-A single neuron is a line drawer. That's it. One straight line through your data. Every real problem in AI -- image recognition, language understanding, playing Go -- requires curves. Stacking neurons into 层s is how you get curves.
+single 神经元 是 line drawer. That's it. One straight line through your 数据. Every real problem 在 AI -- image recognition, language understanding, playing Go -- requires curves. Stacking 神经元 into 层 是 how you get curves.
 
-In 1969, Minsky and Papert proved this limitation was fatal: a single-层 network cannot learn XOR. Not "struggles to learn" -- mathematically cannot. The XOR truth table places [0,1] and [1,0] on one side, [0,0] and [1,1] on the other. No single line separates them.
+In 1969, Minsky 和 Papert proved 这个 limitation was fatal: single-层 network cannot learn XOR. Not "struggles 到 learn" -- mathematically cannot. XOR truth table places [0,1] 和 [1,0] 在 one side, [0,0] 和 [1,1] 在 other. No single line separates them.
 
-This killed 神经网络 funding for over a decade. The fix was obvious in hindsight: stop using one 层. Stack neurons into 层s. Let the first 层 carve the input space into new features, and let the second 层 combine those features into decisions no single line could make.
+This killed 神经网络 funding 为了 over decade. fix was obvious 在 hindsight: stop using one 层. Stack 神经元 into 层. Let first 层 carve 输入 space into new 特征, 和 let second 层 combine 那些 特征 into decisions no single line could make.
 
-That stack is the multi-层 network. It is the foundation of every deep learning model in production today. The forward pass -- data flowing from input through hidden 层s to output -- is the first thing you need to build before anything else works.
+That stack 是 multi-层 network. 它是 foundation 的 every deep learning 模型 在 production today. forward pass -- 数据 flowing 从 输入 through hidden 层 到 输出 -- 是 first thing you need 到 build before anything else works.
 
-## The Concept
+## Concept
 
-### 层s: Input, Hidden, Output
+### Layers: 输入, Hidden, 输出
 
-A multi-层 network has three types of 层s:
+multi-层 network has three types 的 层:
 
-**Input 层** -- not really a 层. It holds your raw data. Two features means two input nodes. No computation happens here.
+**输入 层** -- not really 层. It holds your raw 数据. Two 特征 means two 输入 节点. No computation happens here.
 
-**Hidden 层s** -- where the work happens. Each neuron takes every output from the previous 层, applies 权重s and a 偏置, then passes the result through an 激活函数. "Hidden" because you never see these values directly in the training data.
+**Hidden 层** -- where work happens. Each 神经元 takes every 输出 从 previous 层, applies 权重 和 偏置, then passes result through 激活函数. "Hidden" because you never see 这些 values directly 在 训练 数据.
 
-**Output 层** -- the final answer. For binary classification, one neuron with sigmoid. For multi-class, one neuron per class.
+**输出 层** -- final answer. For binary 分类, one 神经元 使用 sigmoid. For multi-class, one 神经元 per class.
 
 ```mermaid
 graph LR
-    subgraph Input["Input 层"]
+    subgraph Input["Input Layer"]
         x1["x1"]
         x2["x2"]
     end
-    subgraph Hidden["Hidden 层 (3 neurons)"]
+    subgraph Hidden["Hidden Layer (3 neurons)"]
         h1["h1"]
         h2["h2"]
         h3["h3"]
     end
-    subgraph Output["Output 层"]
+    subgraph Output["Output Layer"]
         y["y"]
     end
     x1 --> h1
@@ -61,72 +61,72 @@ graph LR
     h3 --> y
 ```
 
-This is a 2-3-1 network. Two inputs, three hidden neurons, one output. Every connection carries a 权重. Every neuron (except input) carries a 偏置.
+这是 2-3-1 network. Two 输入, three hidden 神经元, one 输出. Every connection carries 权重. Every 神经元 (except 输入) carries 偏置.
 
-Each 层 produces a vector of numbers called a hidden state. For text, hidden states increase dimensionality -- encoding a word as 768 numbers to capture semantic meaning. For images, they reduce dimensionality -- compressing millions of pixels into a manageable representation. The hidden state is where the learning lives.
+Each 层 produces 向量 的 numbers called hidden state. For text, hidden states increase dimensionality -- encoding word 作为 768 numbers 到 capture semantic meaning. For images, they reduce dimensionality -- compressing millions 的 pixels into manageable representation. hidden state 是 where learning lives.
 
-### Neurons and Activations
+### Neurons 和 Activations
 
-Each neuron does three things:
+Each 神经元 does three things:
 
-1. Multiply every input by its corresponding 权重
-2. Sum all the products and add a 偏置
-3. Pass the sum through an 激活函数
+1. Multiply every 输入 通过 its corresponding 权重
+2. Sum all products 和 add 偏置
+3. Pass sum through 激活函数
 
-For now, the activation is sigmoid:
+For now, activation 是 sigmoid:
 
 ```
 sigmoid(z) = 1 / (1 + e^(-z))
 ```
 
-Sigmoid squashes any number into the range (0, 1). Large positive inputs push toward 1. Large negative inputs push toward 0. Zero maps to 0.5. This smooth curve is what makes learning possible -- unlike the 感知机's hard step, sigmoid has a 梯度 everywhere.
+Sigmoid squashes any number into range (0, 1). Large positive 输入 push toward 1. Large negative 输入 push toward 0. Zero maps 到 0.5. This smooth curve 是 what makes learning possible -- unlike 感知机's hard step, sigmoid has gradient everywhere.
 
-### Forward Pass: How Data Flows
+### Forward Pass: How 数据 Flows
 
-The forward pass pushes input data through the network, 层 by 层, until it reaches the output. No learning happens during the forward pass. It is pure computation: multiply, add, activate, repeat.
+forward pass pushes 输入 数据 through network, 层 通过 层, until it reaches 输出. No learning happens during forward pass. 它是 pure computation: multiply, add, activate, repeat.
 
 ```mermaid
 graph TD
-    X["Input: [x1, x2]"] --> WH["Multiply by 权重 Matrix W1 (2x3)"]
-    WH --> BH["Add 偏置 Vector b1 (3,)"]
+    X["Input: [x1, x2]"] --> WH["Multiply by Weight Matrix W1 (2x3)"]
+    WH --> BH["Add Bias Vector b1 (3,)"]
     BH --> AH["Apply sigmoid to each element"]
     AH --> H["Hidden Output: [h1, h2, h3]"]
-    H --> WO["Multiply by 权重 Matrix W2 (3x1)"]
-    WO --> BO["Add 偏置 Vector b2 (1,)"]
+    H --> WO["Multiply by Weight Matrix W2 (3x1)"]
+    WO --> BO["Add Bias Vector b2 (1,)"]
     BO --> AO["Apply sigmoid"]
     AO --> Y["Output: y"]
 ```
 
-At each 层, three operations happen in sequence:
+At each 层, three operations happen 在 sequence:
 
 ```
 z = W * input + b       (linear transformation)
 a = sigmoid(z)           (activation)
 ```
 
-The output of one 层 becomes the input to the next. That is the entire forward pass.
+输出 的 one 层 becomes 输入 到 next. 那是 entire forward pass.
 
-### Matrix Dimensions
+### 矩阵 Dimensions
 
-Tracking dimensions is the single most important debugging skill in deep learning. Here is the 2-3-1 network:
+Tracking dimensions 是 single most important debugging skill 在 deep learning. Here 是 2-3-1 network:
 
 | Step | Operation | Dimensions | Result Shape |
 |------|-----------|------------|-------------|
-| Input | x | -- | (2,) |
+| 输入 | x | -- | (2,) |
 | Hidden linear | W1 * x + b1 | W1: (3, 2), b1: (3,) | (3,) |
 | Hidden activation | sigmoid(z1) | -- | (3,) |
-| Output linear | W2 * h + b2 | W2: (1, 3), b2: (1,) | (1,) |
-| Output activation | sigmoid(z2) | -- | (1,) |
+| 输出 linear | W2 * h + b2 | W2: (1, 3), b2: (1,) | (1,) |
+| 输出 activation | sigmoid(z2) | -- | (1,) |
 
-The rule: 权重 matrix W at 层 k has shape (neurons_in_层_k, neurons_in_层_k_minus_1). Rows match the current 层. Columns match the previous 层. If the shapes do not line up, you have a bug.
+rule: 权重 矩阵 W 在 层 k has shape (neurons_in_layer_k, neurons_in_layer_k_minus_1). Rows match current 层. Columns match previous 层. If shapes do not line up, you have bug.
 
 ### Universal Approximation Theorem
 
-In 1989, George Cybenko proved something remarkable: a 神经网络 with a single hidden 层 and enough neurons can approximate any continuous function to any desired accuracy.
+In 1989, George Cybenko proved something remarkable: 神经网络 使用 single hidden 层 和 enough 神经元 can approximate any continuous 函数 到 any desired 准确率.
 
-This does not mean one hidden 层 is always best. It means the architecture is theoretically capable. In practice, deeper networks (more 层s, fewer neurons per 层) learn the same functions with far fewer total parameters than shallow-wide networks. That is why deep learning works.
+This does not mean one hidden 层 是 always best. It means architecture 是 theoretically capable. In practice, deeper networks (more 层, fewer 神经元 per 层) learn same 函数 使用 far fewer total 参数 than shallow-wide networks. 那是 why deep learning works.
 
-The intuition: each neuron in the hidden 层 learns one "bump" or feature. Enough bumps placed in the right locations can approximate any smooth curve. More neurons, more bumps, better approximation.
+intuition: each 神经元 在 hidden 层 learns one "bump" 或 特征. Enough bumps placed 在 right locations can approximate any smooth curve. More 神经元, more bumps, better approximation.
 
 ```mermaid
 graph LR
@@ -144,11 +144,11 @@ graph LR
 
 ### Composability
 
-Neural networks are composable. You can stack them, chain them, run them in parallel. A Whisper model uses an encoder network to process audio and a separate decoder network to generate text. Modern LLMs are decoder-only. BERT is encoder-only. T5 is encoder-decoder. The architecture choice defines what the model can do.
+Neural networks 是 composable. 你可以 stack them, chain them, run them 在 parallel. Whisper 模型 uses encoder network 到 process audio 和 separate decoder network 到 generate text. Modern LLMs 是 decoder-only. BERT 是 encoder-only. T5 是 encoder-decoder. architecture choice defines what 模型 can do.
 
 ## Build It
 
-Pure Python. No numpy. Every matrix operation written from scratch.
+Pure Python. No numpy. Every 矩阵 operation written 从 scratch.
 
 ### Step 1: Sigmoid Activation
 
@@ -160,79 +160,79 @@ def sigmoid(x):
     return 1.0 / (1.0 + math.exp(-x))
 ```
 
-The clamp to [-500, 500] prevents overflow. `math.exp(500)` is large but finite. `math.exp(1000)` is infinity.
+clamp 到 [-500, 500] prevents overflow. `math.exp(500)` 是 large but finite. `math.exp(1000)` 是 infinity.
 
 ### Step 2: 层 Class
 
-The most important operation in all of deep learning is matrix multiplication. Every 层, every attention head, every forward pass -- it's matmuls all the way down. A linear 层 takes an input vector, multiplies it by a 权重 matrix, and adds a 偏置 vector: y = Wx + b. That single equation is 90% of the compute in a 神经网络.
+most important operation 在 all 的 deep learning 是 矩阵 multiplication. Every 层, every attention head, every forward pass -- it's matmuls all way down. linear 层 takes 输入 向量, multiplies it 通过 权重 矩阵, 和 adds 偏置 向量: y = Wx + b. That single equation 是 90% 的 compute 在 神经网络.
 
-A 层 holds a 权重 matrix and a 偏置 vector. Its forward method takes an input vector and returns the activated output.
+层 holds 权重 矩阵 和 偏置 向量. Its forward method takes 输入 向量 和 returns activated 输出.
 
 ```python
-class 层:
-    def __init__(self, n_inputs, n_neurons, 权重s=None, 偏置es=None):
-        if 权重s is not None:
-            self.权重s = 权重s
+class Layer:
+    def __init__(self, n_inputs, n_neurons, weights=None, biases=None):
+        if weights is not None:
+            self.weights = weights
         else:
             import random
-            self.权重s = [
+            self.weights = [
                 [random.uniform(-1, 1) for _ in range(n_inputs)]
                 for _ in range(n_neurons)
             ]
-        if 偏置es is not None:
-            self.偏置es = 偏置es
+        if biases is not None:
+            self.biases = biases
         else:
-            self.偏置es = [0.0] * n_neurons
+            self.biases = [0.0] * n_neurons
 
     def forward(self, inputs):
         self.last_input = inputs
         self.last_output = []
-        for neuron_idx in range(len(self.权重s)):
+        for neuron_idx in range(len(self.weights)):
             z = sum(
-                w * x for w, x in zip(self.权重s[neuron_idx], inputs)
+                w * x for w, x in zip(self.weights[neuron_idx], inputs)
             )
-            z += self.偏置es[neuron_idx]
+            z += self.biases[neuron_idx]
             self.last_output.append(sigmoid(z))
         return self.last_output
 ```
 
-The 权重 matrix has shape (n_neurons, n_inputs). Each row is one neuron's 权重s across all inputs. The forward method loops through neurons, computes the 权重ed sum plus 偏置, applies sigmoid, and collects the results.
+权重 矩阵 has shape (n_neurons, n_inputs). Each row 是 one 神经元's 权重 across all 输入. forward method loops through 神经元, computes weighted sum plus 偏置, applies sigmoid, 和 collects results.
 
 ### Step 3: Network Class
 
-A network is a list of 层s. The forward pass chains them: output of 层 k feeds into 层 k+1.
+network 是 list 的 层. forward pass chains them: 输出 的 层 k feeds into 层 k+1.
 
 ```python
 class Network:
-    def __init__(self, 层s):
-        self.层s = 层s
+    def __init__(self, layers):
+        self.layers = layers
 
     def forward(self, inputs):
         current = inputs
-        for 层 in self.层s:
-            current = 层.forward(current)
+        for layer in self.layers:
+            current = layer.forward(current)
         return current
 ```
 
-That is the entire forward pass. Four lines of logic. Data goes in, flows through every 层, comes out the other side.
+那是 entire forward pass. Four lines 的 logic. 数据 goes 在, flows through every 层, comes out other side.
 
-### Step 4: XOR with Hand-Tuned 权重s
+### Step 4: XOR 使用 Hand-Tuned Weights
 
-In Lesson 01, we solved XOR by combining OR, NAND, and AND 感知机s. Now do the same thing with our 层 and Network classes. The 2-2-1 architecture: two inputs, two hidden neurons, one output.
+In Lesson 01, we solved XOR 通过 combining OR, NAND, 和 AND perceptrons. Now do same thing 使用 our 层 和 Network classes. 2-2-1 architecture: two 输入, two hidden 神经元, one 输出.
 
 ```python
-hidden = 层(
+hidden = Layer(
     n_inputs=2,
     n_neurons=2,
-    权重s=[[20.0, 20.0], [-20.0, -20.0]],
-    偏置es=[-10.0, 30.0],
+    weights=[[20.0, 20.0], [-20.0, -20.0]],
+    biases=[-10.0, 30.0],
 )
 
-output = 层(
+output = Layer(
     n_inputs=2,
     n_neurons=1,
-    权重s=[[20.0, 20.0]],
-    偏置es=[-30.0],
+    weights=[[20.0, 20.0]],
+    biases=[-30.0],
 )
 
 xor_net = Network([hidden, output])
@@ -250,11 +250,11 @@ for inputs, expected in xor_data:
     print(f"  {inputs} -> {result[0]:.6f} (rounded: {predicted}, expected: {expected})")
 ```
 
-The large 权重s (20, -20) make sigmoid act like a step function. The first hidden neuron approximates OR. The second approximates NAND. The output neuron combines them into AND, which is XOR.
+large 权重 (20, -20) make sigmoid act like step 函数. first hidden 神经元 approximates OR. second approximates NAND. 输出 神经元 combines them into AND, which 是 XOR.
 
-### Step 5: Circle Classification
+### Step 5: Circle 分类
 
-A harder problem: classify 2D points as inside or outside a circle of radius 0.5 centered at the origin. This requires a curved decision boundary -- impossible for a single 感知机.
+harder problem: classify 2D points 作为 inside 或 outside circle 的 radius 0.5 centered 在 origin. This requires curved decision boundary -- impossible 为了 single 感知机.
 
 ```python
 import random
@@ -270,12 +270,12 @@ for _ in range(200):
     data.append(([x, y], label))
 
 circle_net = Network([
-    层(n_inputs=2, n_neurons=8),
-    层(n_inputs=8, n_neurons=1),
+    Layer(n_inputs=2, n_neurons=8),
+    Layer(n_inputs=8, n_neurons=1),
 ])
 ```
 
-With random 权重s, the network will not classify well. But the forward pass still runs. This is the point -- the forward pass is just computation. Learning the right 权重s is 反向传播, coming in Lesson 03.
+With random 权重, network will not classify well. But forward pass still runs. 这是 point -- forward pass 是 just computation. Learning right 权重 是 反向传播, coming 在 Lesson 03.
 
 ```python
 correct = 0
@@ -285,14 +285,14 @@ for inputs, expected in data:
     if predicted == expected:
         correct += 1
 
-print(f"Accuracy with random 权重s: {correct}/{len(data)} ({100*correct/len(data):.1f}%)")
+print(f"Accuracy with random weights: {correct}/{len(data)} ({100*correct/len(data):.1f}%)")
 ```
 
-Random 权重s give poor accuracy -- often worse than guessing the majority class. After training (Lesson 03), this same architecture with 8 hidden neurons will draw a curved boundary that separates inside from outside.
+Random 权重 give poor 准确率 -- often worse than guessing majority class. After 训练 (Lesson 03), 这个 same architecture 使用 8 hidden 神经元 will draw curved boundary separates inside 从 outside.
 
 ## Use It
 
-PyTorch does everything above in four lines:
+PyTorch does everything above 在 four lines:
 
 ```python
 import torch
@@ -310,48 +310,48 @@ output = model(x)
 print(output)
 ```
 
-`nn.Linear(2, 8)` is your 层 class: 权重 matrix of shape (8, 2), 偏置 vector of shape (8,). `nn.Sigmoid()` is your sigmoid function applied element-wise. `nn.Sequential` is your Network class: chain 层s in order.
+`nn.Linear(2, 8)` 是 your 层 class: 权重 矩阵 的 shape (8, 2), 偏置 向量 的 shape (8,). `nn.Sigmoid()` 是 your sigmoid 函数 applied element-wise. `nn.Sequential` 是 your Network class: chain 层 在 order.
 
-The difference is speed and scale. PyTorch runs on GPUs, handles 批次es of millions of samples, and automatically computes 梯度s for 反向传播. But the forward pass logic is identical to what you just built from scratch.
+difference 是 speed 和 scale. PyTorch runs 在 GPUs, handles 批次 的 millions 的 samples, 和 automatically computes gradients 为了 反向传播. But forward pass logic 是 identical 到 what you just built 从 scratch.
 
 ## Ship It
 
-This lesson produces a reusable prompt for designing network architectures:
+This lesson produces reusable prompt 为了 designing network architectures:
 
-- `outputs/prompt-network-architect.md`
+- `输出/prompt-network-architect.md`
 
-Use it when you need to decide how many 层s, how many neurons per 层, and which 激活函数s to use for a given problem.
+Use it when you need 到 decide how many 层, how many 神经元 per 层, 和 which activation 函数 到 use 为了 given problem.
 
 ## Exercises
 
-1. Build a 2-4-2-1 network (two hidden 层s) and run the forward pass on XOR data with random 权重s. Print the intermediate hidden 层 outputs to see how the representation transforms at each 层.
+1. Build 2-4-2-1 network (two hidden 层) 和 run forward pass 在 XOR 数据 使用 random 权重. Print intermediate hidden 层 输出 到 see how representation transforms 在 each 层.
 
-2. Change the hidden 层 size in the circle classifier from 8 to 2, then to 32. Run the forward pass with random 权重s each time. Does the number of hidden neurons change the output range or distribution? Why?
+2. Change hidden 层 size 在 circle classifier 从 8 到 2, then 到 32. Run forward pass 使用 random 权重 each time. Does number 的 hidden 神经元 change 输出 range 或 distribution? Why?
 
-3. Implement a `count_parameters` method on the Network class that returns the total number of trainable 权重s and 偏置es. Test it on a 784-256-128-10 network (the classic MNIST architecture). How many parameters does it have?
+3. Implement `count_parameters` method 在 Network class returns total number 的 trainable 权重 和 偏置. Test it 在 784-256-128-10 network ( classic MNIST architecture). How many 参数 does it have?
 
-4. Build a forward pass for a 3-4-4-2 network. Feed it RGB color values (normalized to 0-1) and observe the two outputs. This is the architecture for a simple color classifier with two classes.
+4. Build forward pass 为了 3-4-4-2 network. Feed it RGB color values (normalized 到 0-1) 和 observe two 输出. 这是 architecture 为了 simple color classifier 使用 two classes.
 
-5. Replace sigmoid with a "leaky step" function: return 0.01 * z if z < 0, else 1.0. Run the forward pass on XOR with the same hand-tuned 权重s from Step 4. Does it still work? Why is the smooth sigmoid preferred over hard cutoffs?
+5. Replace sigmoid 使用 "leaky step" 函数: return 0.01 * z if z < 0, else 1.0. Run forward pass 在 XOR 使用 same hand-tuned 权重 从 Step 4. Does it still work? Why 是 smooth sigmoid preferred over hard cutoffs?
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Forward pass | "Running the model" | Pushing input through every 层 -- multiply by 权重s, add 偏置, activate -- to produce an output |
-| Hidden 层 | "The middle part" | Any 层 between input and output whose values are not directly observed in the data |
-| Multi-层 network | "A deep 神经网络" | 层s of neurons stacked sequentially, where each 层's output feeds the next 层's input |
-| Activation function | "The nonlinearity" | A function applied after the linear transformation that introduces curves into the decision boundary |
-| Sigmoid | "The S-curve" | sigma(z) = 1/(1+e^(-z)), squashes any real number to (0,1), smooth and differentiable everywhere |
-| 权重 matrix | "The parameters" | A matrix W of shape (current_层_neurons, previous_层_neurons) containing learnable connection strengths |
-| 偏置 vector | "The offset" | A vector added after the matrix multiply that lets neurons activate even when all inputs are zero |
-| Universal approximation | "Neural nets can learn anything" | A single hidden 层 with enough neurons can approximate any continuous function -- but "enough" can mean billions |
-| Linear transformation | "The matrix multiply step" | z = W * x + b, the computation before activation, which maps inputs to a new space |
-| Decision boundary | "Where the classifier switches" | The surface in input space where the network output crosses the classification threshold |
+| Forward pass | "Running 模型" | Pushing 输入 through every 层 -- multiply 通过 权重, add 偏置, activate -- 到 produce 输出 |
+| Hidden 层 | " middle part" | Any 层 between 输入 和 输出 whose values 是 not directly observed 在 数据 |
+| Multi-层 network | " deep 神经网络" | Layers 的 神经元 stacked sequentially, where each 层's 输出 feeds next 层's 输入 |
+| Activation 函数 | " nonlinearity" | 函数 applied after linear transformation introduces curves into decision boundary |
+| Sigmoid | " S-curve" | sigma(z) = 1/(1+e^(-z)), squashes any real number 到 (0,1), smooth 和 differentiable everywhere |
+| 权重 矩阵 | " 参数" | 矩阵 W 的 shape (current_layer_neurons, previous_layer_neurons) containing learnable connection strengths |
+| 偏置 向量 | " offset" | 向量 added after 矩阵 multiply lets 神经元 activate even when all 输入 是 zero |
+| Universal approximation | "Neural nets can learn anything" | single hidden 层 使用 enough 神经元 can approximate any continuous 函数 -- but "enough" can mean billions |
+| Linear transformation | " 矩阵 multiply step" | z = W * x + b, computation before activation, which maps 输入 到 new space |
+| Decision boundary | "Where classifier switches" | surface 在 输入 space where network 输出 crosses 分类 threshold |
 
 ## Further Reading
 
-- Michael Nielsen, "神经网络s and 深度学习", Chapter 1-2 (http://neuralnetworksanddeeplearning.com/) -- the clearest free explanation of forward passes and network structure, with interactive visualizations
-- Cybenko, "Approximation by Superpositions of a Sigmoidal Function" (1989) -- the original universal approximation theorem paper, surprisingly readable
-- 3Blue1Brown, "But what is a 神经网络?" (https://www.youtube.com/watch?v=aircAruvnKk) -- 20-minute visual walkthrough of 层s, 权重s, and forward passes that builds the right mental model
-- Goodfellow, Bengio, Courville, "深度学习", Chapter 6 (https://www.deeplearningbook.org/) -- the standard reference for multi-层 networks, free online
+- Michael Nielsen, "Neural Networks 和 Deep Learning", Chapter 1-2 (http://neuralnetworksanddeeplearning.com/) -- clearest free explanation 的 forward passes 和 network structure, 使用 interactive visualizations
+- Cybenko, "Approximation 通过 Superpositions 的 Sigmoidal 函数" (1989) -- original universal approximation theorem paper, surprisingly readable
+- 3Blue1Brown, "But what 是 神经网络?" (https://www.youtube.com/watch?v=aircAruvnKk) -- 20-minute visual walkthrough 的 层, 权重, 和 forward passes builds right mental 模型
+- Goodfellow, Bengio, Courville, "Deep Learning", Chapter 6 (https://www.deeplearningbook.org/) -- standard reference 为了 multi-层 networks, free online

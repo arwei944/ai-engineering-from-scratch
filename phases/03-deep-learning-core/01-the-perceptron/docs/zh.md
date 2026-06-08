@@ -1,55 +1,55 @@
 # 感知机
 
-> The 感知机 is the atom of 神经网络s. Split it open and you find 权重s, a 偏置, and a decision.
+> 感知机 是 atom 的 神经网络. Split it open 和 you find 权重, 偏置, 和 decision.
 
-**类型:** 实现
-**语言:** Python
-**Prerequisites:** Phase 1 (Linear Algebra Intuition)
+**Type:** Build
+**Languages:** Python
+**Prerequisites:** Phase 1 (线性代数 Intuition)
 **Time:** ~60 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement a 感知机 from scratch in Python, including the 权重 update rule and step 激活函数
-- Explain why a single 感知机 can only solve linearly separable problems and demonstrate the XOR failure case
-- Construct a multi-层 感知机 by composing OR, NAND, and AND gates to solve XOR
-- Train a two-层 network with sigmoid activation and 反向传播 to learn XOR automatically
+- Implement 感知机 从 scratch 在 Python, including 权重 update rule 和 step 激活函数
+- Explain why single 感知机 can only solve linearly separable problems 和 demonstrate XOR failure case
+- Construct multi-层 感知机 通过 composing OR, NAND, 和 AND gates 到 solve XOR
+- Train two-层 network 使用 sigmoid activation 和 反向传播 到 learn XOR automatically
 
-## The Problem
+## Problem
 
-You know vectors and dot products. You know that a matrix transforms inputs into outputs. But how does a machine *learn* which transformation to use?
+你知道 向量 和 dot products. 你知道 矩阵 transforms 输入 into 输出. But how does machine *learn* which transformation 到 use?
 
-The 感知机 answers this. It's the simplest possible learning machine: take some inputs, multiply by 权重s, add a 偏置, and make a binary decision. Then adjust. That's it. Every 神经网络 ever built is 层s of this idea stacked together.
+感知机 answers 这个. It's simplest possible learning machine: take some 输入, multiply 通过 权重, add 偏置, 和 make binary decision. Then adjust. That's it. Every 神经网络 ever built 是 层 的 这个 idea stacked together.
 
-Understanding the 感知机 means understanding what "learning" actually means in code: adjusting numbers until the output matches reality.
+Understanding 感知机 means understanding what "learning" actually means 在 代码: adjusting numbers until 输出 matches reality.
 
-## The Concept
+## Concept
 
-### One Neuron, One Decision
+### One 神经元, One Decision
 
-A 感知机 takes n inputs, multiplies each by a 权重, sums them up, adds a 偏置, and passes the result through an 激活函数.
+感知机 takes n 输入, multiplies each 通过 权重, sums them up, adds 偏置, 和 passes result through 激活函数.
 
 ```mermaid
 graph LR
     x1["x1"] -- "w1" --> sum["Σ(wi*xi) + b"]
     x2["x2"] -- "w2" --> sum
     x3["x3"] -- "w3" --> sum
-    偏置["偏置"] --> sum
+    bias["bias"] --> sum
     sum --> step["step(z)"]
     step --> out["output (0 or 1)"]
 ```
 
-The step function is brutal: if the 权重ed sum plus 偏置 is >= 0, output 1. Otherwise, output 0.
+step 函数 是 brutal: if weighted sum plus 偏置 是 >= 0, 输出 1. Otherwise, 输出 0.
 
 ```
 step(z) = 1  if z >= 0
            0  if z < 0
 ```
 
-This is a linear classifier. The 权重s and 偏置 define a line (or hyperplane in higher dimensions) that splits the input space into two regions.
+这是 linear classifier. 权重 和 偏置 define line (或 hyperplane 在 higher dimensions) splits 输入 space into two regions.
 
-### The Decision Boundary
+### Decision Boundary
 
-For two inputs, the 感知机 draws a line through 2D space:
+For two 输入, 感知机 draws line through 2D space:
 
 ```
   x2
@@ -64,27 +64,27 @@ For two inputs, the 感知机 draws a line through 2D space:
   ┼───────────/──────────── x1
 ```
 
-Everything on one side of the line outputs 0. Everything on the other side outputs 1. Training moves this line until it correctly separates the classes.
+Everything 在 one side 的 line 输出 0. Everything 在 other side 输出 1. 训练 moves 这个 line until it correctly separates classes.
 
-### The Learning Rule
+### Learning Rule
 
-The 感知机 learning rule is simple:
+感知机 learning rule 是 simple:
 
 ```
 For each training example (x, y_true):
     y_pred = predict(x)
     error = y_true - y_pred
 
-    For each 权重:
+    For each weight:
         w_i = w_i + learning_rate * error * x_i
-    偏置 = 偏置 + learning_rate * error
+    bias = bias + learning_rate * error
 ```
 
-If the prediction is correct, error = 0, nothing changes. If it predicts 0 but should be 1, 权重s increase. If it predicts 1 but should be 0, 权重s decrease. The 学习率 controls how big each adjustment is.
+If prediction 是 correct, error = 0, nothing changes. If it predicts 0 but should be 1, 权重 increase. If it predicts 1 but should be 0, 权重 decrease. 学习率 controls how big each adjustment 是.
 
-### The XOR Problem
+### XOR Problem
 
-Here's where it breaks. Look at these logic gates:
+Here's where it breaks. Look 在 这些 logic gates:
 
 ```
 AND gate:           OR gate:            XOR gate:
@@ -95,7 +95,7 @@ x1  x2  out         x1  x2  out         x1  x2  out
 1   1   1           1   1   1           1   1   0
 ```
 
-AND and OR are linearly separable: you can draw a single line to separate the 0s from the 1s. XOR is not. No single line can separate [0,1] and [1,0] from [0,0] and [1,1].
+AND 和 OR 是 linearly separable: you can draw single line 到 separate 0s 从 1s. XOR 是 not. No single line can separate [0,1] 和 [1,0] 从 [0,0] 和 [1,1].
 
 ```
 AND (separable):        XOR (not separable):
@@ -108,24 +108,24 @@ AND (separable):        XOR (not separable):
        line works!          no single line works!
 ```
 
-This is a fundamental limit. A single 感知机 can only solve linearly separable problems. Minsky and Papert proved this in 1969 and it nearly killed 神经网络 research for a decade.
+这是 fundamental limit. single 感知机 can only solve linearly separable problems. Minsky 和 Papert proved 这个 在 1969 和 it nearly killed 神经网络 research 为了 decade.
 
-The fix: stack 感知机s into 层s. A multi-层 感知机 can solve XOR by combining two linear decisions into a nonlinear one.
+fix: stack perceptrons into 层. multi-层 感知机 can solve XOR 通过 combining two linear decisions into nonlinear one.
 
 ## Build It
 
-### Step 1: The 感知机 class
+### Step 1: 感知机 class
 
 ```python
-class 感知机:
+class Perceptron:
     def __init__(self, n_inputs, learning_rate=0.1):
-        self.权重s = [0.0] * n_inputs
-        self.偏置 = 0.0
+        self.weights = [0.0] * n_inputs
+        self.bias = 0.0
         self.lr = learning_rate
 
     def predict(self, inputs):
-        total = sum(w * x for w, x in zip(self.权重s, inputs))
-        total += self.偏置
+        total = sum(w * x for w, x in zip(self.weights, inputs))
+        total += self.bias
         return 1 if total >= 0 else 0
 
     def train(self, training_data, epochs=100):
@@ -136,16 +136,16 @@ class 感知机:
                 error = target - prediction
                 if error != 0:
                     errors += 1
-                    for i in range(len(self.权重s)):
-                        self.权重s[i] += self.lr * error * inputs[i]
-                    self.偏置 += self.lr * error
+                    for i in range(len(self.weights)):
+                        self.weights[i] += self.lr * error * inputs[i]
+                    self.bias += self.lr * error
             if errors == 0:
                 print(f"Converged at epoch {epoch + 1}")
                 return
         print(f"Did not converge after {epochs} epochs")
 ```
 
-### Step 2: Train on logic gates
+### Step 2: Train 在 logic gates
 
 ```python
 and_data = [
@@ -168,19 +168,19 @@ not_data = [
 ]
 
 print("=== AND Gate ===")
-p_and = 感知机(2)
+p_and = Perceptron(2)
 p_and.train(and_data)
 for inputs, _ in and_data:
     print(f"  {inputs} -> {p_and.predict(inputs)}")
 
 print("\n=== OR Gate ===")
-p_or = 感知机(2)
+p_or = Perceptron(2)
 p_or.train(or_data)
 for inputs, _ in or_data:
     print(f"  {inputs} -> {p_or.predict(inputs)}")
 
 print("\n=== NOT Gate ===")
-p_not = 感知机(1)
+p_not = Perceptron(1)
 p_not.train(not_data)
 for inputs, _ in not_data:
     print(f"  {inputs} -> {p_not.predict(inputs)}")
@@ -196,8 +196,8 @@ xor_data = [
     ([1, 1], 0),
 ]
 
-print("\n=== XOR Gate (single 感知机) ===")
-p_xor = 感知机(2)
+print("\n=== XOR Gate (single perceptron) ===")
+p_xor = Perceptron(2)
 p_xor.train(xor_data, epochs=1000)
 for inputs, expected in xor_data:
     result = p_xor.predict(inputs)
@@ -205,11 +205,11 @@ for inputs, expected in xor_data:
     print(f"  {inputs} -> {result} (expected {expected}) {status}")
 ```
 
-It will never converge. This is the hard proof that a single 感知机 cannot learn XOR.
+It will never converge. 这是 hard proof single 感知机 cannot learn XOR.
 
-### Step 4: Solve XOR with two 层s
+### Step 4: Solve XOR 使用 two 层
 
-The trick: XOR = (x1 OR x2) AND NOT (x1 AND x2). Combine three 感知机s:
+trick: XOR = (x1 OR x2) AND NOT (x1 AND x2). Combine three perceptrons:
 
 ```mermaid
 graph LR
@@ -224,17 +224,17 @@ graph LR
 
 ```python
 def xor_network(x1, x2):
-    or_neuron = 感知机(2)
-    or_neuron.权重s = [1.0, 1.0]
-    or_neuron.偏置 = -0.5
+    or_neuron = Perceptron(2)
+    or_neuron.weights = [1.0, 1.0]
+    or_neuron.bias = -0.5
 
-    nand_neuron = 感知机(2)
-    nand_neuron.权重s = [-1.0, -1.0]
-    nand_neuron.偏置 = 1.5
+    nand_neuron = Perceptron(2)
+    nand_neuron.weights = [-1.0, -1.0]
+    nand_neuron.bias = 1.5
 
-    and_neuron = 感知机(2)
-    and_neuron.权重s = [1.0, 1.0]
-    and_neuron.偏置 = -1.5
+    and_neuron = Perceptron(2)
+    and_neuron.weights = [1.0, 1.0]
+    and_neuron.bias = -1.5
 
     hidden1 = or_neuron.predict([x1, x2])
     hidden2 = nand_neuron.predict([x1, x2])
@@ -242,20 +242,20 @@ def xor_network(x1, x2):
     return output
 
 
-print("\n=== XOR Gate (multi-层 network) ===")
+print("\n=== XOR Gate (multi-layer network) ===")
 for inputs, expected in xor_data:
     result = xor_network(inputs[0], inputs[1])
     print(f"  {inputs} -> {result} (expected {expected})")
 ```
 
-All four cases correct. Stacking 感知机s into 层s creates decision boundaries that no single 感知机 can produce.
+All four cases correct. Stacking perceptrons into 层 creates decision boundaries no single 感知机 can produce.
 
-### Step 5: Train a Two-层 Network
+### Step 5: Train Two-层 Network
 
-Step 4 hand-wired the 权重s. That works for XOR, but not for real problems where you don't know the right 权重s in advance. The fix: replace the step function with sigmoid and learn the 权重s automatically through 反向传播.
+Step 4 hand-wired 权重. That works 为了 XOR, but not 为了 real problems where you don't know right 权重 在 advance. fix: replace step 函数 使用 sigmoid 和 learn 权重 automatically through 反向传播.
 
 ```python
-class Two层Network:
+class TwoLayerNetwork:
     def __init__(self, learning_rate=0.5):
         import random
         random.seed(0)
@@ -308,7 +308,7 @@ class Two层Network:
 ```
 
 ```python
-net = Two层Network(learning_rate=2.0)
+net = TwoLayerNetwork(learning_rate=2.0)
 net.train(xor_data, epochs=10000)
 for inputs, expected in xor_data:
     result = net.forward(inputs)
@@ -316,63 +316,63 @@ for inputs, expected in xor_data:
     print(f"  {inputs} -> {result:.4f} (rounded: {predicted}, expected {expected})")
 ```
 
-Two key differences from Step 4. First, sigmoid replaces the step function -- it's smooth, so 梯度s exist. Second, the `train` method propagates error backward from output to hidden 层, adjusting every 权重 proportionally to its contribution to the error. That's 反向传播 in 20 lines.
+Two key differences 从 Step 4. First, sigmoid replaces step 函数 -- it's smooth, so gradients exist. Second, `train` method propagates error backward 从 输出 到 hidden 层, adjusting every 权重 proportionally 到 its contribution 到 error. That's 反向传播 在 20 lines.
 
-This is the bridge to Lesson 03. The math behind `d_output` and `hidden_deltas` is the 链式法则 applied to the network graph. We'll derive it properly there.
+这是 bridge 到 Lesson 03. math behind `d_output` 和 `hidden_deltas` 是 chain rule applied 到 network graph. We'll derive it properly there.
 
 ## Use It
 
-Everything you just built from scratch exists in one import:
+Everything you just built 从 scratch exists 在 one import:
 
 ```python
-from sklearn.linear_model import 感知机 as Sk感知机
+from sklearn.linear_model import Perceptron as SkPerceptron
 import numpy as np
 
 X = np.array([[0,0],[0,1],[1,0],[1,1]])
 y = np.array([0, 0, 0, 1])
 
-clf = Sk感知机(max_iter=100, tol=1e-3)
+clf = SkPerceptron(max_iter=100, tol=1e-3)
 clf.fit(X, y)
 print([clf.predict([x])[0] for x in X])
 ```
 
-Five lines. Your 30-line `感知机` class does the same thing. The sklearn version adds 收敛 checks, multiple 损失函数s, and sparse input support -- but the core loop is identical: 权重ed sum, step function, 权重 update on error.
+Five lines. Your 30-line `感知机` class does same thing. sklearn version adds 收敛 checks, multiple loss 函数, 和 sparse 输入 support -- but core loop 是 identical: weighted sum, step 函数, 权重 update 在 error.
 
-The real gap shows up at scale. What changes in production networks:
+real gap shows up 在 scale. What changes 在 production networks:
 
-- The step function becomes sigmoid, ReLU, or other smooth activations
-- 权重s are learned automatically via 反向传播 (Lesson 03)
-- 层s get deeper: 3, 10, 100+ 层s
-- The same principle holds: each 层 creates new features from the previous 层's outputs
+- step 函数 becomes sigmoid, ReLU, 或 other smooth activations
+- Weights 是 learned automatically via 反向传播 (Lesson 03)
+- Layers get deeper: 3, 10, 100+ 层
+- same principle holds: each 层 creates new 特征 从 previous 层's 输出
 
-A single 感知机 can only draw straight lines. Stack them, and you can draw any shape.
+single 感知机 can only draw straight lines. Stack them, 和 you can draw any shape.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/skill-感知机.md` - a skill covering when single-层 vs multi-层 architectures are needed
+- `输出/skill-感知机.md` - skill covering when single-层 vs multi-层 architectures 是 needed
 
 ## Exercises
 
-1. Train a 感知机 on a NAND gate (the universal gate - any logic circuit can be built from NAND). Verify its 权重s and 偏置 form a valid decision boundary.
-2. Modify the 感知机 class to track the decision boundary (w1*x1 + w2*x2 + b = 0) at each epoch. Print how the line shifts during training on the AND gate.
-3. Build a 3-input 感知机 that outputs 1 only when at least 2 of the 3 inputs are 1 (a majority vote function). Is this linearly separable? Why?
+1. Train 感知机 在 NAND gate ( universal gate - any logic circuit can be built 从 NAND). Verify its 权重 和 偏置 form valid decision boundary.
+2. Modify 感知机 class 到 track decision boundary (w1*x1 + w2*x2 + b = 0) 在 each 轮次. Print how line shifts during 训练 在 AND gate.
+3. Build 3-输入 感知机 输出 1 only when 在 least 2 的 3 输入 是 1 ( majority vote 函数). Is 这个 linearly separable? Why?
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| 感知机 | "A fake neuron" | A linear classifier: dot product of inputs and 权重s, plus 偏置, through a step function |
-| 权重 | "How important an input is" | A multiplier that scales each input's contribution to the decision |
-| 偏置 | "The threshold" | A constant that shifts the decision boundary, letting the 感知机 fire even with zero inputs |
-| Activation function | "The thing that squishes values" | A function applied after the 权重ed sum - step function for 感知机s, sigmoid/ReLU for modern networks |
-| Linearly separable | "You can draw a line between them" | A dataset where a single hyperplane can perfectly separate the classes |
-| XOR problem | "The thing 感知机s can't do" | Proof that single-层 networks cannot learn non-linearly-separable functions |
-| Decision boundary | "Where the classifier switches" | The hyperplane w*x + b = 0 that divides input space into two classes |
-| Multi-层 感知机 | "A real 神经网络" | 感知机s stacked in 层s, where each 层's output feeds the next 层's input |
+| 感知机 | " fake 神经元" | linear classifier: dot product 的 输入 和 权重, plus 偏置, through step 函数 |
+| 权重 | "How important 输入 是" | multiplier scales each 输入's contribution 到 decision |
+| 偏置 | " threshold" | constant shifts decision boundary, letting 感知机 fire even 使用 zero 输入 |
+| Activation 函数 | " thing squishes values" | 函数 applied after weighted sum - step 函数 为了 perceptrons, sigmoid/ReLU 为了 modern networks |
+| Linearly separable | "你可以 draw line between them" | 数据集 where single hyperplane can perfectly separate classes |
+| XOR problem | " thing perceptrons can't do" | Proof single-层 networks cannot learn non-linearly-separable 函数 |
+| Decision boundary | "Where classifier switches" | hyperplane w*x + b = 0 divides 输入 space into two classes |
+| Multi-层 感知机 | " real 神经网络" | Perceptrons stacked 在 层, where each 层's 输出 feeds next 层's 输入 |
 
 ## Further Reading
 
-- Frank Rosenblatt, "The 感知机: A Probabilistic Model for Information Storage and Organization in the Brain" (1958) -- the original paper that started it all
-- Minsky & Papert, "感知机s" (1969) -- the book that proved XOR was unsolvable by single-层 networks and killed 感知机 research for a decade
-- Michael Nielsen, "神经网络s and 深度学习", Chapter 1 (http://neuralnetworksanddeeplearning.com/) -- free online, best visual explanation of how 感知机s compose into networks
+- Frank Rosenblatt, " 感知机: Probabilistic 模型 为了 Information Storage 和 Organization 在 Brain" (1958) -- original paper started it all
+- Minsky & Papert, "Perceptrons" (1969) -- book proved XOR was unsolvable 通过 single-层 networks 和 killed 感知机 research 为了 decade
+- Michael Nielsen, "Neural Networks 和 Deep Learning", Chapter 1 (http://neuralnetworksanddeeplearning.com/) -- free online, best visual explanation 的 how perceptrons compose into networks

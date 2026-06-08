@@ -1,26 +1,26 @@
-# Git 与协作
+# Git & Collaboration
 
-> 版本控制不是可选项。你在这里构建的每个实验、每个模型、每节课都需要被追踪。
+> Version control 是 not optional. Every experiment, every 模型, every lesson you build here gets tracked.
 
-**类型:** 学习
-**语言:** --
-**前置要求:** 阶段0, 课程01
-**预计时间:** ~30分钟
+**Type:** Learn
+**Languages:** --
+**Prerequisites:** Phase 0, Lesson 01
+**Time:** ~30 minutes
 
-## 学习目标
+## Learning Objectives
 
-- 配置 git 身份信息，使用 add、commit、push 的日常工作流
-- 创建和合并分支，在不破坏主分支的情况下进行独立实验
-- 编写 `.gitignore`，排除模型检查点和大二进制文件
-- 使用 `git log` 浏览提交历史，理解项目演进
+- Configure git identity 和 use daily workflow 的 add, commit, 和 push
+- Create 和 merge branches 为了 isolated experiments without breaking main
+- Write `.gitignore` excludes 模型 checkpoints 和 large binary files
+- Navigate commit history 使用 `git log` 到 understand project evolution
 
-## 问题引入
+## Problem
 
-你即将在 20 个阶段中编写数百个代码文件。没有版本控制，你会丢失工作、破坏无法撤销的东西，也无法与他人协作。
+You're about 到 write hundreds 的 代码 files across 20 phases. Without version control you will lose work, break things you can't undo, 和 have no way 到 collaborate 使用 others.
 
-Git 是工具。GitHub 是代码存放的地方。本节课只涵盖本课程需要的内容。
+Git 是 tool. GitHub 是 where 代码 lives. This lesson covers what you need 为了 这个 course 和 nothing more.
 
-## 概念讲解
+## Concept
 
 ```mermaid
 sequenceDiagram
@@ -35,21 +35,21 @@ sequenceDiagram
     LR->>WD: git pull
 ```
 
-记住三点：
-1. 经常保存 (`git commit`)
-2. 推送到远程 (`git push`)
-3. 实验用分支 (`git checkout -b experiment`)
+Three things 到 remember:
+1. Save often (`git commit`)
+2. Push 到 remote (`git push`)
+3. Branch 为了 experiments (`git checkout -b experiment`)
 
-## 从零实现
+## Build It
 
-### 步骤1：配置 git
+### Step 1: Configure git
 
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
 
-### 步骤2：日常工作流
+### Step 2: daily workflow
 
 ```bash
 git status
@@ -58,7 +58,7 @@ git commit -m "Add perceptron implementation"
 git push origin main
 ```
 
-### 步骤3：实验分支
+### Step 3: Branching 为了 experiments
 
 ```bash
 git checkout -b experiment/new-optimizer
@@ -69,7 +69,7 @@ git checkout main
 git merge experiment/new-optimizer
 ```
 
-### 步骤4：使用本课程仓库
+### Step 4: Working 使用 这个 course repo
 
 ```bash
 git clone https://github.com/rohitg00/ai-engineering-from-scratch.git
@@ -80,31 +80,31 @@ git checkout -b my-progress
 git push origin my-progress
 ```
 
-## 框架应用
+## Use It
 
-对于本课程，你只需要这些命令：
+For 这个 course, you need exactly 这些 commands:
 
-| 命令 | 使用场景 |
+| Command | When |
 |---------|------|
-| `git clone` | 获取课程仓库 |
-| `git add` + `git commit` | 保存你的工作 |
-| `git push` | 备份到 GitHub |
-| `git checkout -b` | 尝试新东西不破坏主分支 |
-| `git log --oneline` | 查看你做了什么 |
+| `git clone` | Get course repo |
+| `git add` + `git commit` | Save your work |
+| `git push` | Back it up 到 GitHub |
+| `git checkout -b` | Try something without breaking main |
+| `git log --oneline` | See what you've done |
 
-就这些。本课程不需要 rebase、cherry-pick 或 submodules。
+That's it. You don't need rebase, cherry-pick, 或 submodules 为了 这个 course.
 
-## 练习
+## Exercises
 
-1. 克隆本仓库，创建名为 `my-progress` 的分支，创建一个文件，提交并推送
-2. 创建 `.gitignore` 排除模型检查点文件 (`.pt`, `.pth`, `.safetensors`)
-3. 用 `git log --oneline` 查看本仓库的提交历史
+1. Clone 这个 repo, create branch called `my-progress`, make file, commit it, push it
+2. Create `.gitignore` excludes 模型 checkpoint files (`.pt`, `.pth`, `.safetensors`)
+3. Look 在 commit history 的 这个 repo 使用 `git log --oneline` 和 read how lessons were added
 
-## 关键术语
+## Key Terms
 
-| 术语 | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Commit | "保存" | 项目在某个时间点的完整快照 |
-| Branch | "副本" | 指向提交的指针，随工作向前移动 |
-| Merge | "合并代码" | 从一个分支获取变更并应用到另一个分支 |
-| Remote | "云端" | 托管在其他地方的仓库副本 (GitHub, GitLab) |
+| Commit | "Saving" | snapshot 的 your entire project 在 point 在 time |
+| Branch | " copy" | pointer 到 commit moves forward 作为 you work |
+| Merge | "Combining 代码" | Taking changes 从 one branch 和 applying them 到 another |
+| Remote | " cloud" | copy 的 your repo hosted somewhere else (GitHub, GitLab) |

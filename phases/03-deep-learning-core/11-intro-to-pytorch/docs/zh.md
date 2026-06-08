@@ -1,65 +1,65 @@
-# PyTorch入门
+# Introduction 到 PyTorch
 
-> You built the engine from pistons and crankshafts. Now learn the one everyone actually drives.
+> You built engine 从 pistons 和 crankshafts. Now learn one everyone actually drives.
 
-**类型:** 实现
-**语言:** Python
-**Prerequisites:** Lesson 03.10 (Build Your Own Mini 框架)
+**Type:** Build
+**Languages:** Python
+**Prerequisites:** Lesson 03.10 (Build Your Own Mini Framework)
 **Time:** ~75 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Build and train 神经网络s using PyTorch's nn.模块, nn.Sequential, and 自动微分
-- Use PyTorch 张量s, GPU acceleration, and the standard training loop (zero_grad, forward, loss, backward, step)
-- Convert your from-scratch mini 框架 components to their PyTorch equivalents
-- Profile and compare training speed between your pure-Python 框架 and PyTorch on the same task
+- Build 和 train 神经网络 using PyTorch's nn.Module, nn.Sequential, 和 autograd
+- Use PyTorch 张量, GPU acceleration, 和 standard 训练 loop (zero_grad, forward, loss, backward, step)
+- Convert your 从-scratch mini framework components 到 their PyTorch equivalents
+- Profile 和 compare 训练 speed between your pure-Python framework 和 PyTorch 在 same task
 
-## The Problem
+## Problem
 
-You have a working mini 框架. Linear layers, ReLU, dropout, batch norm, Adam, a 数据加载器, a training loop. It trains a 4-layer network on a circle classification problem in pure Python.
+You have working mini framework. Linear 层, ReLU, dropout, 批次 norm, Adam, DataLoader, 训练 loop. It trains 4-层 network 在 circle 分类 problem 在 pure Python.
 
-It is also 500x slower than PyTorch on the same problem.
+它是 also 500x slower than PyTorch 在 same problem.
 
-Your mini 框架 processes one sample at a time with nested Python loops. PyTorch dispatches the same operations to optimized C++/CUDA kernels that run on GPU. On a single NVIDIA A100, PyTorch trains a ResNet-50 (25.6M parameters) on ImageNet (1.28M images) in about 6 hours. Your 框架 would take roughly 3,000 hours on the same task -- if it didn't run out of memory first.
+Your mini framework processes one sample 在 time 使用 nested Python loops. PyTorch dispatches same operations 到 optimized C++/CUDA kernels run 在 GPU. On single NVIDIA A100, PyTorch trains ResNet-50 (25.6M 参数) 在 ImageNet (1.28M images) 在 about 6 hours. Your framework would take roughly 3,000 hours 在 same task -- if it didn't run out 的 memory first.
 
-Speed is not the only gap. Your 框架 has no GPU support. No 自动微分 -- you hand-wrote backward() for every 模块. No serialization. No distributed training. No mixed precision. No way to debug gradient flow without print statements.
+Speed 是 not only gap. Your framework has no GPU support. No automatic differentiation -- you hand-wrote backward() 为了 every module. No serialization. No distributed 训练. No mixed 精确率. No way 到 debug gradient flow without print statements.
 
-PyTorch fills every one of these gaps. And it does so while keeping the exact same mental model you already built: 模块, forward(), parameters(), backward(), 优化器.step(). The concepts transfer one-to-one. The syntax is nearly identical. The difference is that PyTorch wraps a decade of systems engineering behind the same interface you designed from scratch.
+PyTorch fills every one 的 这些 gaps. And it does so while keeping exact same mental 模型 you already built: Module, forward(), 参数(), backward(), 优化器.step(). concepts transfer one-到-one. syntax 是 nearly identical. difference 是 PyTorch wraps decade 的 systems engineering behind same interface you designed 从 scratch.
 
-## The Concept
+## Concept
 
 ### Why PyTorch Won
 
-In 2015, 张量Flow required you to define a static computation graph before running anything. You built the graph, compiled it, then fed data through it. Debugging meant staring at graph visualizations. Changing the architecture meant rebuilding the graph from scratch.
+In 2015, TensorFlow required you 到 define static computation graph before running anything. You built graph, compiled it, then fed 数据 through it. Debugging meant staring 在 graph visualizations. Changing architecture meant rebuilding graph 从 scratch.
 
-PyTorch launched in 2017 with a different philosophy: eager execution. You write Python. It runs immediately. `y = model(x)` actually computes y right now, not "add a node to a graph that will compute y later." This meant standard Python debugging tools worked. print() worked. pdb worked. if/else in your forward pass worked.
+PyTorch launched 在 2017 使用 different philosophy: eager execution. You write Python. It runs immediately. `y = 模型(x)` actually computes y right now, not "add 节点 到 graph will compute y later." This meant standard Python debugging tools worked. print() worked. pdb worked. if/else 在 your forward pass worked.
 
-By 2020, the market had spoken. PyTorch's share in ML research papers went from 7% (2017) to over 75% (2022). Meta, Google DeepMind, OpenAI, Anthropic, and Hugging Face all use PyTorch as their primary 框架. 张量Flow 2.x adopted eager execution in response -- tacit admission that PyTorch's design was correct.
+By 2020, market had spoken. PyTorch's share 在 ML research papers went 从 7% (2017) 到 over 75% (2022). Meta, Google DeepMind, OpenAI, Anthropic, 和 Hugging Face all use PyTorch 作为 their primary framework. TensorFlow 2.x adopted eager execution 在 response -- tacit admission PyTorch's design was correct.
 
-The lesson: developer experience compounds. A 框架 that is 10% slower but 50% faster to debug wins every time.
+lesson: developer experience compounds. framework 是 10% slower but 50% faster 到 debug wins every time.
 
-### 张量s
+### Tensors
 
-A 张量 is a multi-dimensional array with three critical properties: shape, dtype, and device.
+张量 是 multi-dimensional array 使用 three critical properties: shape, dtype, 和 device.
 
 ```python
 import torch
 
 x = torch.zeros(3, 4)           # shape: (3, 4), dtype: float32, device: cpu
 x = torch.randn(2, 3, 224, 224) # batch of 2 RGB images, 224x224
-x = torch.张量([1, 2, 3])     # from a Python list
+x = torch.tensor([1, 2, 3])     # from a Python list
 ```
 
-**Shape** is the dimensionality. A scalar is shape (), a vector is (n,), a matrix is (m, n), a batch of images is (batch, channels, height, width).
+**Shape** 是 dimensionality. scalar 是 shape (), 向量 是 (n,), 矩阵 是 (m, n), 批次 的 images 是 (批次, channels, height, width).
 
-**Dtype** controls precision and memory.
+**Dtype** controls 精确率 和 memory.
 
 | dtype | Bits | Range | Use case |
 |-------|------|-------|----------|
-| float32 | 32 | ~7 decimal digits | Default training |
-| float16 | 16 | ~3.3 decimal digits | Mixed precision |
-| bfloat16 | 16 | Same range as float32, less precision | LLM training |
-| int8 | 8 | -128 to 127 | Quantized inference |
+| float32 | 32 | ~7 decimal digits | Default 训练 |
+| float16 | 16 | ~3.3 decimal digits | Mixed 精确率 |
+| bfloat16 | 16 | Same range 作为 float32, less 精确率 | LLM 训练 |
+| int8 | 8 | -128 到 127 | Quantized inference |
 
 **Device** determines where computation happens.
 
@@ -70,9 +70,9 @@ x = x.to("cuda")
 x = x.cpu()
 ```
 
-Every operation requires all 张量s on the same device. This is the #1 PyTorch error beginners hit: `RuntimeError: Expected all 张量s to be on the same device`. Fix it by moving everything to the same device before computation.
+Every operation requires all 张量 在 same device. 这是 #1 PyTorch error beginners hit: `RuntimeError: Expected all 张量 到 be 在 same device`. Fix it 通过 moving everything 到 same device before computation.
 
-**Reshaping** is constant-time -- it changes the metadata, not the data.
+**Reshaping** 是 constant-time -- it changes metadata, not 数据.
 
 ```python
 x = torch.randn(2, 3, 4)
@@ -83,9 +83,9 @@ x.unsqueeze(0)     # add dimension: (1, 2, 3, 4)
 x.squeeze()        # remove size-1 dimensions
 ```
 
-### 自动微分
+### Autograd
 
-Your mini 框架 required you to implement backward() for every 模块. PyTorch does not. It records every operation on 张量s into a directed acyclic graph (the computational graph) and then traverses that graph in reverse to compute gradients automatically.
+Your mini framework required you 到 implement backward() 为了 every module. PyTorch does not. It records every operation 在 张量 into directed acyclic graph ( computational graph) 和 then traverses graph 在 reverse 到 compute gradients automatically.
 
 ```mermaid
 graph LR
@@ -100,7 +100,7 @@ graph LR
     mul --> |"grad"| w
 ```
 
-The key difference from your 框架: PyTorch uses tape-based autodiff. Every operation appends to a "tape" during the forward pass. Calling `.backward()` replays the tape in reverse.
+key difference 从 your framework: PyTorch uses tape-based autodiff. Every operation appends 到 "tape" during forward pass. Calling `.backward()` replays tape 在 reverse.
 
 ```python
 x = torch.randn(3, requires_grad=True)
@@ -110,20 +110,20 @@ z.backward()
 print(x.grad)  # dz/dx = 2x + 3
 ```
 
-Three rules of 自动微分:
+Three rules 的 autograd:
 
-1. Only leaf 张量s with `requires_grad=True` accumulate gradients
-2. Gradients accumulate by default -- call `优化器.zero_grad()` before each backward pass
+1. Only leaf 张量 使用 `requires_grad=True` accumulate gradients
+2. Gradients accumulate 通过 default -- call `优化器.zero_grad()` before each backward pass
 3. `torch.no_grad()` disables gradient tracking (use during evaluation)
 
-### nn.模块
+### nn.Module
 
-`nn.模块` is the base class for every 神经网络 component in PyTorch. You already built this abstraction in Lesson 10. PyTorch's version adds automatic parameter registration, recursive 模块 discovery, device management, and state dict serialization.
+`nn.Module` 是 base class 为了 every 神经网络 component 在 PyTorch. You already built 这个 abstraction 在 Lesson 10. PyTorch's version adds automatic 参数 registration, recursive module discovery, device management, 和 state dict serialization.
 
 ```python
 import torch.nn as nn
 
-class MLP(nn.模块):
+class MLP(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim):
         super().__init__()
         self.layer1 = nn.Linear(input_dim, hidden_dim)
@@ -137,91 +137,91 @@ class MLP(nn.模块):
         return x
 ```
 
-When you assign an `nn.模块` or `nn.Parameter` as an attribute in `__init__`, PyTorch automatically registers it. `model.parameters()` recursively collects every registered parameter. This is why you never have to manually gather weights like you did in the mini 框架.
+When you assign `nn.Module` 或 `nn.参数` 作为 attribute 在 `__init__`, PyTorch automatically registers it. `模型.参数()` recursively collects every registered 参数. 这是 why you never have 到 manually gather 权重 like you did 在 mini framework.
 
 Key building blocks:
 
-| 模块 | What it does | Parameters |
+| Module | What it does | Parameters |
 |--------|-------------|------------|
-| nn.Linear(in, out) | Wx + b | in*out + out |
+| nn.Linear(在, out) | Wx + b | 在*out + out |
 | nn.Conv2d(in_ch, out_ch, k) | 2D convolution | in_ch*out_ch*k*k + out_ch |
-| nn.BatchNorm1d(features) | Normalize activations | 2 * features |
+| nn.BatchNorm1d(特征) | Normalize activations | 2 * 特征 |
 | nn.Dropout(p) | Random zeroing | 0 |
 | nn.ReLU() | max(0, x) | 0 |
 | nn.GELU() | Gaussian error linear | 0 |
 | nn.Embedding(vocab, dim) | Lookup table | vocab * dim |
 | nn.LayerNorm(dim) | Per-sample normalization | 2 * dim |
 
-### Loss Functions and 优化器s
+### Loss Functions 和 Optimizers
 
-PyTorch ships production-ready versions of everything you built.
+PyTorch ships production-ready versions 的 everything you built.
 
-**Loss functions** (from `torch.nn`):
+**Loss 函数** (从 `torch.nn`):
 
-| Loss | Task | Input |
+| Loss | Task | 输入 |
 |------|------|-------|
-| nn.MSELoss() | Regression | Any shape |
-| nn.CrossEntropyLoss() | Multi-class classification | Logits (not softmax) |
-| nn.BCEWithLogitsLoss() | Binary classification | Logits (not sigmoid) |
-| nn.L1Loss() | Regression (robust) | Any shape |
+| nn.MSELoss() | 回归 | Any shape |
+| nn.CrossEntropyLoss() | Multi-class 分类 | Logits (not softmax) |
+| nn.BCEWithLogitsLoss() | Binary 分类 | Logits (not sigmoid) |
+| nn.L1Loss() | 回归 (robust) | Any shape |
 | nn.CTCLoss() | Sequence alignment | Log probabilities |
 
-Note: `CrossEntropyLoss` combines `LogSoftmax` + `NLLLoss` internally. Pass raw logits, not softmax outputs. This is a common mistake that produces wrong gradients silently.
+Note: `CrossEntropyLoss` combines `LogSoftmax` + `NLLLoss` internally. Pass raw logits, not softmax 输出. 这是 common mistake produces wrong gradients silently.
 
-**优化器s** (from `torch.optim`):
+**Optimizers** (从 `torch.optim`):
 
-| 优化器 | When to use | Typical LR |
+| 优化器 | When 到 use | Typical LR |
 |-----------|-------------|-----------|
 | SGD(params, lr, momentum) | CNNs, well-tuned pipelines | 0.01--0.1 |
 | Adam(params, lr) | Default starting point | 1e-3 |
 | AdamW(params, lr, weight_decay) | Transformers, fine-tuning | 1e-4--1e-3 |
 | LBFGS(params) | Small-scale, second-order | 1.0 |
 
-### The Training Loop
+### 训练 Loop
 
-Every PyTorch training loop follows the same 5-step pattern. You already know this from Lesson 10.
+Every PyTorch 训练 loop follows same 5-step pattern. You already know 这个 从 Lesson 10.
 
 ```mermaid
 sequenceDiagram
-    participant D as 数据加载器
+    participant D as DataLoader
     participant M as Model
     participant L as Loss fn
-    participant O as 优化器
+    participant O as Optimizer
 
     loop Each Epoch
         D->>M: batch = next(dataloader)
         M->>L: predictions = model(batch)
         L->>L: loss = criterion(predictions, targets)
         L->>M: loss.backward()
-        O->>M: 优化器.step()
-        O->>O: 优化器.zero_grad()
+        O->>M: optimizer.step()
+        O->>O: optimizer.zero_grad()
     end
 ```
 
-The canonical pattern:
+canonical pattern:
 
 ```python
 for epoch in range(num_epochs):
     model.train()
     for inputs, targets in train_loader:
         inputs, targets = inputs.to(device), targets.to(device)
-        优化器.zero_grad()
+        optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, targets)
         loss.backward()
-        优化器.step()
+        optimizer.step()
 ```
 
-Five lines inside the batch loop. Five lines that trained GPT-4, Stable Diffusion, and LLaMA. The architecture changes. The data changes. These five lines do not.
+Five lines inside 批次 loop. Five lines trained GPT-4, Stable Diffusion, 和 LLaMA. architecture changes. 数据 changes. These five lines do not.
 
-### 数据集 and 数据加载器
+### 数据集 和 DataLoader
 
-PyTorch's `数据集` is an abstract class with two methods: `__len__` and `__getitem__`. `数据加载器` wraps it with batching, shuffling, and multi-process data loading.
+PyTorch's `数据集` 是 abstract class 使用 two methods: `__len__` 和 `__getitem__`. `DataLoader` wraps it 使用 batching, shuffling, 和 multi-process 数据 loading.
 
 ```python
-from torch.utils.data import 数据集, 数据加载器
+from torch.utils.data import Dataset, DataLoader
 
-class MNIST数据集(数据集):
+class MNISTDataset(Dataset):
     def __init__(self, images, labels):
         self.images = images
         self.labels = labels
@@ -232,27 +232,27 @@ class MNIST数据集(数据集):
     def __getitem__(self, idx):
         return self.images[idx], self.labels[idx]
 
-loader = 数据加载器(数据集, batch_size=64, shuffle=True, num_workers=4)
+loader = DataLoader(dataset, batch_size=64, shuffle=True, num_workers=4)
 ```
 
-`num_workers=4` spawns 4 processes to load data in parallel while the GPU trains on the current batch. On disk-bound workloads (large images, audio), this alone can double training speed.
+`num_workers=4` spawns 4 processes 到 load 数据 在 parallel while GPU trains 在 current 批次. On disk-bound workloads (large images, audio), 这个 alone can double 训练 speed.
 
-### GPU Training
+### GPU 训练
 
-Moving a model to GPU:
+Moving 模型 到 GPU:
 
 ```python
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 ```
 
-This recursively moves every parameter and buffer to the GPU. Then move each batch during training:
+This recursively moves every 参数 和 buffer 到 GPU. Then move each 批次 during 训练:
 
 ```python
 inputs, targets = inputs.to(device), targets.to(device)
 ```
 
-**Mixed precision** halves memory usage and doubles throughput on modern GPUs (A100, H100, RTX 4090) by running forward/backward in float16 while keeping the master weights in float32:
+**Mixed 精确率** halves memory usage 和 doubles throughput 在 modern GPUs (A100, H100, RTX 4090) 通过 running forward/backward 在 float16 while keeping master 权重 在 float32:
 
 ```python
 from torch.amp import autocast, GradScaler
@@ -263,32 +263,32 @@ for inputs, targets in loader:
         outputs = model(inputs)
         loss = criterion(outputs, targets)
     scaler.scale(loss).backward()
-    scaler.step(优化器)
+    scaler.step(optimizer)
     scaler.update()
-    优化器.zero_grad()
+    optimizer.zero_grad()
 ```
 
-### Comparison: Mini 框架 vs PyTorch vs JAX
+### Comparison: Mini Framework vs PyTorch vs JAX
 
-| Feature | Mini 框架 (L10) | PyTorch | JAX |
+| 特征 | Mini Framework (L10) | PyTorch | JAX |
 |---------|---------------------|---------|-----|
-| Autodiff | Manual backward() | Tape-based 自动微分 | Functional transforms |
-| Execution | Eager (Python loops) | Eager (C++ kernels) | Traced + JIT编译 compiled |
+| Autodiff | Manual backward() | Tape-based autograd | Functional transforms |
+| Execution | Eager (Python loops) | Eager (C++ kernels) | Traced + JIT compiled |
 | GPU support | No | Yes (CUDA, ROCm, MPS) | Yes (CUDA, TPU) |
-| Speed (MNIST MLP) | ~300s/epoch | ~0.5s/epoch | ~0.3s/epoch |
-| 模块 system | Custom 模块 class | nn.模块 | Stateless functions (Flax/Equinox) |
-| Debugging | print() | print(), pdb, breakpoint() | Harder (JIT编译 tracing breaks print) |
+| Speed (MNIST MLP) | ~300s/轮次 | ~0.5s/轮次 | ~0.3s/轮次 |
+| Module system | Custom Module class | nn.Module | Stateless 函数 (Flax/Equinox) |
+| Debugging | print() | print(), pdb, breakpoint() | Harder (JIT tracing breaks print) |
 | Ecosystem | None | Hugging Face, Lightning, timm | Flax, Optax, Orbax |
 | Learning curve | You built it | Moderate | Steep (functional paradigm) |
 | Production use | Toy problems | Meta, OpenAI, Anthropic, HF | Google DeepMind, Midjourney |
 
 ## Build It
 
-A 3-layer MLP trained on MNIST using only PyTorch primitives. No high-level wrappers. No `torchvision.数据集s`. We download and parse the raw data ourselves.
+3-层 MLP trained 在 MNIST using only PyTorch primitives. No high-level wrappers. No `torchvision.数据集`. We download 和 parse raw 数据 ourselves.
 
 ### Step 1: Load MNIST From Raw Files
 
-MNIST ships as 4 gzipped files: training images (60,000 x 28 x 28), training labels, test images (10,000 x 28 x 28), test labels. We download them and parse the binary format.
+MNIST ships 作为 4 gzipped files: 训练 images (60,000 x 28 x 28), 训练 labels, test images (10,000 x 28 x 28), test labels. We download them 和 parse binary format.
 
 ```python
 import torch
@@ -299,7 +299,7 @@ import urllib.request
 import os
 
 def download_mnist(path="./mnist_data"):
-    base_url = "https://storage.googleapis.com/cvdf-数据集s/mnist/"
+    base_url = "https://storage.googleapis.com/cvdf-datasets/mnist/"
     files = [
         "train-images-idx3-ubyte.gz",
         "train-labels-idx1-ubyte.gz",
@@ -328,12 +328,12 @@ def load_labels(filepath):
     return labels
 ```
 
-### Step 2: Define the Model
+### Step 2: Define 模型
 
-A 3-layer MLP: 784 -> 256 -> 128 -> 10. ReLU activations. Dropout for 正则化. No batch norm to keep it simple.
+3-层 MLP: 784 -> 256 -> 128 -> 10. ReLU activations. Dropout 为了 正则化. No 批次 norm 到 keep it simple.
 
 ```python
-class MNISTModel(nn.模块):
+class MNISTModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.net = nn.Sequential(
@@ -350,27 +350,27 @@ class MNISTModel(nn.模块):
         return self.net(x)
 ```
 
-The output layer produces 10 raw logits (one per digit). No softmax -- `CrossEntropyLoss` handles that internally.
+输出 层 produces 10 raw logits (one per digit). No softmax -- `CrossEntropyLoss` handles internally.
 
-Parameter count: 784*256 + 256 + 256*128 + 128 + 128*10 + 10 = 235,146. Tiny by modern standards. GPT-2 small has 124M. This trains in seconds.
+参数 count: 784*256 + 256 + 256*128 + 128 + 128*10 + 10 = 235,146. Tiny 通过 modern standards. GPT-2 small has 124M. This trains 在 seconds.
 
-### Step 3: Training Loop
+### Step 3: 训练 Loop
 
-The canonical forward-loss-backward-step pattern.
+canonical forward-loss-backward-step pattern.
 
 ```python
-def train_one_epoch(model, loader, criterion, 优化器, device):
+def train_one_epoch(model, loader, criterion, optimizer, device):
     model.train()
     total_loss = 0
     correct = 0
     total = 0
     for images, labels in loader:
         images, labels = images.to(device), labels.to(device)
-        优化器.zero_grad()
+        optimizer.zero_grad()
         outputs = model(images)
         loss = criterion(outputs, labels)
         loss.backward()
-        优化器.step()
+        optimizer.step()
         total_loss += loss.item() * images.size(0)
         _, predicted = outputs.max(1)
         correct += predicted.eq(labels).sum().item()
@@ -395,7 +395,7 @@ def evaluate(model, loader, criterion, device):
     return total_loss / total, correct / total
 ```
 
-Note `torch.no_grad()` during evaluation. This disables 自动微分, reducing memory usage and speeding up inference. Without it, PyTorch builds a computational graph you never use.
+Note `torch.no_grad()` during evaluation. This disables autograd, reducing memory usage 和 speeding up inference. Without it, PyTorch builds computational graph you never use.
 
 ### Step 4: Wire Everything Together
 
@@ -409,29 +409,29 @@ def main():
     test_images = load_images("./mnist_data/t10k-images-idx3-ubyte.gz")
     test_labels = load_labels("./mnist_data/t10k-labels-idx1-ubyte.gz")
 
-    train_数据集 = torch.utils.data.张量数据集(train_images, train_labels)
-    test_数据集 = torch.utils.data.张量数据集(test_images, test_labels)
-    train_loader = torch.utils.data.数据加载器(
-        train_数据集, batch_size=64, shuffle=True
+    train_dataset = torch.utils.data.TensorDataset(train_images, train_labels)
+    test_dataset = torch.utils.data.TensorDataset(test_images, test_labels)
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset, batch_size=64, shuffle=True
     )
-    test_loader = torch.utils.data.数据加载器(
-        test_数据集, batch_size=256, shuffle=False
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset, batch_size=256, shuffle=False
     )
 
     model = MNISTModel().to(device)
     criterion = nn.CrossEntropyLoss()
-    优化器 = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
     num_params = sum(p.numel() for p in model.parameters())
     print(f"Device: {device}")
     print(f"Parameters: {num_params:,}")
-    print(f"Train samples: {len(train_数据集):,}")
-    print(f"Test samples: {len(test_数据集):,}")
+    print(f"Train samples: {len(train_dataset):,}")
+    print(f"Test samples: {len(test_dataset):,}")
     print()
 
     for epoch in range(10):
         train_loss, train_acc = train_one_epoch(
-            model, train_loader, criterion, 优化器, device
+            model, train_loader, criterion, optimizer, device
         )
         test_loss, test_acc = evaluate(
             model, test_loader, criterion, device
@@ -447,25 +447,25 @@ def main():
     print(f"Final test accuracy: {test_acc:.4f}")
 ```
 
-Expected output after 10 epochs: ~97.8% test accuracy. Training time on CPU: ~30 seconds. On GPU: ~5 seconds. On your mini 框架 with the same architecture: ~45 minutes.
+Expected 输出 after 10 轮次: ~97.8% test 准确率. 训练 time 在 CPU: ~30 seconds. On GPU: ~5 seconds. On your mini framework 使用 same architecture: ~45 minutes.
 
 ## Use It
 
-### Quick Comparison: Mini 框架 vs PyTorch
+### Quick Comparison: Mini Framework vs PyTorch
 
-| Mini 框架 (Lesson 10) | PyTorch |
+| Mini Framework (Lesson 10) | PyTorch |
 |---------------------------|---------|
-| `model = Sequential(Linear(784, 256), ReLU(), ...)` | `model = nn.Sequential(nn.Linear(784, 256), nn.ReLU(), ...)` |
-| `pred = model.forward(x)` | `pred = model(x)` |
+| `模型 = Sequential(Linear(784, 256), ReLU(), ...)` | `模型 = nn.Sequential(nn.Linear(784, 256), nn.ReLU(), ...)` |
+| `pred = 模型.forward(x)` | `pred = 模型(x)` |
 | `优化器.zero_grad()` | `优化器.zero_grad()` |
-| `grad = criterion.backward()` then `model.backward(grad)` | `loss.backward()` |
+| `grad = criterion.backward()` then `模型.backward(grad)` | `loss.backward()` |
 | `优化器.step()` | `优化器.step()` |
-| No GPU | `model.to("cuda")` |
-| Manual backward for every 模块 | 自动微分 handles everything |
+| No GPU | `模型.到("cuda")` |
+| Manual backward 为了 every module | Autograd handles everything |
 
-The interface is nearly identical. The difference is everything under the hood.
+interface 是 nearly identical. difference 是 everything under hood.
 
-### Saving and Loading Models
+### Saving 和 Loading Models
 
 ```python
 torch.save(model.state_dict(), "model.pt")
@@ -475,58 +475,58 @@ model.load_state_dict(torch.load("model.pt", weights_only=True))
 model.eval()
 ```
 
-Always save `state_dict()` (the parameter dictionary), not the model object. Saving the model object uses pickle, which breaks when you refactor code. State dicts are portable.
+Always save `state_dict()` ( 参数 dictionary), not 模型 object. Saving 模型 object uses pickle, which breaks when you refactor 代码. State dicts 是 portable.
 
 ### 学习率 Scheduling
 
 ```python
-调度器 = torch.optim.lr_调度器.CosineAnnealingLR(
-    优化器, T_max=10
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+    optimizer, T_max=10
 )
 for epoch in range(10):
-    train_one_epoch(model, train_loader, criterion, 优化器, device)
-    调度器.step()
+    train_one_epoch(model, train_loader, criterion, optimizer, device)
+    scheduler.step()
 ```
 
-PyTorch ships 15+ 调度器s: StepLR, ExponentialLR, CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau. All plug into the same 优化器 interface.
+PyTorch ships 15+ schedulers: StepLR, ExponentialLR, CosineAnnealingLR, OneCycleLR, ReduceLROnPlateau. All plug into same 优化器 interface.
 
 ## Ship It
 
 This lesson produces two artifacts:
 
-- `outputs/prompt-pytorch-debugger.md` -- a prompt for diagnosing common PyTorch training failures
-- `outputs/skill-pytorch-patterns.md` -- a skill reference for PyTorch training patterns
+- `输出/prompt-pytorch-debugger.md` -- prompt 为了 diagnosing common PyTorch 训练 failures
+- `输出/skill-pytorch-patterns.md` -- skill reference 为了 PyTorch 训练 patterns
 
 ## Exercises
 
-1. **Add 批归一化.** Insert `nn.BatchNorm1d` after each linear layer (before the activation). Compare test accuracy and training speed vs the dropout-only version. Batch norm should reach 98%+ in fewer epochs.
+1. **Add 批次 normalization.** Insert `nn.BatchNorm1d` after each linear 层 (before activation). Compare test 准确率 和 训练 speed vs dropout-only version. 批次 norm should reach 98%+ 在 fewer 轮次.
 
-2. **Implement a 学习率 finder.** Train for one epoch with exponentially increasing 学习率 (from 1e-7 to 1.0). Plot loss vs LR. The optimal LR is just before the loss starts climbing. Use this to pick a better LR for the MNIST model.
+2. **Implement 学习率 finder.** Train 为了 one 轮次 使用 exponentially increasing 学习率 (从 1e-7 到 1.0). Plot loss vs LR. optimal LR 是 just before loss starts climbing. Use 这个 到 pick better LR 为了 MNIST 模型.
 
-3. **Port to GPU with mixed precision.** Add `torch.amp.autocast` and `GradScaler` to the training loop. Measure throughput (samples/second) with and without mixed precision on GPU. On an A100, expect ~2x speedup.
+3. **Port 到 GPU 使用 mixed 精确率.** Add `torch.amp.autocast` 和 `GradScaler` 到 训练 loop. Measure throughput (samples/second) 使用 和 without mixed 精确率 在 GPU. On A100, expect ~2x speedup.
 
-4. **Build a custom 数据集.** Download Fashion-MNIST (same format as MNIST but with clothing items). Implement a `FashionMNIST数据集(数据集)` class with `__getitem__` and `__len__`. Train the same MLP and compare accuracy. Fashion-MNIST is harder -- expect ~88% vs ~98%.
+4. **Build custom 数据集.** Download Fashion-MNIST (same format 作为 MNIST but 使用 clothing items). Implement `FashionMNISTDataset(数据集)` class 使用 `__getitem__` 和 `__len__`. Train same MLP 和 compare 准确率. Fashion-MNIST 是 harder -- expect ~88% vs ~98%.
 
-5. **Replace Adam with SGD + momentum.** Train with `SGD(params, lr=0.01, momentum=0.9)`. Compare convergence curves. Then add a `CosineAnnealingLR` 调度器 and see if SGD catches up to Adam by epoch 10.
+5. **Replace Adam 使用 SGD + momentum.** Train 使用 `SGD(params, lr=0.01, momentum=0.9)`. Compare 收敛 curves. Then add `CosineAnnealingLR` scheduler 和 see if SGD catches up 到 Adam 通过 轮次 10.
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| 张量 | "A multi-dimensional array" | A typed, device-aware array with 自动微分 support baked into every operation |
-| 自动微分 | "Automatic backprop" | A tape-based system that records operations during forward pass, then replays them in reverse to compute exact gradients |
-| nn.模块 | "A layer" | The base class for any differentiable computation block -- registers parameters, supports nesting, handles train/eval modes |
-| state_dict | "The model weights" | An OrderedDict mapping parameter names to 张量s -- the portable, serializable representation of a trained model |
-| .backward() | "Compute gradients" | Traverse the computational graph in reverse, computing and accumulating gradients for every leaf 张量 with requires_grad=True |
-| .to(device) | "Move to GPU" | Recursively transfer all parameters and buffers to the specified device (CPU, CUDA, MPS) |
-| 数据加载器 | "The data pipeline" | An iterator that batches, shuffles, and optionally parallelizes data loading from a 数据集 |
-| Mixed precision | "Use float16" | Train with float16 forward/backward for speed while keeping float32 master weights for numerical stability |
-| Eager execution | "Run it now" | Operations execute immediately when called, not deferred to a later compilation step -- the core design choice that differentiates PyTorch from TF 1.x |
-| zero_grad | "Reset gradients" | Set all parameter gradients to zero before the next backward pass, since PyTorch accumulates gradients by default |
+| 张量 | " multi-dimensional array" | typed, device-aware array 使用 automatic differentiation support baked into every operation |
+| Autograd | "Automatic backprop" | tape-based system records operations during forward pass, then replays them 在 reverse 到 compute exact gradients |
+| nn.Module | " 层" | base class 为了 any differentiable computation block -- registers 参数, supports nesting, handles train/eval modes |
+| state_dict | " 模型 权重" | OrderedDict mapping 参数 names 到 张量 -- portable, serializable representation 的 trained 模型 |
+| .backward() | "Compute gradients" | Traverse computational graph 在 reverse, computing 和 accumulating gradients 为了 every leaf 张量 使用 requires_grad=True |
+| .到(device) | "Move 到 GPU" | Recursively transfer all 参数 和 buffers 到 specified device (CPU, CUDA, MPS) |
+| DataLoader | " 数据 pipeline" | iterator 批次, shuffles, 和 optionally parallelizes 数据 loading 从 数据集 |
+| Mixed 精确率 | "Use float16" | Train 使用 float16 forward/backward 为了 speed while keeping float32 master 权重 为了 numerical stability |
+| Eager execution | "Run it now" | Operations execute immediately when called, not deferred 到 later compilation step -- core design choice differentiates PyTorch 从 TF 1.x |
+| zero_grad | "Reset gradients" | Set all 参数 gradients 到 zero before next backward pass, since PyTorch accumulates gradients 通过 default |
 
 ## Further Reading
 
-- Paszke et al., "PyTorch: An Imperative Style, High-Performance 深度学习 Library" (2019) -- the original paper explaining PyTorch's design tradeoffs
-- PyTorch Tutorials: "Learning PyTorch with Examples" (https://pytorch.org/tutorials/beginner/pytorch_with_examples.html) -- the official path from 张量s to nn.模块
-- PyTorch Performance Tuning Guide (https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html) -- mixed precision, 数据加载器 workers, pinned memory, and other production optimizations
-- Horace He, "Making 深度学习 Go Brrrr" (https://horace.io/brrr_intro.html) -- why GPU training is fast, with PyTorch-specific optimization strategies
+- Paszke et al., "PyTorch: Imperative Style, High-Performance Deep Learning Library" (2019) -- original paper explaining PyTorch's design tradeoffs
+- PyTorch Tutorials: "Learning PyTorch 使用 Examples" (https://pytorch.org/tutorials/beginner/pytorch_with_examples.html) -- official path 从 张量 到 nn.Module
+- PyTorch Performance Tuning Guide (https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html) -- mixed 精确率, DataLoader workers, pinned memory, 和 other production optimizations
+- Horace He, "Making Deep Learning Go Brrrr" (https://horace.io/brrr_intro.html) -- why GPU 训练 是 fast, 使用 PyTorch-specific optimization strategies

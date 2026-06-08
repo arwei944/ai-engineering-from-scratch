@@ -1,44 +1,44 @@
-# 图论 for Machine Learning
+# Graph Theory 为了 Machine Learning
 
-> Graphs are the data structure of relationships. If your data has connections, you need graph theory.
+> Graphs 是 数据 structure 的 relationships. If your 数据 has connections, you need graph theory.
 
-**类型:** 实现
+**Type:** Build
 **Language:** Python
-**前置要求:** 阶段1, Lessons 01-03 (linear algebra, matrices)
+**Prerequisites:** Phase 1, Lessons 01-03 (线性代数, 矩阵)
 **Time:** ~90 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Build a graph class with adjacency matrix/list representations and implement BFS and DFS traversals
-- Compute the graph Laplacian and use its eigenvalues to detect connected components and cluster nodes
-- Implement one round of GNN-style message passing as a normalized adjacency matrix multiplication
-- Apply spectral clustering to partition a graph using the Fiedler vector
+- Build graph class 使用 adjacency 矩阵/list representations 和 implement BFS 和 DFS traversals
+- Compute graph Laplacian 和 use its eigenvalues 到 detect connected components 和 cluster 节点
+- Implement one round 的 GNN-style message passing 作为 normalized adjacency 矩阵 multiplication
+- Apply spectral 聚类 到 partition graph using Fiedler 向量
 
-## 问题引入
+## Problem
 
-Social networks, molecules, knowledge bases, citation networks, road maps -- all are graphs. Traditional ML treats data as flat tables. Each row is independent. Each feature is a column. But when the structure of connections matters, tables fail.
+Social networks, molecules, knowledge bases, citation networks, road maps -- all 是 graphs. Traditional ML treats 数据 作为 flat tables. Each row 是 independent. Each 特征 是 column. But when structure 的 connections matters, tables fail.
 
-Consider a social network. You want to predict what product a user will buy. Their purchase history matters. But their friends' purchase history matters more. The connections carry signal.
+Consider social network. You want 到 predict what product user will buy. Their purchase history matters. But their friends' purchase history matters more. connections carry signal.
 
-Or consider a molecule. You want to predict if it binds to a protein. The atoms matter, but what really matters is how atoms are bonded to each other. The structure is the data.
+Or consider molecule. You want 到 predict if it binds 到 protein. atoms matter, but what really matters 是 how atoms 是 bonded 到 each other. structure 是 数据.
 
-Graph Neural Networks (GNNs) are the fastest-growing area in deep learning. They power drug discovery, social recommendation, fraud detection, and knowledge graph reasoning. Every GNN builds on the same foundation: basic graph theory.
+Graph Neural Networks (GNNs) 是 fastest-growing area 在 deep learning. They power drug discovery, social recommendation, fraud detection, 和 knowledge graph reasoning. Every GNN builds 在 same foundation: basic graph theory.
 
-You need four things:
-1. A way to represent graphs as matrices (so you can multiply them)
-2. Traversal algorithms to explore graph structure
-3. The Laplacian -- the single most important matrix in spectral graph theory
-4. Message passing -- the operation that makes GNNs work
+你需要 four things:
+1. way 到 represent graphs 作为 矩阵 (so you can multiply them)
+2. Traversal 算法 到 explore graph structure
+3. Laplacian -- single most important 矩阵 在 spectral graph theory
+4. Message passing -- operation makes GNNs work
 
-## 概念讲解
+## Concept
 
-### Graphs: Nodes and Edges
+### Graphs: Nodes 和 Edges
 
-A graph G = (V, E) consists of vertices (nodes) V and edges E. Each edge connects two nodes.
+graph G = (V, E) consists 的 vertices (节点) V 和 edges E. Each edge connects two 节点.
 
-**Directed vs undirected.** In an undirected graph, edge (u, v) means u connects to v AND v connects to u. In a directed graph (digraph), edge (u, v) means u points to v, but not necessarily the reverse.
+**Directed vs undirected.** In undirected graph, edge (u, v) means u connects 到 v AND v connects 到 u. In directed graph (digraph), edge (u, v) means u points 到 v, but not necessarily reverse.
 
-**Weighted vs unweighted.** In an unweighted graph, edges either exist or they don't. In a weighted graph, each edge has a numerical weight -- a distance, a cost, a strength.
+**Weighted vs unweighted.** In unweighted graph, edges either exist 或 they don't. In weighted graph, each edge has numerical 权重 -- distance, cost, strength.
 
 | Graph type | Example |
 |-----------|---------|
@@ -47,18 +47,18 @@ A graph G = (V, E) consists of vertices (nodes) V and edges E. Each edge connect
 | Undirected, weighted | Road map (distances) |
 | Directed, weighted | Web page links (PageRank scores) |
 
-### The Adjacency Matrix
+### Adjacency 矩阵
 
-The adjacency matrix A is the core representation. For a graph with n nodes:
+adjacency 矩阵 是 core representation. For graph 使用 n 节点:
 
 ```
 A[i][j] = 1    if there is an edge from node i to node j
 A[i][j] = 0    otherwise
 ```
 
-For undirected graphs, A is symmetric: A[i][j] = A[j][i]. For weighted graphs, A[i][j] = weight of edge (i, j).
+For undirected graphs, 是 symmetric: [i][j] = [j][i]. For weighted graphs, [i][j] = 权重 的 edge (i, j).
 
-**Example -- a triangle:**
+**Example -- triangle:**
 
 ```
 Nodes: 0, 1, 2
@@ -69,28 +69,28 @@ A = [[0, 1, 1],
      [1, 1, 0]]
 ```
 
-The adjacency matrix is the input to every GNN. Matrix operations on A correspond to operations on the graph.
+adjacency 矩阵 是 输入 到 every GNN. 矩阵 operations 在 correspond 到 operations 在 graph.
 
 ### Degree
 
-The degree of a node is the number of edges connected to it. For directed graphs, you have in-degree (edges coming in) and out-degree (edges going out).
+degree 的 节点 是 number 的 edges connected 到 it. For directed graphs, you have 在-degree (edges coming 在) 和 out-degree (edges going out).
 
-The degree matrix D is diagonal:
+degree 矩阵 D 是 diagonal:
 
 ```
 D[i][i] = degree of node i
 D[i][j] = 0    for i != j
 ```
 
-For the triangle example: D = diag(2, 2, 2) because every node connects to two others.
+For triangle example: D = diag(2, 2, 2) because every 节点 connects 到 two others.
 
-Degree tells you about node importance. High degree = hub node. The degree distribution of a network reveals its structure. Social networks follow power laws (few hubs, many leaf nodes). Random graphs have Poisson-distributed degrees.
+Degree tells you about 节点 importance. High degree = hub 节点. degree distribution 的 network reveals its structure. Social networks follow power laws (few hubs, many leaf 节点). Random graphs have Poisson-distributed degrees.
 
-### BFS and DFS
+### BFS 和 DFS
 
-The two fundamental graph traversal algorithms. You need both.
+two fundamental graph traversal 算法. 你需要 both.
 
-**Breadth-First Search (BFS):** Explore all neighbors first, then neighbors' neighbors. Uses a queue (FIFO).
+**Breadth-First Search (BFS):** Explore all neighbors first, then neighbors' neighbors. Uses queue (FIFO).
 
 ```
 BFS from node 0:
@@ -104,9 +104,9 @@ BFS from node 0:
   Queue: []            (done)
 ```
 
-BFS finds shortest paths in unweighted graphs. The distance from the start to any node equals the BFS level at which that node is first discovered. This is why BFS is used for hop-count distances in social networks.
+BFS finds shortest paths 在 unweighted graphs. distance 从 start 到 any 节点 equals BFS level 在 which 节点 是 first discovered. 这是 why BFS 是 used 为了 hop-count distances 在 social networks.
 
-**Depth-First Search (DFS):** Go as deep as possible before backtracking. Uses a stack (LIFO) or recursion.
+**Depth-First Search (DFS):** Go 作为 deep 作为 possible before backtracking. Uses stack (LIFO) 或 recursion.
 
 ```
 DFS from node 0:
@@ -120,21 +120,21 @@ DFS from node 0:
   Stack: []             (done)
 ```
 
-DFS is useful for:
-- Finding connected components (run DFS from unvisited nodes)
-- Cycle detection (back edges in DFS tree)
+DFS 是 useful 为了:
+- Finding connected components (run DFS 从 unvisited 节点)
+- Cycle detection (back edges 在 DFS tree)
 - Topological sorting (reverse DFS finish order)
 
-| Algorithm | Data structure | Finds | Use case |
+| 算法 | 数据 structure | Finds | Use case |
 |-----------|---------------|-------|----------|
 | BFS | Queue | Shortest paths | Social network distance, knowledge graph traversal |
 | DFS | Stack | Components, cycles | Connectivity, topological sort |
 
-### The Graph Laplacian
+### Graph Laplacian
 
-L = D - A. The most important matrix in spectral graph theory.
+L = D - . most important 矩阵 在 spectral graph theory.
 
-For the triangle:
+For triangle:
 
 ```
 D = [[2, 0, 0],    A = [[0, 1, 1],    L = [[2, -1, -1],
@@ -142,15 +142,15 @@ D = [[2, 0, 0],    A = [[0, 1, 1],    L = [[2, -1, -1],
      [0, 0, 2]]         [1, 1, 0]]         [-1, -1,  2]]
 ```
 
-The Laplacian has remarkable properties:
+Laplacian has remarkable properties:
 
-1. **L is positive semi-definite.** All eigenvalues are >= 0.
+1. **L 是 positive semi-definite.** All eigenvalues 是 >= 0.
 
-2. **The number of zero eigenvalues equals the number of connected components.** A connected graph has exactly one zero eigenvalue. A graph with 3 disconnected components has three zero eigenvalues.
+2. ** number 的 zero eigenvalues equals number 的 connected components.** connected graph has exactly one zero eigenvalue. graph 使用 3 disconnected components has three zero eigenvalues.
 
-3. **The smallest non-zero eigenvalue (Fiedler value) measures connectivity.** A large Fiedler value means the graph is well-connected. A small Fiedler value means the graph has a weak point -- a bottleneck.
+3. ** smallest non-zero eigenvalue (Fiedler value) measures connectivity.** large Fiedler value means graph 是 well-connected. small Fiedler value means graph has weak point -- bottleneck.
 
-4. **The eigenvector of the Fiedler value (Fiedler vector) reveals the best split.** Nodes with positive values go in one group, nodes with negative values go in the other. This is spectral clustering.
+4. ** eigenvector 的 Fiedler value (Fiedler 向量) reveals best split.** Nodes 使用 positive values go 在 one group, 节点 使用 negative values go 在 other. 这是 spectral 聚类.
 
 ```mermaid
 graph TD
@@ -171,41 +171,41 @@ graph TD
 
 ### Spectral Properties
 
-The eigenvalues of the adjacency matrix and Laplacian reveal structural properties without any traversal.
+eigenvalues 的 adjacency 矩阵 和 Laplacian reveal structural properties without any traversal.
 
-**Spectral clustering** works like this:
-1. Compute the Laplacian L
-2. Find the k smallest eigenvectors of L (skip the first, which is all-ones for connected graphs)
-3. Use those eigenvectors as new coordinates for each node
-4. Run k-means on those coordinates
+**Spectral 聚类** works like 这个:
+1. Compute Laplacian L
+2. Find k smallest eigenvectors 的 L (skip first, which 是 all-ones 为了 connected graphs)
+3. Use 那些 eigenvectors 作为 new coordinates 为了 each 节点
+4. Run k-means 在 那些 coordinates
 
-Why does this work? The eigenvectors of L encode the "smoothest" functions on the graph. Nodes that are well-connected get similar eigenvector values. Nodes separated by a bottleneck get different values. The eigenvectors naturally separate clusters.
+Why does 这个 work? eigenvectors 的 L encode "smoothest" 函数 在 graph. Nodes 是 well-connected get similar eigenvector values. Nodes separated 通过 bottleneck get different values. eigenvectors naturally separate clusters.
 
-**Random walk connection.** The normalized Laplacian relates to random walks on the graph. The stationary distribution of a random walk is proportional to node degree. The mixing time (how fast the walk converges) depends on the spectral gap.
+**Random walk connection.** normalized Laplacian relates 到 random walks 在 graph. stationary distribution 的 random walk 是 proportional 到 节点 degree. mixing time (how fast walk converges) depends 在 spectral gap.
 
 ### Message Passing
 
-The core operation of Graph Neural Networks. Each node collects messages from its neighbors, aggregates them, and updates its own state.
+core operation 的 Graph Neural Networks. Each 节点 collects messages 从 its neighbors, aggregates them, 和 updates its own state.
 
 ```
 h_v^(k+1) = UPDATE(h_v^(k), AGGREGATE({h_u^(k) : u in neighbors(v)}))
 ```
 
-In the simplest form, AGGREGATE = mean, and UPDATE = linear transform + activation:
+In simplest form, AGGREGATE = mean, 和 UPDATE = linear transform + activation:
 
 ```
 h_v^(k+1) = sigma(W * mean({h_u^(k) : u in neighbors(v)}))
 ```
 
-This is matrix multiplication in disguise. If H is the matrix of all node features and A is the adjacency matrix:
+这是 矩阵 multiplication 在 disguise. If H 是 矩阵 的 all 节点 特征 和 是 adjacency 矩阵:
 
 ```
 H^(k+1) = sigma(A_norm * H^(k) * W)
 ```
 
-where A_norm is the normalized adjacency matrix (each row sums to 1).
+where A_norm 是 normalized adjacency 矩阵 (each row sums 到 1).
 
-One round of message passing lets each node "see" its immediate neighbors. Two rounds let it see neighbors of neighbors. K rounds give each node information from its K-hop neighborhood.
+One round 的 message passing lets each 节点 "see" its immediate neighbors. Two rounds let it see neighbors 的 neighbors. K rounds give each 节点 information 从 its K-hop neighborhood.
 
 ```mermaid
 graph LR
@@ -228,22 +228,22 @@ graph LR
     B0 --> C1
 ```
 
-### Concepts and ML Applications
+### Concepts 和 ML Applications
 
 | Concept | ML Application |
 |---------|---------------|
-| Adjacency matrix | GNN input representation |
-| Graph Laplacian | Spectral clustering, community detection |
+| Adjacency 矩阵 | GNN 输入 representation |
+| Graph Laplacian | Spectral 聚类, community detection |
 | BFS/DFS | Knowledge graph traversal, path finding |
-| Degree distribution | Node importance, feature engineering |
-| Message passing | GNN layers (GCN, GAT, GraphSAGE) |
-| Eigenvalues of L | Community detection, graph partitioning |
-| Spectral clustering | Unsupervised node grouping |
-| PageRank | Node importance, web search |
+| Degree distribution | 节点 importance, 特征 engineering |
+| Message passing | GNN 层 (GCN, GAT, GraphSAGE) |
+| Eigenvalues 的 L | Community detection, graph partitioning |
+| Spectral 聚类 | Unsupervised 节点 grouping |
+| PageRank | 节点 importance, web search |
 
-## 从零实现
+## Build It
 
-### Step 1: Graph class from scratch
+### Step 1: Graph class 从 scratch
 
 ```python
 class Graph:
@@ -282,9 +282,9 @@ class Graph:
         return self.degree_matrix() - self.adjacency_matrix()
 ```
 
-The adjacency list (`self.adj`) stores neighbors efficiently. The adjacency matrix conversion uses numpy because all the spectral operations need it.
+adjacency list (`self.adj`) stores neighbors efficiently. adjacency 矩阵 conversion uses numpy because all spectral operations need it.
 
-### Step 2: BFS and DFS
+### Step 2: BFS 和 DFS
 
 ```python
 from collections import deque
@@ -322,9 +322,9 @@ def dfs(graph, start):
     return order
 ```
 
-BFS uses a deque (double-ended queue) for O(1) popleft. DFS uses a list as a stack. Both visit every node exactly once -- O(V + E) time.
+BFS uses deque (double-ended queue) 为了 O(1) popleft. DFS uses list 作为 stack. Both visit every 节点 exactly once -- O(V + E) time.
 
-### Step 3: Connected components and Laplacian eigenvalues
+### Step 3: Connected components 和 Laplacian eigenvalues
 
 ```python
 def connected_components(graph):
@@ -345,9 +345,9 @@ def laplacian_eigenvalues(graph):
     return eigenvalues
 ```
 
-`eigvalsh` is for symmetric matrices -- the Laplacian is always symmetric for undirected graphs. It returns eigenvalues in ascending order. Count the zeros to find the number of connected components.
+`eigvalsh` 是 为了 symmetric 矩阵 -- Laplacian 是 always symmetric 为了 undirected graphs. It returns eigenvalues 在 ascending order. Count zeros 到 find number 的 connected components.
 
-### Step 4: Spectral clustering
+### Step 4: Spectral 聚类
 
 ```python
 def spectral_clustering(graph, k=2):
@@ -365,7 +365,7 @@ def spectral_clustering(graph, k=2):
     return labels
 ```
 
-For k=2, the sign of the Fiedler vector splits the graph into two clusters. For k>2, you would run k-means on the first k eigenvectors (excluding the trivial all-ones eigenvector).
+For k=2, sign 的 Fiedler 向量 splits graph into two clusters. For k>2, you would run k-means 在 first k eigenvectors (excluding trivial all-ones eigenvector).
 
 ### Step 5: Message passing
 
@@ -381,11 +381,11 @@ def message_passing(graph, features, weight_matrix):
     return output
 ```
 
-This is one round of GNN message passing. Each node's new features are the weighted average of its neighbors' features, transformed by the weight matrix. Stack multiple rounds to propagate information further.
+这是 one round 的 GNN message passing. Each 节点's new 特征 是 weighted average 的 its neighbors' 特征, transformed 通过 权重 矩阵. Stack multiple rounds 到 propagate information further.
 
-## 框架应用
+## Use It
 
-With networkx and numpy, the same operations are one-liners:
+With networkx 和 numpy, same operations 是 one-liners:
 
 ```python
 import networkx as nx
@@ -408,7 +408,7 @@ top_nodes = sorted(pr.items(), key=lambda x: x[1], reverse=True)[:5]
 print(f"Top 5 PageRank nodes: {top_nodes}")
 ```
 
-networkx handles graphs of any size with optimized C backends. Use it in production. Use your from-scratch implementation to understand what it does.
+networkx handles graphs 的 any size 使用 optimized C backends. Use it 在 production. Use your 从-scratch implementation 到 understand what it does.
 
 ### numpy spectral analysis
 
@@ -438,65 +438,65 @@ print(f"Cluster A: {group_a}")
 print(f"Cluster B: {group_b}")
 ```
 
-The Fiedler vector does the heavy lifting. Positive entries in one cluster, negative in the other. No iterative optimization needed -- just one eigendecomposition.
+Fiedler 向量 does heavy lifting. Positive entries 在 one cluster, negative 在 other. No iterative optimization needed -- just one eigendecomposition.
 
-## 产物交付
+## Ship It
 
 This lesson produces:
-- `outputs/skill-graph-analysis.md` -- a skill reference for analyzing graph-structured data
+- `输出/skill-graph-analysis.md` -- skill reference 为了 analyzing graph-structured 数据
 
 ## Connections
 
 | Concept | Where it shows up |
 |---------|------------------|
-| Adjacency matrix | GCN, GAT, GraphSAGE input |
-| Laplacian | Spectral clustering, ChebNet filters |
+| Adjacency 矩阵 | GCN, GAT, GraphSAGE 输入 |
+| Laplacian | Spectral 聚类, ChebNet filters |
 | BFS | Knowledge graph traversal, shortest path queries |
-| Message passing | Every GNN layer, neural message passing |
-| Spectral gap | Graph connectivity, mixing time of random walks |
-| Degree distribution | Power-law networks, node feature engineering |
+| Message passing | Every GNN 层, neural message passing |
+| Spectral gap | Graph connectivity, mixing time 的 random walks |
+| Degree distribution | Power-law networks, 节点 特征 engineering |
 | Connected components | Preprocessing, handling disconnected graphs |
-| PageRank | Node importance ranking, attention initialization |
+| PageRank | 节点 importance ranking, attention initialization |
 
-GNNs deserve special mention. The graph convolution operation in GCN (Kipf & Welling, 2017) uses the adjacency matrix with added self-loops, A_hat = A + I:
+GNNs deserve special mention. graph convolution operation 在 GCN (Kipf & Welling, 2017) uses adjacency 矩阵 使用 added self-loops, A_hat = + I:
 
 ```text
 H^(l+1) = sigma(D_hat^(-1/2) * A_hat * D_hat^(-1/2) * H^(l) * W^(l))
 ```
 
-where A_hat = A + I (adjacency plus self-loops) and D_hat is the degree matrix of A_hat. The self-loops ensure each node includes its own features during aggregation. This is exactly message passing with symmetric normalization. D_hat^(-1/2) * A_hat * D_hat^(-1/2) is the normalized adjacency matrix. The Laplacian shows up because this normalization is related to L_sym = I - D^(-1/2) * A * D^(-1/2). Understanding the Laplacian means understanding why GCNs work.
+where A_hat = + I (adjacency plus self-loops) 和 D_hat 是 degree 矩阵 的 A_hat. self-loops ensure each 节点 includes its own 特征 during aggregation. 这是 exactly message passing 使用 symmetric normalization. D_hat^(-1/2) * A_hat * D_hat^(-1/2) 是 normalized adjacency 矩阵. Laplacian shows up because 这个 normalization 是 related 到 L_sym = I - D^(-1/2) * * D^(-1/2). Understanding Laplacian means understanding why GCNs work.
 
-## 练习
+## Exercises
 
-1. **Implement PageRank from scratch.** Start with uniform scores. At each step: score(v) = (1-d)/n + d * sum(score(u)/out_degree(u)) for all u pointing to v. Use d=0.85. Run until convergence (change < 1e-6). Test on a small web graph.
+1. **Implement PageRank 从 scratch.** Start 使用 uniform scores. At each step: score(v) = (1-d)/n + d * sum(score(u)/out_degree(u)) 为了 all u pointing 到 v. Use d=0.85. Run until 收敛 (change < 1e-6). Test 在 small web graph.
 
-2. **Find communities using spectral clustering.** Create a graph with two clearly separated clusters (e.g., two cliques connected by a single edge). Run spectral clustering and verify it finds the right split. What happens as you add more cross-cluster edges?
+2. **Find communities using spectral 聚类.** Create graph 使用 two clearly separated clusters (e.g., two cliques connected 通过 single edge). Run spectral 聚类 和 verify it finds right split. What happens 作为 you add more cross-cluster edges?
 
-3. **Implement Dijkstra's algorithm** for shortest paths in weighted graphs. Compare results to BFS on the same graph with uniform weights.
+3. **Implement Dijkstra's 算法** 为了 shortest paths 在 weighted graphs. Compare results 到 BFS 在 same graph 使用 uniform 权重.
 
-4. **Build a 2-layer message passing network.** Apply message passing twice with different weight matrices. Show that after 2 rounds, each node has information from its 2-hop neighborhood.
+4. **Build 2-层 message passing network.** Apply message passing twice 使用 different 权重 矩阵. Show after 2 rounds, each 节点 has information 从 its 2-hop neighborhood.
 
-5. **Analyze a real-world graph.** Use the Karate Club graph (34 nodes, 78 edges). Compute degree distribution, Laplacian eigenvalues, and spectral clustering. Compare the spectral clustering result to the known ground truth split.
+5. **Analyze real-world graph.** Use Karate Club graph (34 节点, 78 edges). Compute degree distribution, Laplacian eigenvalues, 和 spectral 聚类. Compare spectral 聚类 result 到 known ground truth split.
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Graph | "Nodes and edges" | A mathematical structure G=(V,E) encoding pairwise relationships |
-| Adjacency matrix | "The connection table" | An n x n matrix where A[i][j] = 1 if nodes i and j are connected |
-| Degree | "How connected a node is" | The number of edges touching a node |
-| Laplacian | "D minus A" | L = D - A, the matrix whose eigenvalues reveal graph structure |
-| Fiedler value | "The algebraic connectivity" | The smallest non-zero eigenvalue of L, measuring how well-connected the graph is |
-| BFS | "Level-by-level search" | Traversal that visits all neighbors before going deeper, finds shortest paths |
-| DFS | "Go deep first" | Traversal that follows one path to its end before backtracking |
-| Message passing | "Nodes talk to neighbors" | Each node aggregates information from its neighbors, the core of GNNs |
-| Spectral clustering | "Cluster by eigenvectors" | Partition a graph using eigenvectors of its Laplacian |
-| Connected component | "A separate piece" | A maximal subgraph where every node can reach every other node |
+| Graph | "Nodes 和 edges" | mathematical structure G=(V,E) encoding pairwise relationships |
+| Adjacency 矩阵 | " connection table" | n x n 矩阵 where [i][j] = 1 if 节点 i 和 j 是 connected |
+| Degree | "How connected 节点 是" | number 的 edges touching 节点 |
+| Laplacian | "D minus " | L = D - , 矩阵 whose eigenvalues reveal graph structure |
+| Fiedler value | " algebraic connectivity" | smallest non-zero eigenvalue 的 L, measuring how well-connected graph 是 |
+| BFS | "Level-通过-level search" | Traversal visits all neighbors before going deeper, finds shortest paths |
+| DFS | "Go deep first" | Traversal follows one path 到 its end before backtracking |
+| Message passing | "Nodes talk 到 neighbors" | Each 节点 aggregates information 从 its neighbors, core 的 GNNs |
+| Spectral 聚类 | "Cluster 通过 eigenvectors" | Partition graph using eigenvectors 的 its Laplacian |
+| Connected component | " separate piece" | maximal subgraph where every 节点 can reach every other 节点 |
 
 ## Further Reading
 
-- **Kipf & Welling (2017)** -- "Semi-Supervised Classification with Graph Convolutional Networks." The paper that launched modern GNNs. Shows that spectral graph convolutions simplify to message passing.
-- **Spielman (2012)** -- "Spectral 图论" lecture notes. The definitive introduction to Laplacians, spectral gaps, and graph partitioning.
-- **Hamilton (2020)** -- "Graph Representation Learning." Book covering GNNs from fundamentals to applications.
-- **Bronstein et al. (2021)** -- "Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, and Gauges." The unifying framework paper.
-- **Veličković et al. (2018)** -- "Graph Attention Networks." Extends message passing with attention mechanisms.
+- **Kipf & Welling (2017)** -- "Semi-Supervised 分类 使用 Graph Convolutional Networks." paper launched modern GNNs. Shows spectral graph convolutions simplify 到 message passing.
+- **Spielman (2012)** -- "Spectral Graph Theory" lecture notes. definitive introduction 到 Laplacians, spectral gaps, 和 graph partitioning.
+- **Hamilton (2020)** -- "Graph Representation Learning." Book covering GNNs 从 fundamentals 到 applications.
+- **Bronstein et al. (2021)** -- "Geometric Deep Learning: Grids, Groups, Graphs, Geodesics, 和 Gauges." unifying framework paper.
+- **Veličković et al. (2018)** -- "Graph Attention Networks." Extends message passing 使用 attention mechanisms.

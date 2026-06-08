@@ -1,30 +1,30 @@
 # Singular Value Decomposition
 
-> 奇异值分解 is the Swiss Army knife of linear algebra. Every matrix has one. Every data scientist needs one.
+> SVD 是 Swiss Army knife 的 线性代数. Every 矩阵 has one. Every 数据 scientist needs one.
 
-**类型:** 实现
-**语言:** Python, Julia
-**前置要求:** 阶段1, Lessons 01 (Linear Algebra Intuition), 02 (Vectors & Matrices Operations), 03 (Matrix Transformations)
+**Type:** Build
+**Languages:** Python, Julia
+**Prerequisites:** Phase 1, Lessons 01 (线性代数 Intuition), 02 (Vectors & Matrices Operations), 03 (矩阵 Transformations)
 **Time:** ~120 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement 奇异值分解 via power iteration and explain the geometric meaning of U, Sigma, and V^T
-- Apply truncated 奇异值分解 for image compression and measure the compression ratio vs reconstruction error
-- Compute the Moore-Penrose pseudoinverse via 奇异值分解 to solve overdetermined least-squares systems
-- Connect 奇异值分解 to PCA, recommendation systems (latent factors), and Latent Semantic Analysis in NLP
+- Implement SVD via power iteration 和 explain geometric meaning 的 U, Sigma, 和 V^T
+- Apply truncated SVD 为了 image compression 和 measure compression ratio vs reconstruction error
+- Compute Moore-Penrose pseudoinverse via SVD 到 solve overdetermined least-squares systems
+- Connect SVD 到 PCA, recommendation systems (latent factors), 和 Latent Semantic Analysis 在 NLP
 
-## 问题引入
+## Problem
 
-You have a 1000x2000 matrix. Maybe it is user-movie ratings. Maybe it is a document-term frequency table. Maybe it is the pixel values of an image. You need to compress it, denoise it, find hidden structure in it, or solve a least-squares system with it. Eigendecomposition only works on square matrices. Even then, it requires the matrix to have a full set of linearly independent eigenvectors.
+You have 1000x2000 矩阵. Maybe it 是 user-movie ratings. Maybe it 是 document-term frequency table. Maybe it 是 pixel values 的 image. 你需要 到 compress it, denoise it, find hidden structure 在 it, 或 solve least-squares system 使用 it. Eigendecomposition only works 在 square 矩阵. Even then, it requires 矩阵 到 have full set 的 linearly independent eigenvectors.
 
-奇异值分解 works on any matrix. Any shape. Any rank. No conditions. It decomposes the matrix into three factors that reveal the geometry of what the matrix does to space. It is the most general and most useful factorization in all of linear algebra.
+SVD works 在 any 矩阵. Any shape. Any rank. No conditions. It decomposes 矩阵 into three factors reveal geometry 的 what 矩阵 does 到 space. 它是 most general 和 most useful factorization 在 all 的 线性代数.
 
-## 概念讲解
+## Concept
 
-### What 奇异值分解 does geometrically
+### What SVD does geometrically
 
-Every matrix, regardless of shape, performs three operations in sequence: rotate, scale, rotate. 奇异值分解 makes this decomposition explicit.
+Every 矩阵, regardless 的 shape, performs three operations 在 sequence: rotate, scale, rotate. SVD makes 这个 decomposition explicit.
 
 ```
 A = U * Sigma * V^T
@@ -33,10 +33,10 @@ A = U * Sigma * V^T
      (any)    (rotate)  (scale)  (rotate)
 ```
 
-Given any matrix A, 奇异值分解 factors it into:
-- V^T rotates vectors in the input space (n-dimensional)
-- Sigma scales along each axis (stretches or compresses)
-- U rotates the result into the output space (m-dimensional)
+Given any 矩阵 , SVD factors it into:
+- V^T rotates 向量 在 输入 space (n-dimensional)
+- Sigma scales along each axis (stretches 或 compresses)
+- U rotates result into 输出 space (m-dimensional)
 
 ```mermaid
 graph LR
@@ -44,11 +44,11 @@ graph LR
     B -->|"U\n(rotate)"| C["Output space (m-dim)\nRotated to output\norientation"]
 ```
 
-Think of it this way. You hand 奇异值分解 a matrix. It tells you: "This matrix takes a sphere of inputs, first rotates it by V^T, then stretches it into an ellipsoid by Sigma, then rotates the ellipsoid by U." The singular values are the lengths of the ellipsoid's axes.
+Think 的 it 这个 way. You hand SVD 矩阵. It tells you: "This 矩阵 takes sphere 的 输入, first rotates it 通过 V^T, then stretches it into ellipsoid 通过 Sigma, then rotates ellipsoid 通过 U." singular values 是 lengths 的 ellipsoid's axes.
 
-### The full decomposition
+### full decomposition
 
-For a matrix A with shape m x n:
+For 矩阵 使用 shape m x n:
 
 ```
 A = U * Sigma * V^T
@@ -62,19 +62,19 @@ The singular values sigma_1 >= sigma_2 >= ... >= sigma_r > 0
 where r = rank(A)
 ```
 
-The columns of U are called left singular vectors. The columns of V are called right singular vectors. The diagonal entries of Sigma are called singular values. They are always non-negative and conventionally sorted in decreasing order.
+columns 的 U 是 called left singular 向量. columns 的 V 是 called right singular 向量. diagonal entries 的 Sigma 是 called singular values. They 是 always non-negative 和 conventionally sorted 在 decreasing order.
 
-### Left singular vectors, singular values, right singular vectors
+### Left singular 向量, singular values, right singular 向量
 
-Each component of the 奇异值分解 has a distinct geometric meaning.
+Each component 的 SVD has distinct geometric meaning.
 
-**Right singular vectors (columns of V):** These form an orthonormal basis for the input space (R^n). They are the directions in input space that the matrix maps to orthogonal directions in output space. Think of them as the natural coordinate system for the domain.
+**Right singular 向量 (columns 的 V):** These form orthonormal basis 为了 输入 space (R^n). They 是 directions 在 输入 space 矩阵 maps 到 orthogonal directions 在 输出 space. Think 的 them 作为 natural coordinate system 为了 domain.
 
-**Singular values (diagonal of Sigma):** These are the scaling factors. The i-th singular value tells you how much the matrix stretches vectors along the i-th right singular vector. A singular value of zero means the matrix crushes that direction entirely.
+**Singular values (diagonal 的 Sigma):** These 是 scaling factors. i-th singular value tells you how much 矩阵 stretches 向量 along i-th right singular 向量. singular value 的 zero means 矩阵 crushes direction entirely.
 
-**Left singular vectors (columns of U):** These form an orthonormal basis for the output space (R^m). The i-th left singular vector is the direction in output space where the i-th right singular vector lands (after scaling).
+**Left singular 向量 (columns 的 U):** These form orthonormal basis 为了 输出 space (R^m). i-th left singular 向量 是 direction 在 输出 space where i-th right singular 向量 lands (after scaling).
 
-The relationship between them:
+relationship between them:
 
 ```
 A * v_i = sigma_i * u_i
@@ -83,11 +83,11 @@ The matrix A takes the i-th right singular vector v_i,
 scales it by sigma_i, and maps it to the i-th left singular vector u_i.
 ```
 
-This gives you a coordinate-by-coordinate picture of what any matrix does.
+This gives you coordinate-通过-coordinate picture 的 what any 矩阵 does.
 
 ### Outer product form
 
-The 奇异值分解 can be written as a sum of rank-1 matrices:
+SVD can be written 作为 sum 的 rank-1 矩阵:
 
 ```
 A = sigma_1 * u_1 * v_1^T + sigma_2 * u_2 * v_2^T + ... + sigma_r * u_r * v_r^T
@@ -96,7 +96,7 @@ Each term sigma_i * u_i * v_i^T is a rank-1 matrix (an outer product).
 The full matrix is the sum of r such matrices, where r is the rank.
 ```
 
-This form is the foundation of low-rank approximation. Each term adds one layer of structure. The first term captures the single most important pattern. The second captures the next most important. And so on. Truncating this sum gives you the best possible approximation at any given rank.
+This form 是 foundation 的 low-rank approximation. Each term adds one 层 的 structure. first term captures single most important pattern. second captures next most important. And so 在. Truncating 这个 sum gives you best possible approximation 在 any given rank.
 
 ```
 Rank-1 approx:    A_1 = sigma_1 * u_1 * v_1^T
@@ -109,9 +109,9 @@ Rank-k approx:    A_k = sum of top k terms
                   (optimal by the Eckart-Young theorem)
 ```
 
-### Relationship to eigendecomposition
+### Relationship 到 eigendecomposition
 
-奇异值分解 and eigendecomposition are deeply connected. The singular values and vectors of A come directly from the eigenvalues and eigenvectors of A^T A and A A^T.
+SVD 和 eigendecomposition 是 deeply connected. singular values 和 向量 的 come directly 从 eigenvalues 和 eigenvectors 的 ^T 和 ^T.
 
 ```
 A^T A = V * Sigma^T * U^T * U * Sigma * V^T
@@ -134,13 +134,13 @@ So:
 ```
 
 This connection tells you three things:
-1. Singular values are always real and non-negative (they are square roots of eigenvalues of a positive semi-definite matrix).
-2. You could compute 奇异值分解 via eigendecomposition of A^T A, but this squares the condition number and loses numerical precision. Dedicated 奇异值分解 algorithms avoid this.
-3. When A is square and symmetric positive semi-definite, 奇异值分解 and eigendecomposition are the same thing.
+1. Singular values 是 always real 和 non-negative (they 是 square roots 的 eigenvalues 的 positive semi-definite 矩阵).
+2. You could compute SVD via eigendecomposition 的 ^T , but 这个 squares condition number 和 loses numerical 精确率. Dedicated SVD 算法 avoid 这个.
+3. When 是 square 和 symmetric positive semi-definite, SVD 和 eigendecomposition 是 same thing.
 
-### Truncated 奇异值分解: low-rank approximation
+### Truncated SVD: low-rank approximation
 
-The Eckart-Young-Mirsky theorem states that the best rank-k approximation to A (in both Frobenius and spectral norm) is obtained by keeping only the top k singular values and their corresponding vectors:
+Eckart-Young-Mirsky theorem states best rank-k approximation 到 (在 both Frobenius 和 spectral norm) 是 obtained 通过 keeping only top k singular values 和 their corresponding 向量:
 
 ```
 A_k = U_k * Sigma_k * V_k^T
@@ -154,9 +154,9 @@ Approximation error = sigma_{k+1}  (in spectral norm)
                     = sqrt(sigma_{k+1}^2 + ... + sigma_r^2)  (in Frobenius norm)
 ```
 
-This is not just "a good" approximation. It is provably the best possible approximation of rank k. No other rank-k matrix is closer to A.
+这是 not just " good" approximation. 它是 provably best possible approximation 的 rank k. No other rank-k 矩阵 是 closer 到 .
 
-| Component | Relative magnitude | Kept in rank-3 approx? |
+| Component | Relative magnitude | Kept 在 rank-3 approx? |
 |-----------|-------------------|------------------------|
 | sigma_1 | Largest | Yes |
 | sigma_2 | Large | Yes |
@@ -167,18 +167,18 @@ This is not just "a good" approximation. It is provably the best possible approx
 | sigma_7 | Very small | No (error) |
 | sigma_8 | Tiny | No (error) |
 
-Keep top 3: A_3 captures the three largest singular values. Error = remaining values (sigma_4 through sigma_8).
+Keep top 3: A_3 captures three largest singular values. Error = remaining values (sigma_4 through sigma_8).
 
-If singular values decay fast, a small k captures most of the matrix. If they decay slowly, the matrix has no low-rank structure.
+If singular values decay fast, small k captures most 的 矩阵. If they decay slowly, 矩阵 has no low-rank structure.
 
-### Image compression with 奇异值分解
+### Image compression 使用 SVD
 
-A grayscale image is a matrix of pixel intensities. An 800x600 image has 480,000 values. 奇异值分解 lets you approximate it with far fewer.
+grayscale image 是 矩阵 的 pixel intensities. 800x600 image has 480,000 values. SVD lets you approximate it 使用 far fewer.
 
 ```
 Original image: 800 x 600 = 480,000 values
 
-奇异值分解 with rank k:
+SVD with rank k:
   U_k:      800 x k values
   Sigma_k:  k values
   V_k:      600 x k values
@@ -192,11 +192,11 @@ Original image: 800 x 600 = 480,000 values
   but visual quality degrades.
 ```
 
-The key insight: natural images have rapidly decaying singular values. The first few singular values capture the broad structure (shapes, gradients). The later ones capture fine detail and noise. Truncating at rank 50 often produces an image that looks nearly identical to the original while using 85% less storage.
+key insight: natural images have rapidly decaying singular values. first few singular values capture broad structure (shapes, gradients). later ones capture fine detail 和 noise. Truncating 在 rank 50 often produces image looks nearly identical 到 original while using 85% less storage.
 
-### 奇异值分解 for recommendation systems
+### SVD 为了 recommendation systems
 
-The Netflix Prize made this famous. You have a user-movie ratings matrix where most entries are missing.
+Netflix Prize made 这个 famous. You have user-movie ratings 矩阵 where most entries 是 missing.
 
 ```
              Movie1  Movie2  Movie3  Movie4  Movie5
@@ -208,20 +208,20 @@ The Netflix Prize made this famous. You have a user-movie ratings matrix where m
   ? = unknown rating
 ```
 
-The idea: this ratings matrix has low rank. Users do not have completely independent tastes. There are a handful of latent factors (action vs. drama, old vs. new, cerebral vs. visceral) that explain most preferences.
+idea: 这个 ratings 矩阵 has low rank. Users do not have completely independent tastes. 有 handful 的 latent factors (action vs. drama, old vs. new, cerebral vs. visceral) explain most preferences.
 
-奇异值分解 on the (filled-in) ratings matrix decomposes it into:
-- U: user profiles in latent factor space
-- Sigma: importance of each latent factor
-- V^T: movie profiles in latent factor space
+SVD 在 (filled-在) ratings 矩阵 decomposes it into:
+- U: user profiles 在 latent factor space
+- Sigma: importance 的 each latent factor
+- V^T: movie profiles 在 latent factor space
 
-A user's predicted rating for a movie is the dot product of their user profile with the movie's profile (weighted by singular values). The low-rank approximation fills in the missing entries.
+user's predicted rating 为了 movie 是 dot product 的 their user profile 使用 movie's profile (weighted 通过 singular values). low-rank approximation fills 在 missing entries.
 
-In practice, you use variants like Simon Funk's incremental 奇异值分解 or ALS (alternating least squares) that handle missing data directly. But the core idea is the same: latent factor decomposition via 奇异值分解.
+In practice, you use variants like Simon Funk's incremental SVD 或 ALS (alternating least squares) handle missing 数据 directly. But core idea 是 same: latent factor decomposition via SVD.
 
-### 奇异值分解 in NLP: Latent Semantic Analysis
+### SVD 在 NLP: Latent Semantic Analysis
 
-Latent Semantic Analysis (LSA), also called Latent Semantic Indexing (LSI), applies 奇异值分解 to a term-document matrix.
+Latent Semantic Analysis (LSA), also called Latent Semantic Indexing (LSI), applies SVD 到 term-document 矩阵.
 
 ```
              Doc1   Doc2   Doc3   Doc4
@@ -231,7 +231,7 @@ Latent Semantic Analysis (LSA), also called Latent Semantic Indexing (LSI), appl
   "pet"      [  1      1      1      1  ]
   "ocean"    [  0      3      0      0  ]
 
-After 奇异值分解 with rank k=2:
+After SVD with rank k=2:
 
   Each document becomes a point in 2D "concept space."
   Each term becomes a point in the same 2D space.
@@ -243,11 +243,11 @@ After 奇异值分解 with rank k=2:
   Doc1 and Doc3 cluster if they share similar topics.
 ```
 
-LSA was one of the first successful methods for capturing semantic similarity from raw text. It works because synonymous terms tend to appear in similar documents, so 奇异值分解 groups them into the same latent dimensions. Modern word embeddings (Word2Vec, GloVe) can be seen as descendants of this idea.
+LSA was one 的 first successful methods 为了 capturing semantic similarity 从 raw text. It works because synonymous terms tend 到 appear 在 similar documents, so SVD groups them into same latent dimensions. Modern word embeddings (Word2Vec, GloVe) can be seen 作为 descendants 的 这个 idea.
 
-### 奇异值分解 for noise reduction
+### SVD 为了 noise reduction
 
-Noisy data has signal concentrated in the top singular values and noise spread across all singular values. Truncating removes the noise floor.
+Noisy 数据 has signal concentrated 在 top singular values 和 noise spread across all singular values. Truncating removes noise floor.
 
 **Clean signal singular values:**
 
@@ -259,7 +259,7 @@ Noisy data has signal concentrated in the top singular values and noise spread a
 | sigma_4 | Near zero | Negligible |
 | sigma_5 | Near zero | Negligible |
 
-**Noisy signal singular values (noise adds to all):**
+**Noisy signal singular values (noise adds 到 all):**
 
 | Component | Magnitude | Type |
 |-----------|-----------|------|
@@ -279,11 +279,11 @@ graph TD
     C --> E["Reconstruct with A_k to get denoised version"]
 ```
 
-This is used in signal processing, scientific measurement, and data cleaning. Any time you have a matrix corrupted by additive noise, truncated 奇异值分解 is a principled way to separate signal from noise.
+这是 used 在 signal processing, scientific measurement, 和 数据 cleaning. Any time you have 矩阵 corrupted 通过 additive noise, truncated SVD 是 principled way 到 separate signal 从 noise.
 
-### Pseudoinverse via 奇异值分解
+### Pseudoinverse via SVD
 
-The Moore-Penrose pseudoinverse A+ generalizes matrix inversion to non-square and singular matrices. 奇异值分解 makes computing it trivial.
+Moore-Penrose pseudoinverse + generalizes 矩阵 inversion 到 non-square 和 singular 矩阵. SVD makes computing it trivial.
 
 ```
 If A = U * Sigma * V^T, then:
@@ -299,7 +299,7 @@ For A (m x n):      A+ is (n x m)
 For Sigma (m x n):  Sigma+ is (n x m)
 ```
 
-The pseudoinverse solves least-squares problems. If Ax = b has no exact solution (overdetermined system), then x = A+ b is the least-squares solution (minimizes ||Ax - b||).
+pseudoinverse solves least-squares problems. If Ax = b has no exact solution (overdetermined system), then x = + b 是 least-squares solution (minimizes ||Ax - b||).
 
 ```
 Overdetermined system (more equations than unknowns):
@@ -317,7 +317,7 @@ Overdetermined system (more equations than unknowns):
 
 ### Numerical stability advantages
 
-Computing eigendecomposition of A^T A squares the singular values (eigenvalues of A^T A are sigma_i^2). This squares the condition number, amplifying numerical errors.
+Computing eigendecomposition 的 ^T squares singular values (eigenvalues 的 ^T 是 sigma_i^2). This squares condition number, amplifying numerical errors.
 
 ```
 Example:
@@ -327,16 +327,16 @@ Example:
   A^T A has eigenvalues [10^6, 1, 10^{-6}]
   Condition number of A^T A: 10^6 / 10^{-6} = 10^{12}
 
-  Computing 奇异值分解 directly: works with condition number 10^6
+  Computing SVD directly: works with condition number 10^6
   Computing via A^T A:     works with condition number 10^{12}
                            (6 extra digits of precision lost)
 ```
 
-Modern 奇异值分解 algorithms (Golub-Kahan bidiagonalization) work directly on A, never forming A^T A. This is why you should always prefer `np.linalg.svd(A)` over `np.linalg.eig(A.T @ A)`.
+Modern SVD 算法 (Golub-Kahan bidiagonalization) work directly 在 , never forming ^T . 这是 why you should always prefer `np.linalg.svd()` over `np.linalg.eig(.T @ )`.
 
-### Connection to PCA
+### Connection 到 PCA
 
-PCA IS 奇异值分解 on centered data. This is not an analogy. It is literally the same computation.
+PCA IS SVD 在 centered 数据. 这是 not analogy. 它是 literally same computation.
 
 ```
 Given data matrix X (n_samples x n_features), centered (mean subtracted):
@@ -345,7 +345,7 @@ Covariance matrix: C = (1/(n-1)) * X^T X
 
 PCA finds eigenvectors of C. But:
 
-  X = U * Sigma * V^T    (奇异值分解 of X)
+  X = U * Sigma * V^T    (SVD of X)
 
   X^T X = V * Sigma^2 * V^T
 
@@ -354,17 +354,17 @@ PCA finds eigenvectors of C. But:
 So the principal components are exactly the right singular vectors V.
 The explained variance for each component is sigma_i^2 / (n-1).
 
-In sklearn, PCA is implemented using 奇异值分解, not eigendecomposition.
+In sklearn, PCA is implemented using SVD, not eigendecomposition.
 It is faster and more numerically stable.
 ```
 
-This means everything you learned about dimensionality reduction in Lesson 10 is 奇异值分解 under the hood. PCA is the most common application of 奇异值分解 in machine learning.
+This means everything you learned about dimensionality reduction 在 Lesson 10 是 SVD under hood. PCA 是 most common application 的 SVD 在 machine learning.
 
-## 从零实现
+## Build It
 
-### Step 1: 奇异值分解 from scratch using power iteration
+### Step 1: SVD 从 scratch using power iteration
 
-The idea: to find the largest singular value and its vectors, use power iteration on A^T A (or A A^T). Then deflate the matrix and repeat for the next singular value.
+idea: 到 find largest singular value 和 its 向量, use power iteration 在 ^T (或 ^T). Then deflate 矩阵 和 repeat 为了 next singular value.
 
 ```python
 import numpy as np
@@ -415,7 +415,7 @@ def svd_from_scratch(A, k=None):
     return U, S, V
 ```
 
-### Step 2: Test and compare with NumPy
+### Step 2: Test 和 compare 使用 NumPy
 
 ```python
 np.random.seed(42)
@@ -483,64 +483,64 @@ x_svd = A_pinv @ b
 x_lstsq = np.linalg.lstsq(A, b, rcond=None)[0]
 x_pinv = np.linalg.pinv(A) @ b
 
-print(f"奇异值分解 pseudoinverse solution:  {x_svd}")
+print(f"SVD pseudoinverse solution:  {x_svd}")
 print(f"np.linalg.lstsq solution:   {x_lstsq}")
 print(f"np.linalg.pinv solution:    {x_pinv}")
 ```
 
-## 框架应用
+## Use It
 
-Full working demos are in `code/svd.py`. Run it to see 奇异值分解 applied to image compression, recommendation systems, latent semantic analysis, and noise reduction.
+Full working demos 是 在 `代码/svd.py`. Run it 到 see SVD applied 到 image compression, recommendation systems, latent semantic analysis, 和 noise reduction.
 
 ```bash
 python svd.py
 ```
 
-The Julia version in `code/svd.jl` demonstrates the same concepts using Julia's native `svd()` function and `LinearAlgebra` package.
+Julia version 在 `代码/svd.jl` demonstrates same concepts using Julia's native `svd()` 函数 和 `LinearAlgebra` package.
 
 ```bash
 julia svd.jl
 ```
 
-## 产物交付
+## Ship It
 
 This lesson produces:
-- `outputs/skill-svd.md` - a skill for knowing when and how to apply 奇异值分解 in real projects
+- `输出/skill-svd.md` - skill 为了 knowing when 和 how 到 apply SVD 在 real projects
 
-## 练习
+## Exercises
 
-1. Implement the full 奇异值分解 from scratch without using power iteration. Instead, compute the eigendecomposition of A^T A to get V and the singular values, then compute U = A V Sigma^{-1}. Compare numerical accuracy with your power iteration version and with NumPy.
+1. Implement full SVD 从 scratch without using power iteration. Instead, compute eigendecomposition 的 ^T 到 get V 和 singular values, then compute U = V Sigma^{-1}. Compare numerical 准确率 使用 your power iteration version 和 使用 NumPy.
 
-2. Load a real grayscale image (or convert one to grayscale). Compress it at ranks 1, 5, 10, 25, 50, 100. For each rank, compute the compression ratio and the relative error. Find the rank where the image becomes visually acceptable.
+2. Load real grayscale image (或 convert one 到 grayscale). Compress it 在 ranks 1, 5, 10, 25, 50, 100. For each rank, compute compression ratio 和 relative error. Find rank where image becomes visually acceptable.
 
-3. Build a tiny recommendation system. Create a 10x8 user-movie ratings matrix with some known entries. Fill missing entries with row means. Compute 奇异值分解 and reconstruct a rank-3 approximation. Use the reconstructed matrix to predict the missing ratings. Verify that the predictions are reasonable.
+3. Build tiny recommendation system. Create 10x8 user-movie ratings 矩阵 使用 some known entries. Fill missing entries 使用 row means. Compute SVD 和 reconstruct rank-3 approximation. Use reconstructed 矩阵 到 predict missing ratings. Verify predictions 是 reasonable.
 
-4. Create a 100x50 document-term matrix with 3 synthetic topics. Each topic has 5 associated terms. Add noise. Apply 奇异值分解 and verify that the top 3 singular values are much larger than the rest. Project documents into the 3D latent space and check that documents from the same topic cluster together.
+4. Create 100x50 document-term 矩阵 使用 3 synthetic topics. Each topic has 5 associated terms. Add noise. Apply SVD 和 verify top 3 singular values 是 much larger than rest. Project documents into 3D latent space 和 check documents 从 same topic cluster together.
 
-5. Generate a clean low-rank matrix (rank 3, size 50x40) and add Gaussian noise at different levels (sigma = 0.1, 0.5, 1.0, 2.0). For each noise level, find the optimal truncation rank by sweeping k from 1 to 40 and measuring reconstruction error against the clean matrix. Plot how the optimal k changes with noise level.
+5. Generate clean low-rank 矩阵 (rank 3, size 50x40) 和 add Gaussian noise 在 different levels (sigma = 0.1, 0.5, 1.0, 2.0). For each noise level, find optimal truncation rank 通过 sweeping k 从 1 到 40 和 measuring reconstruction error against clean 矩阵. Plot how optimal k changes 使用 noise level.
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| 奇异值分解 | "Factor any matrix" | Decompose A into U Sigma V^T where U and V are orthogonal and Sigma is diagonal with non-negative entries. Works for any matrix of any shape. |
-| Singular value | "How important this component is" | The i-th diagonal entry of Sigma. Measures how much the matrix stretches along the i-th principal direction. Always non-negative, sorted in decreasing order. |
-| Left singular vector | "Output direction" | A column of U. The direction in output space that the i-th right singular vector maps to (after scaling by sigma_i). |
-| Right singular vector | "Input direction" | A column of V. The direction in input space that the matrix maps to the i-th left singular vector (after scaling by sigma_i). |
-| Truncated 奇异值分解 | "Low-rank approximation" | Keep only the top k singular values and their vectors. Produces the provably best rank-k approximation to the original matrix (Eckart-Young theorem). |
-| Rank | "True dimensionality" | The number of non-zero singular values. Tells you how many independent directions the matrix actually uses. |
-| Pseudoinverse | "Generalized inverse" | V Sigma+ U^T. Inverts non-zero singular values, leaves zeros as zeros. Solves least-squares problems for non-square or singular matrices. |
-| Condition number | "How sensitive to errors" | sigma_max / sigma_min. A large condition number means small input changes cause large output changes. 奇异值分解 reveals this directly. |
-| Latent factor | "Hidden variable" | A dimension in the low-rank space discovered by 奇异值分解. In recommendations, a latent factor might correspond to genre preference. In NLP, it might correspond to a topic. |
-| Frobenius norm | "Total matrix size" | Square root of the sum of squared entries. Equals the square root of the sum of squared singular values. Used to measure approximation error. |
-| Eckart-Young theorem | "奇异值分解 gives the best compression" | For any target rank k, the truncated 奇异值分解 minimizes the approximation error over all possible rank-k matrices. |
-| Power iteration | "Find the biggest eigenvector" | Repeatedly multiply a random vector by the matrix and normalize. Converges to the eigenvector with the largest eigenvalue. The building block of many 奇异值分解 algorithms. |
+| SVD | "Factor any 矩阵" | Decompose into U Sigma V^T where U 和 V 是 orthogonal 和 Sigma 是 diagonal 使用 non-negative entries. Works 为了 any 矩阵 的 any shape. |
+| Singular value | "How important 这个 component 是" | i-th diagonal entry 的 Sigma. Measures how much 矩阵 stretches along i-th principal direction. Always non-negative, sorted 在 decreasing order. |
+| Left singular 向量 | "输出 direction" | column 的 U. direction 在 输出 space i-th right singular 向量 maps 到 (after scaling 通过 sigma_i). |
+| Right singular 向量 | "输入 direction" | column 的 V. direction 在 输入 space 矩阵 maps 到 i-th left singular 向量 (after scaling 通过 sigma_i). |
+| Truncated SVD | "Low-rank approximation" | Keep only top k singular values 和 their 向量. Produces provably best rank-k approximation 到 original 矩阵 (Eckart-Young theorem). |
+| Rank | "True dimensionality" | number 的 non-zero singular values. Tells you how many independent directions 矩阵 actually uses. |
+| Pseudoinverse | "Generalized inverse" | V Sigma+ U^T. Inverts non-zero singular values, leaves zeros 作为 zeros. Solves least-squares problems 为了 non-square 或 singular 矩阵. |
+| Condition number | "How sensitive 到 errors" | sigma_max / sigma_min. large condition number means small 输入 changes cause large 输出 changes. SVD reveals 这个 directly. |
+| Latent factor | "Hidden variable" | dimension 在 low-rank space discovered 通过 SVD. In recommendations, latent factor might correspond 到 genre preference. In NLP, it might correspond 到 topic. |
+| Frobenius norm | "Total 矩阵 size" | Square root 的 sum 的 squared entries. Equals square root 的 sum 的 squared singular values. Used 到 measure approximation error. |
+| Eckart-Young theorem | "SVD gives best compression" | For any target rank k, truncated SVD minimizes approximation error over all possible rank-k 矩阵. |
+| Power iteration | "Find biggest eigenvector" | Repeatedly multiply random 向量 通过 矩阵 和 normalize. Converges 到 eigenvector 使用 largest eigenvalue. building block 的 many SVD 算法. |
 
 ## Further Reading
 
-- [Gilbert Strang: Linear Algebra and Its Applications, Chapter 7](https://math.mit.edu/~gs/linearalgebra/) - thorough treatment of 奇异值分解 with applications
-- [3Blue1Brown: But what is the 奇异值分解?](https://www.youtube.com/watch?v=vSczTbgc8Rc) - geometric intuition for 奇异值分解
-- [We Recommend a Singular Value Decomposition](https://www.ams.org/publicoutreach/feature-column/fcarc-svd) - accessible overview from the American Mathematical Society
-- [Netflix Prize and Matrix Factorization](https://sifter.org/~simon/journal/20061211.html) - Simon Funk's original blog post on 奇异值分解 for recommendations
-- [Latent Semantic Analysis](https://en.wikipedia.org/wiki/Latent_semantic_analysis) - the original NLP application of 奇异值分解
-- [Numerical Linear Algebra by Trefethen and Bau](https://people.maths.ox.ac.uk/trefethen/text.html) - the gold standard for understanding 奇异值分解 algorithms and their numerical properties
+- [Gilbert Strang: 线性代数 和 Its Applications, Chapter 7](https://math.mit.edu/~gs/linearalgebra/) - thorough treatment 的 SVD 使用 applications
+- [3Blue1Brown: But what 是 SVD?](https://www.youtube.com/watch?v=vSczTbgc8Rc) - geometric intuition 为了 SVD
+- [We Recommend Singular Value Decomposition](https://www.ams.org/publicoutreach/特征-column/fcarc-svd) - accessible overview 从 American Mathematical Society
+- [Netflix Prize 和 矩阵 Factorization](https://sifter.org/~simon/journal/20061211.html) - Simon Funk's original blog post 在 SVD 为了 recommendations
+- [Latent Semantic Analysis](https://en.wikipedia.org/wiki/Latent_semantic_analysis) - original NLP application 的 SVD
+- [Numerical 线性代数 通过 Trefethen 和 Bau](https://people.maths.ox.ac.uk/trefethen/text.html) - gold standard 为了 understanding SVD 算法 和 their numerical properties

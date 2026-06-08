@@ -1,30 +1,30 @@
 # 矩阵 Transformations
 
-> A matrix is a machine that reshapes space. Learn what it does to every point, and you understand the whole transformation.
+> 矩阵 是 machine reshapes space. Learn what it does 到 every point, 和 you understand whole transformation.
 
-**类型:** 实现
-**语言:** Python, Julia
-**前置要求:** 阶段1, Lessons 01-02 (线性代数 Intuition, 向量s & Matrices Operations)
+**Type:** Build
+**Languages:** Python, Julia
+**Prerequisites:** Phase 1, Lessons 01-02 (线性代数 Intuition, Vectors & Matrices Operations)
 **Time:** ~75 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Construct rotation, scaling, shearing, and reflection matrices and apply them to 2D and 3D points
-- Compose multiple transformations by matrix multiplication and verify that order matters
-- Compute eigenvalues and eigenvectors of 2x2 matrices from the characteristic equation
-- Explain why eigenvalues determine PCA directions, RNN stability, and spectral clustering behavior
+- Construct rotation, scaling, shearing, 和 reflection 矩阵 和 apply them 到 2D 和 3D points
+- Compose multiple transformations 通过 矩阵 multiplication 和 verify order matters
+- Compute eigenvalues 和 eigenvectors 的 2x2 矩阵 从 characteristic equation
+- Explain why eigenvalues determine PCA directions, RNN stability, 和 spectral 聚类 behavior
 
-## 问题引入
+## Problem
 
-You read about PCA and see "find the eigenvectors of the covariance matrix." You read about model stability and see "check if all eigenvalues have magnitude less than 1." You read about data augmentation and see "apply a random rotation." None of this makes sense until you understand what matrices do to space geometrically.
+You read about PCA 和 see "find eigenvectors 的 covariance 矩阵." You read about 模型 stability 和 see "check if all eigenvalues have magnitude less than 1." You read about 数据 augmentation 和 see "apply random rotation." None 的 这个 makes sense until you understand what 矩阵 do 到 space geometrically.
 
-Matrices are not just grids of numbers. They are spatial machines. A rotation matrix spins points. A scaling matrix stretches them. A shearing matrix tilts them. Every transformation a neural network applies to data is one of these operations or a composition of them. This lesson makes those operations concrete.
+Matrices 是 not just grids 的 numbers. They 是 spatial machines. rotation 矩阵 spins points. scaling 矩阵 stretches them. shearing 矩阵 tilts them. Every transformation 神经网络 applies 到 数据 是 one 的 这些 operations 或 composition 的 them. This lesson makes 那些 operations concrete.
 
-## 概念讲解
+## Concept
 
-### Transformations as matrices
+### Transformations 作为 矩阵
 
-Every linear transformation in 2D can be written as a 2x2 matrix. The matrix tells you exactly where the basis vectors [1, 0] and [0, 1] end up. Everything else follows.
+Every linear transformation 在 2D can be written 作为 2x2 矩阵. 矩阵 tells you exactly where basis 向量 [1, 0] 和 [0, 1] end up. Everything else follows.
 
 ```mermaid
 graph LR
@@ -32,7 +32,7 @@ graph LR
         e1["e1 = [1, 0] (along x)"]
         e2["e2 = [0, 1] (along y)"]
     end
-    subgraph Transform["矩阵 M"]
+    subgraph Transform["Matrix M"]
         M["M = columns are new basis vectors"]
     end
     subgraph After["After Transformation M"]
@@ -45,7 +45,7 @@ graph LR
 
 ### Rotation
 
-A 2D rotation by angle theta keeps distances and angles intact. It moves every point along a circular arc.
+2D rotation 通过 angle theta keeps distances 和 angles intact. It moves every point along circular arc.
 
 ```mermaid
 graph LR
@@ -64,7 +64,7 @@ graph LR
     B --> R --> Bp
 ```
 
-In 3D, you rotate around an axis. Each axis has its own rotation matrix:
+In 3D, you rotate around axis. Each axis has its own rotation 矩阵:
 
 ```
 Rz(theta) = | cos  -sin  0 |     Rotate around z-axis
@@ -82,7 +82,7 @@ Ry(theta) = |  cos  0  sin |     Rotate around y-axis
 
 ### Scaling
 
-Scaling stretches or compresses along each axis independently.
+Scaling stretches 或 compresses along each axis independently.
 
 ```mermaid
 graph LR
@@ -103,7 +103,7 @@ graph LR
 
 ### Shearing
 
-Shearing tilts one axis while keeping the other fixed. It turns rectangles into parallelograms.
+Shearing tilts one axis while keeping other fixed. It turns rectangles into parallelograms.
 
 ```mermaid
 graph LR
@@ -122,13 +122,13 @@ graph LR
     B --> Sh --> Bp
 ```
 
-Shear matrices:
-- `Shx = [[1, k], [0, 1]]` shifts x by k * y
-- `Shy = [[1, 0], [k, 1]]` shifts y by k * x
+Shear 矩阵:
+- `Shx = [[1, k], [0, 1]]` shifts x 通过 k * y
+- `Shy = [[1, 0], [k, 1]]` shifts y 通过 k * x
 
 ### Reflection
 
-Reflection mirrors points across an axis or line.
+Reflection mirrors points across axis 或 line.
 
 ```mermaid
 graph LR
@@ -144,13 +144,13 @@ graph LR
     A --> R --> Ap
 ```
 
-Reflection matrices:
+Reflection 矩阵:
 - Reflect across y-axis: `[[-1, 0], [0, 1]]`
 - Reflect across x-axis: `[[1, 0], [0, -1]]`
 
 ### Composition: chaining transformations
 
-Applying transformation A then B is the same as multiplying their matrices: `result = B @ A @ point`. Order matters. Rotate then scale gives different results than scale then rotate.
+Applying transformation then B 是 same 作为 multiplying their 矩阵: `result = B @ @ point`. Order matters. Rotate then scale gives different results than scale then rotate.
 
 ```mermaid
 graph LR
@@ -170,11 +170,11 @@ graph LR
 
 Composed: `R @ S = [[0, -0.5], [2, 0]]`
 
-Different results. 矩阵 multiplication is not commutative.
+Different results. 矩阵 multiplication 是 not commutative.
 
-### Eigenvalues and eigenvectors
+### Eigenvalues 和 eigenvectors
 
-Most vectors change direction when a matrix hits them. Eigenvectors are special: the matrix only scales them, never rotates them. The scaling factor is the eigenvalue.
+Most 向量 change direction when 矩阵 hits them. Eigenvectors 是 special: 矩阵 only scales them, never rotates them. scaling factor 是 eigenvalue.
 
 ```
 A @ v = lambda * v
@@ -192,11 +192,11 @@ Eigenvector [1, -1] with eigenvalue 1:
   A @ [1,-1] = [1, -1] = 1 * [1, -1]  (same direction, unchanged)
 ```
 
-The matrix stretches space by 3x along [1, 1] and keeps [1, -1] unchanged. Every other direction is a mix of these two.
+矩阵 stretches space 通过 3x along [1, 1] 和 keeps [1, -1] unchanged. Every other direction 是 mix 的 这些 two.
 
 ### Eigendecomposition
 
-If a matrix has n linearly independent eigenvectors, it can be decomposed:
+If 矩阵 has n linearly independent eigenvectors, it can be decomposed:
 
 ```
 A = V @ D @ V^(-1)
@@ -210,15 +210,15 @@ This says: rotate into eigenvector coordinates, scale along each axis, rotate ba
 
 ### Why eigenvalues matter
 
-**PCA.** The eigenvectors of the covariance matrix are the principal components. The eigenvalues tell you how much variance each component captures. Sort by eigenvalue, keep the top k, and you have dimensionality reduction.
+**PCA.** eigenvectors 的 covariance 矩阵 是 principal components. eigenvalues tell you how much variance each component captures. Sort 通过 eigenvalue, keep top k, 和 you have dimensionality reduction.
 
-**Stability.** In recurrent networks and dynamical systems, eigenvalues with magnitude > 1 cause outputs to explode. Magnitude < 1 causes them to vanish. This is the vanishing/exploding gradient problem stated in one sentence.
+**Stability.** In recurrent networks 和 dynamical systems, eigenvalues 使用 magnitude > 1 cause 输出 到 explode. Magnitude < 1 causes them 到 vanish. 这是 vanishing/exploding gradient problem stated 在 one sentence.
 
-**Spectral methods.** Graph neural networks use eigenvalues of the adjacency matrix. Spectral clustering uses eigenvalues of the Laplacian. The eigenvectors reveal the structure of the graph.
+**Spectral methods.** Graph 神经网络 use eigenvalues 的 adjacency 矩阵. Spectral 聚类 uses eigenvalues 的 Laplacian. eigenvectors reveal structure 的 graph.
 
-### Determinant as volume scaling factor
+### Determinant 作为 volume scaling factor
 
-The determinant of a transformation matrix tells you how much it scales area (2D) or volume (3D).
+determinant 的 transformation 矩阵 tells you how much it scales area (2D) 或 volume (3D).
 
 ```
 det = 1:   area preserved (rotation)
@@ -232,9 +232,9 @@ det = -1:  area preserved but orientation flipped (reflection)
 | det(Reflection) | = -1     (orientation flipped)
 ```
 
-## 从零实现
+## Build It
 
-### Step 1: Transformation matrices from scratch (Python)
+### Step 1: Transformation 矩阵 从 scratch (Python)
 
 ```python
 import math
@@ -285,7 +285,7 @@ reflected = mat_vec_mul(reflection_y(), [2.0, 1.0])
 print(f"Reflect (2,1) across y: ({reflected[0]:.1f}, {reflected[1]:.1f})")
 ```
 
-### Step 2: Composition of transformations
+### Step 2: Composition 的 transformations
 
 ```python
 R = rotation_2d(math.pi / 2)
@@ -303,9 +303,9 @@ print(f"Scale then rotate 90: ({result2[0]:.2f}, {result2[1]:.2f})")
 print(f"Same? {result1 == result2}")
 ```
 
-### Step 3: Eigenvalues from scratch (2x2)
+### Step 3: Eigenvalues 从 scratch (2x2)
 
-For a 2x2 matrix `[[a, b], [c, d]]`, eigenvalues solve the characteristic equation: `lambda^2 - (a+d)*lambda + (ad - bc) = 0`.
+For 2x2 矩阵 `[[, b], [c, d]]`, eigenvalues solve characteristic equation: `lambda^2 - (+d)*lambda + (ad - bc) = 0`.
 
 ```python
 def eigenvalues_2x2(matrix):
@@ -338,7 +338,7 @@ def eigenvector_2x2(matrix, eigenvalue):
 
 A = [[2, 1], [1, 2]]
 vals = eigenvalues_2x2(A)
-print(f"矩阵: {A}")
+print(f"Matrix: {A}")
 print(f"Eigenvalues: {vals[0]:.4f}, {vals[1]:.4f}")
 
 for val in vals:
@@ -350,7 +350,7 @@ for val in vals:
     print(f"    l*v = {[round(x,4) for x in scaled]}")
 ```
 
-### Step 4: Determinant as volume scaling factor
+### Step 4: Determinant 作为 volume scaling factor
 
 ```python
 def det_2x2(matrix):
@@ -366,9 +366,9 @@ print(f"det(singular)     = {det_2x2(singular):.1f}")
 print("Singular: columns are proportional, space collapses to a line.")
 ```
 
-## 框架应用
+## Use It
 
-NumPy handles all of this with optimized routines.
+NumPy handles all 的 这个 使用 optimized routines.
 
 ```python
 import numpy as np
@@ -407,7 +407,7 @@ print(f"Original:\n{B}")
 print(f"Reconstructed:\n{reconstructed}")
 ```
 
-### 3D rotations with NumPy
+### 3D rotations 使用 NumPy
 
 ```python
 def rotation_3d_z(theta):
@@ -427,35 +427,35 @@ print(f"Rotate 90 around z: {np.round(rotated_z, 4)}")
 print(f"Rotate 90 around x: {np.round(rotated_x, 4)}")
 ```
 
-## 产物交付
+## Ship It
 
-This lesson builds the geometric foundation for PCA (Phase 2) and neural network weight analysis. The eigenvalue/eigenvector code built here is the same algorithm that powers dimensionality reduction, spectral clustering, and stability analysis in production ML systems.
+This lesson builds geometric foundation 为了 PCA (Phase 2) 和 神经网络 权重 analysis. eigenvalue/eigenvector 代码 built here 是 same 算法 powers dimensionality reduction, spectral 聚类, 和 stability analysis 在 production ML systems.
 
-## 练习
+## Exercises
 
-1. Apply rotation, scaling, and shearing to a unit square (corners at [0,0], [1,0], [1,1], [0,1]). Print the transformed corners for each. Verify that rotation preserves distances between corners.
+1. Apply rotation, scaling, 和 shearing 到 unit square (corners 在 [0,0], [1,0], [1,1], [0,1]). Print transformed corners 为了 each. Verify rotation preserves distances between corners.
 
-2. Find the eigenvalues of the matrix [[4, 2], [1, 3]] by hand using the characteristic equation. Then verify with your from-scratch function and with NumPy.
+2. Find eigenvalues 的 矩阵 [[4, 2], [1, 3]] 通过 hand using characteristic equation. Then verify 使用 your 从-scratch 函数 和 使用 NumPy.
 
-3. Create a composition of three transformations (rotate 30 degrees, scale by [1.5, 0.8], shear with kx=0.3) and apply it to 8 points arranged in a circle. Print before and after coordinates. Compute the determinant of the composed matrix and verify it equals the product of the individual determinants.
+3. Create composition 的 three transformations (rotate 30 degrees, scale 通过 [1.5, 0.8], shear 使用 kx=0.3) 和 apply it 到 8 points arranged 在 circle. Print before 和 after coordinates. Compute determinant 的 composed 矩阵 和 verify it equals product 的 individual determinants.
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Rotation matrix | "Spins things" | An orthogonal matrix that moves points along circular arcs while preserving distances and angles. Determinant is always 1. |
-| Scaling matrix | "Makes things bigger" | A diagonal matrix that stretches or compresses independently along each axis. Determinant is the product of scale factors. |
-| Shearing matrix | "Slants things" | A matrix that shifts one coordinate proportionally to another, turning rectangles into parallelograms. Determinant is 1. |
-| Reflection | "Mirrors things" | A matrix that flips space across an axis or plane. Determinant is -1. |
-| Composition | "Do two things" | Multiplying transformation matrices to chain operations. Order matters: B @ A means apply A first, then B. |
-| Eigenvector | "Special direction" | A direction that the matrix only scales, never rotates. The transformation's fingerprint. |
-| Eigenvalue | "How much it stretches" | The scalar factor by which the matrix scales its eigenvector. Can be negative (flip) or complex (rotation). |
-| Eigendecomposition | "Break the matrix apart" | Writing a matrix as V @ D @ V^(-1), separating it into its fundamental scaling directions and magnitudes. |
-| Determinant | "A single number from a matrix" | The factor by which the transformation scales area (2D) or volume (3D). Zero means the transformation is irreversible. |
-| Characteristic equation | "Where eigenvalues come from" | det(A - lambda * I) = 0. The polynomial whose roots are the eigenvalues. |
+| Rotation 矩阵 | "Spins things" | orthogonal 矩阵 moves points along circular arcs while preserving distances 和 angles. Determinant 是 always 1. |
+| Scaling 矩阵 | "Makes things bigger" | diagonal 矩阵 stretches 或 compresses independently along each axis. Determinant 是 product 的 scale factors. |
+| Shearing 矩阵 | "Slants things" | 矩阵 shifts one coordinate proportionally 到 another, turning rectangles into parallelograms. Determinant 是 1. |
+| Reflection | "Mirrors things" | 矩阵 flips space across axis 或 plane. Determinant 是 -1. |
+| Composition | "Do two things" | Multiplying transformation 矩阵 到 chain operations. Order matters: B @ means apply first, then B. |
+| Eigenvector | "Special direction" | direction 矩阵 only scales, never rotates. transformation's fingerprint. |
+| Eigenvalue | "How much it stretches" | scalar factor 通过 which 矩阵 scales its eigenvector. Can be negative (flip) 或 complex (rotation). |
+| Eigendecomposition | "Break 矩阵 apart" | Writing 矩阵 作为 V @ D @ V^(-1), separating it into its fundamental scaling directions 和 magnitudes. |
+| Determinant | " single number 从 矩阵" | factor 通过 which transformation scales area (2D) 或 volume (3D). Zero means transformation 是 irreversible. |
+| Characteristic equation | "Where eigenvalues come 从" | det( - lambda * I) = 0. polynomial whose roots 是 eigenvalues. |
 
 ## Further Reading
 
-- [3Blue1Brown: Linear Transformations](https://www.3blue1brown.com/lessons/linear-transformations) -- visual intuition for how matrices reshape space
-- [3Blue1Brown: Eigenvectors and Eigenvalues](https://www.3blue1brown.com/lessons/eigenvalues) -- the best visual explanation of what eigenvectors mean geometrically
-- [MIT 18.06 Lecture 21: Eigenvalues and Eigenvectors](https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/) -- Gilbert Strang's classic treatment
+- [3Blue1Brown: Linear Transformations](https://www.3blue1brown.com/lessons/linear-transformations) -- visual intuition 为了 how 矩阵 reshape space
+- [3Blue1Brown: Eigenvectors 和 Eigenvalues](https://www.3blue1brown.com/lessons/eigenvalues) -- best visual explanation 的 what eigenvectors mean geometrically
+- [MIT 18.06 Lecture 21: Eigenvalues 和 Eigenvectors](https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/) -- Gilbert Strang's classic treatment

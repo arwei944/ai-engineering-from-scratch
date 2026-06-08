@@ -1,33 +1,33 @@
-# Python 环境管理
+# Python Environments
 
-> Dependency hell is real. Virtual environments are the cure.
+> Dependency hell 是 real. Virtual environments 是 cure.
 
-**类型:** 实现
+**Type:** Build
 **Languages:** Shell
-**前置要求:** 阶段0, 课程01
+**Prerequisites:** Phase 0, Lesson 01
 **Time:** ~30 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Create isolated virtual environments using `uv`, `venv`, or `conda`
-- Write a `pyproject.toml` with optional dependency groups and generate lockfiles for reproducibility
-- Diagnose and fix common pitfalls: global installs, pip/conda mixing, CUDA version mismatches
-- Implement a per-phase environment strategy for projects with conflicting dependencies
+- Create isolated virtual environments using `uv`, `venv`, 或 `conda`
+- Write `pyproject.toml` 使用 optional dependency groups 和 generate lockfiles 为了 reproducibility
+- Diagnose 和 fix common pitfalls: global installs, pip/conda mixing, CUDA version mismatches
+- Implement per-phase environment strategy 为了 projects 使用 conflicting dependencies
 
-## 问题引入
+## Problem
 
-You install PyTorch 2.4 for a fine-tuning project. Next week, a different project needs PyTorch 2.1 because its CUDA build is pinned. You upgrade globally, and the first project breaks. You downgrade, and the second one breaks.
+You install PyTorch 2.4 为了 fine-tuning project. Next week, different project needs PyTorch 2.1 because its CUDA build 是 pinned. You upgrade globally, 和 first project breaks. You downgrade, 和 second one breaks.
 
-This is dependency hell. It happens constantly in AI/ML work because:
+这是 dependency hell. It happens constantly 在 AI/ML work because:
 
-- PyTorch, JAX, and TensorFlow each ship their own CUDA bindings
-- Model libraries pin specific framework versions
-- A global `pip install` overwrites whatever was there before
-- CUDA 11.8 builds don't work with CUDA 12.x drivers (and vice versa)
+- PyTorch, JAX, 和 TensorFlow each ship their own CUDA bindings
+- 模型 libraries pin specific framework versions
+- global `pip install` overwrites whatever was there before
+- CUDA 11.8 builds don't work 使用 CUDA 12.x drivers (和 vice versa)
 
-The fix: every project gets its own isolated environment with its own packages.
+fix: every project gets its own isolated environment 使用 its own packages.
 
-## 概念讲解
+## Concept
 
 ```mermaid
 graph TD
@@ -45,11 +45,11 @@ graph TD
     end
 ```
 
-## 从零实现
+## Build It
 
 ### Option 1: uv venv (Recommended)
 
-`uv` is the fastest Python package manager (10-100x faster than pip). It handles virtual environments, Python versions, and dependency resolution in one tool.
+`uv` 是 fastest Python package manager (10-100x faster than pip). It handles virtual environments, Python versions, 和 dependency resolution 在 one tool.
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -67,7 +67,7 @@ Install packages:
 uv pip install torch numpy
 ```
 
-Create a project with `pyproject.toml` in one step:
+Create project 使用 `pyproject.toml` 在 one step:
 
 ```bash
 uv init my-ai-project
@@ -75,9 +75,9 @@ cd my-ai-project
 uv add torch numpy matplotlib
 ```
 
-### Option 2: venv (Built-in)
+### Option 2: venv (Built-在)
 
-If you can't install `uv`, Python ships with `venv`:
+If you can't install `uv`, Python ships 使用 `venv`:
 
 ```bash
 python3 -m venv .venv
@@ -87,15 +87,15 @@ source .venv/bin/activate  # Linux/macOS
 pip install torch numpy
 ```
 
-Slower than `uv`, but works everywhere Python is installed.
+Slower than `uv`, but works everywhere Python 是 installed.
 
 ### Option 3: conda (When You Need It)
 
-Conda manages non-Python dependencies like CUDA toolkits, cuDNN, and C libraries. Use it when:
+Conda manages non-Python dependencies like CUDA toolkits, cuDNN, 和 C libraries. Use it when:
 
-- You need a specific CUDA toolkit version without installing it system-wide
-- You're on a shared cluster where you can't install system packages
-- A library's install instructions say "use conda"
+- 你需要 specific CUDA toolkit version without installing it system-wide
+- You're 在 shared cluster where you can't install system packages
+- library's install instructions say "use conda"
 
 ```bash
 # Install miniconda (not the full Anaconda)
@@ -108,11 +108,11 @@ conda activate myproject
 conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia
 ```
 
-One rule: if you use conda for an environment, use conda for all packages in that environment. Mixing `pip install` into a conda env causes dependency conflicts that are painful to debug.
+One rule: if you use conda 为了 environment, use conda 为了 all packages 在 environment. Mixing `pip install` into conda env causes dependency conflicts 是 painful 到 debug.
 
 ### For This Course: Per-Phase Strategy
 
-You could create one environment for the whole course. Don't. Different phases need different (sometimes conflicting) dependencies.
+You could create one environment 为了 whole course. Don't. Different phases need different (sometimes conflicting) dependencies.
 
 Strategy:
 
@@ -130,11 +130,11 @@ ai-engineering-from-scratch/
 │       └── .venv/            <-- API SDKs, no torch needed
 ```
 
-The script in `code/env_setup.sh` creates the base environment for this course.
+script 在 `代码/env_setup.sh` creates base environment 为了 这个 course.
 
 ## pyproject.toml Basics
 
-Every Python project should have a `pyproject.toml`. It replaces `setup.py`, `setup.cfg`, and `requirements.txt` in one file.
+Every Python project should have `pyproject.toml`. It replaces `setup.py`, `setup.cfg`, 和 `requirements.txt` 在 one file.
 
 ```toml
 [project]
@@ -163,7 +163,7 @@ uv pip install -e ".[torch,llm]" # everything
 
 ## Lockfiles
 
-A lockfile pins every dependency (including transitive ones) to exact versions. This guarantees reproducibility: anyone who installs from the lockfile gets exactly the same packages.
+lockfile pins every dependency (including transitive ones) 到 exact versions. This guarantees reproducibility: anyone who installs 从 lockfile gets exactly same packages.
 
 ```bash
 # uv generates uv.lock automatically when using uv add
@@ -174,7 +174,7 @@ uv pip compile pyproject.toml -o requirements.lock
 uv pip install -r requirements.lock
 ```
 
-Commit your lockfile to git. When someone clones the repo, they install from the lockfile and get identical versions.
+Commit your lockfile 到 git. When someone clones repo, they install 从 lockfile 和 get identical versions.
 
 ## Common Mistakes
 
@@ -194,7 +194,7 @@ which python       # should show .venv/bin/python, not /usr/bin/python
 which pip           # should show .venv/bin/pip
 ```
 
-### 2. Mixing pip and conda
+### 2. Mixing pip 和 conda
 
 ```bash
 conda create -n myenv python=3.12
@@ -204,9 +204,9 @@ pip install some-other-package   # BAD: can break conda's dependency tracking
 conda install some-other-package # GOOD: let conda manage everything
 ```
 
-If you must use pip inside conda (some packages are pip-only), install all conda packages first, then pip packages last.
+If you must use pip inside conda (some packages 是 pip-only), install all conda packages first, then pip packages last.
 
-### 3. Forgetting to activate
+### 3. Forgetting 到 activate
 
 ```bash
 python train.py           # uses system Python, missing packages
@@ -214,19 +214,19 @@ source .venv/bin/activate
 python train.py           # uses project Python, packages found
 ```
 
-Your shell prompt should show the environment name:
+Your shell prompt should show environment name:
 
 ```
 (.venv) $ python train.py
 ```
 
-### 4. Committing .venv to git
+### 4. Committing .venv 到 git
 
 ```bash
 echo ".venv/" >> .gitignore
 ```
 
-Virtual environments are 200MB-2GB. They're local, not portable between machines. Commit `pyproject.toml` and the lockfile instead.
+Virtual environments 是 200MB-2GB. They're local, not portable between machines. Commit `pyproject.toml` 和 lockfile instead.
 
 ### 5. CUDA version mismatch
 
@@ -238,29 +238,29 @@ python -c "import torch; print(torch.version.cuda)"  # shows PyTorch CUDA versio
 # PyTorch CUDA version must be <= driver CUDA version.
 ```
 
-## 框架应用
+## Use It
 
-Run the setup script to create your course environment:
+Run setup script 到 create your course environment:
 
 ```bash
 bash phases/00-setup-and-tooling/06-python-environments/code/env_setup.sh
 ```
 
-This creates a `.venv` at the repo root with core dependencies installed and verified.
+This creates `.venv` 在 repo root 使用 core dependencies installed 和 verified.
 
-## 练习
+## Exercises
 
-1. Run `env_setup.sh` and verify all checks pass
-2. Create a second virtual environment, install a different version of numpy in it, and confirm the two environments are isolated
-3. Write a `pyproject.toml` for a project that needs both PyTorch and the Anthropic SDK
-4. Deliberately install a package globally (without activating a venv), notice where it goes, then uninstall it
+1. Run `env_setup.sh` 和 verify all checks pass
+2. Create second virtual environment, install different version 的 numpy 在 it, 和 confirm two environments 是 isolated
+3. Write `pyproject.toml` 为了 project needs both PyTorch 和 Anthropic SDK
+4. Deliberately install package globally (without activating venv), notice where it goes, then uninstall it
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Virtual environment | "A venv" | An isolated directory containing a Python interpreter and packages, separate from the system Python |
-| Lockfile | "Pinned dependencies" | A file listing every package and its exact version, guaranteeing identical installs across machines |
-| pyproject.toml | "The new setup.py" | The standard Python project configuration file, replacing setup.py/setup.cfg/requirements.txt |
-| Transitive dependency | "A dependency of a dependency" | Package B depends on C; if you install A which depends on B, C is a transitive dependency of A |
-| CUDA mismatch | "My GPU isn't working" | PyTorch was compiled for a different CUDA version than what your GPU driver supports |
+| Virtual environment | " venv" | isolated directory containing Python interpreter 和 packages, separate 从 system Python |
+| Lockfile | "Pinned dependencies" | file listing every package 和 its exact version, guaranteeing identical installs across machines |
+| pyproject.toml | " new setup.py" | standard Python project configuration file, replacing setup.py/setup.cfg/requirements.txt |
+| Transitive dependency | " dependency 的 dependency" | Package B depends 在 C; if you install which depends 在 B, C 是 transitive dependency 的 |
+| CUDA mismatch | "My GPU isn't working" | PyTorch was compiled 为了 different CUDA version than what your GPU driver supports |

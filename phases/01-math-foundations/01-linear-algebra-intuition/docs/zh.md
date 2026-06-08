@@ -1,47 +1,47 @@
 # 线性代数 Intuition
 
-> Every AI model is just matrix math wearing a fancy hat.
+> Every AI 模型 是 just 矩阵 math wearing fancy hat.
 
-**类型:** 学习
-**语言:** Python, Julia
+**Type:** Learn
+**Languages:** Python, Julia
 **Prerequisites:** Phase 0
 **Time:** ~60 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement vector and matrix operations (addition, dot product, matrix multiply) from scratch in Python
-- Explain geometrically what the dot product, projection, and Gram-Schmidt process do
-- Determine linear independence, rank, and basis of a set of vectors using row reduction
-- Connect linear algebra concepts to their AI applications: embeddings, attention scores, and LoRA
+- Implement 向量 和 矩阵 operations (addition, dot product, 矩阵 multiply) 从 scratch 在 Python
+- Explain geometrically what dot product, projection, 和 Gram-Schmidt process do
+- Determine linear independence, rank, 和 basis 的 set 的 向量 using row reduction
+- Connect 线性代数 concepts 到 their AI applications: embeddings, attention scores, 和 LoRA
 
-## 问题引入
+## Problem
 
-Open any ML paper. Within the first page, you'll see vectors, matrices, dot products, and transformations. Without linear algebra intuition, these are just symbols. With it, you can see what a neural network is actually doing -- moving points around in space.
+Open any ML paper. Within first page, you'll see 向量, 矩阵, dot products, 和 transformations. Without 线性代数 intuition, 这些 是 just symbols. With it, you can see what 神经网络 是 actually doing -- moving points around 在 space.
 
-You don't need to be a mathematician. You need to see what these operations mean geometrically, then code them yourself.
+You don't need 到 be mathematician. 你需要 到 see what 这些 operations mean geometrically, then 代码 them yourself.
 
-## 概念讲解
+## Concept
 
-### 向量s Are Points (and Directions)
+### Vectors Are Points (和 Directions)
 
-A vector is just a list of numbers. But those numbers mean something -- they're coordinates in space.
+向量 是 just list 的 numbers. But 那些 numbers mean something -- they're coordinates 在 space.
 
-**2D vector [3, 2]:**
+**2D 向量 [3, 2]:**
 
 | x | y | Point |
 |---|---|-------|
-| 3 | 2 | The vector points from origin (0,0) to (3, 2) on the plane |
+| 3 | 2 | 向量 points 从 origin (0,0) 到 (3, 2) 在 plane |
 
-The vector has magnitude sqrt(3^2 + 2^2) = sqrt(13) and points up and to the right.
+向量 has magnitude sqrt(3^2 + 2^2) = sqrt(13) 和 points up 和 到 right.
 
-In AI, vectors represent everything:
-- A word → a vector of 768 numbers (its "meaning" in embedding space)
-- An image → a vector of millions of pixel values
-- A user → a vector of preferences
+In AI, 向量 represent everything:
+- word → 向量 的 768 numbers (its "meaning" 在 embedding space)
+- image → 向量 的 millions 的 pixel values
+- user → 向量 的 preferences
 
 ### Matrices Are Transformations
 
-A matrix transforms one vector into another. It can rotate, scale, stretch, or project.
+矩阵 transforms one 向量 into another. It can rotate, scale, stretch, 或 project.
 
 ```mermaid
 graph LR
@@ -49,7 +49,7 @@ graph LR
         A["Point A"]
         B["Point B"]
     end
-    subgraph 矩阵["矩阵 Multiplication"]
+    subgraph Matrix["Matrix Multiplication"]
         M["M (transformation)"]
     end
     subgraph After
@@ -62,14 +62,14 @@ graph LR
     M --> B2
 ```
 
-In AI, matrices ARE the model:
-- Neural network weights → matrices that transform input into output
-- Attention scores → matrices that decide what to focus on
-- Embeddings → matrices that map words to vectors
+In AI, 矩阵 ARE 模型:
+- Neural network 权重 → 矩阵 transform 输入 into 输出
+- Attention scores → 矩阵 decide what 到 focus 在
+- Embeddings → 矩阵 map words 到 向量
 
-### The Dot Product Measures Similarity
+### Dot Product Measures Similarity
 
-The dot product of two vectors tells you how similar they are.
+dot product 的 two 向量 tells you how similar they 是.
 
 ```
 a · b = a₁×b₁ + a₂×b₂ + ... + aₙ×bₙ
@@ -79,13 +79,13 @@ Perpendicular:       a · b = 0  (unrelated)
 Opposite direction:  a · b < 0  (dissimilar)
 ```
 
-This is literally how search engines, recommendation systems, and RAG work -- find vectors with high dot products.
+这是 literally how search engines, recommendation systems, 和 RAG work -- find 向量 使用 high dot products.
 
 ### Linear Independence
 
-向量s are linearly independent if no vector in the set can be written as a combination of the others. If v1, v2, v3 are independent, they span a 3D space. If one is a combination of the others, they only span a plane.
+Vectors 是 linearly independent if no 向量 在 set can be written 作为 combination 的 others. If v1, v2, v3 是 independent, they span 3D space. If one 是 combination 的 others, they only span plane.
 
-Why it matters for AI: your feature matrix should have linearly independent columns. If two features are perfectly correlated (linearly dependent), the model cannot distinguish their effects. This causes multicollinearity in regression -- the weight matrix becomes unstable, and small input changes produce wild output swings.
+Why it matters 为了 AI: your 特征 矩阵 should have linearly independent columns. If two 特征 是 perfectly correlated (linearly dependent), 模型 cannot distinguish their effects. This causes multicollinearity 在 回归 -- 权重 矩阵 becomes unstable, 和 small 输入 changes produce wild 输出 swings.
 
 **Concrete example:**
 
@@ -95,42 +95,42 @@ v2 = [0, 1, 0]
 v3 = [2, 1, 0]   # v3 = 2*v1 + v2
 ```
 
-v1 and v2 are independent -- neither is a scalar multiple or combination of the other. But v3 = 2*v1 + v2, so {v1, v2, v3} is a dependent set. These three vectors all lie in the xy-plane. No matter how you combine them, you cannot reach [0, 0, 1]. You have three vectors but only two dimensions of freedom.
+v1 和 v2 是 independent -- neither 是 scalar multiple 或 combination 的 other. But v3 = 2*v1 + v2, so {v1, v2, v3} 是 dependent set. These three 向量 all lie 在 xy-plane. No matter how you combine them, you cannot reach [0, 0, 1]. You have three 向量 but only two dimensions 的 freedom.
 
-In a dataset: if feature_3 = 2*feature_1 + feature_2, adding feature_3 gives the model zero new information. Worse, it makes the normal equations singular -- there is no unique solution for the weights.
+In 数据集: if feature_3 = 2*feature_1 + feature_2, adding feature_3 gives 模型 zero new information. Worse, it makes normal equations singular -- there 是 no unique solution 为了 权重.
 
-### Basis and Rank
+### Basis 和 Rank
 
-A basis is a minimal set of linearly independent vectors that span the entire space. The number of basis vectors is the dimension of the space.
+basis 是 minimal set 的 linearly independent 向量 span entire space. number 的 basis 向量 是 dimension 的 space.
 
-The standard basis for 3D space is {[1,0,0], [0,1,0], [0,0,1]}. But any three independent vectors in 3D form a valid basis. The choice of basis is a choice of coordinate system.
+standard basis 为了 3D space 是 {[1,0,0], [0,1,0], [0,0,1]}. But any three independent 向量 在 3D form valid basis. choice 的 basis 是 choice 的 coordinate system.
 
-Rank of a matrix = number of linearly independent columns = number of linearly independent rows. If rank < min(rows, cols), the matrix is rank-deficient. This means:
-- The system has infinitely many solutions (or none)
-- Information is lost in the transformation
-- The matrix cannot be inverted
+Rank 的 矩阵 = number 的 linearly independent columns = number 的 linearly independent rows. If rank < min(rows, cols), 矩阵 是 rank-deficient. This means:
+- system has infinitely many solutions (或 none)
+- Information 是 lost 在 transformation
+- 矩阵 cannot be inverted
 
-| Situation | Rank | What it means for ML |
+| Situation | Rank | What it means 为了 ML |
 |-----------|------|---------------------|
-| Full rank (rank = min(m, n)) | Maximum possible | Unique least-squares solution exists. Model is well-conditioned. |
-| Rank deficient (rank < min(m, n)) | Below maximum | Features are redundant. Infinitely many weight solutions. Regularization needed. |
-| Rank 1 | 1 | Every column is a scaled copy of one vector. All data lies on a line. |
-| Near rank-deficient (small singular values) | Numerically low | 矩阵 is ill-conditioned. Tiny input noise causes large output changes. Use SVD truncation or ridge regression. |
+| Full rank (rank = min(m, n)) | Maximum possible | Unique least-squares solution exists. 模型 是 well-conditioned. |
+| Rank deficient (rank < min(m, n)) | Below maximum | Features 是 redundant. Infinitely many 权重 solutions. 正则化 needed. |
+| Rank 1 | 1 | Every column 是 scaled copy 的 one 向量. All 数据 lies 在 line. |
+| Near rank-deficient (small singular values) | Numerically low | 矩阵 是 ill-conditioned. Tiny 输入 noise causes large 输出 changes. Use SVD truncation 或 ridge 回归. |
 
 ### Projection
 
-Projecting vector **a** onto vector **b** gives the component of **a** in the direction of **b**:
+Projecting 向量 **** onto 向量 **b** gives component 的 **** 在 direction 的 **b**:
 
 ```
 proj_b(a) = (a dot b / b dot b) * b
 ```
 
-The residual (a - proj_b(a)) is perpendicular to b. This orthogonal decomposition is the foundation of least-squares fitting.
+residual ( - proj_b()) 是 perpendicular 到 b. This orthogonal decomposition 是 foundation 的 least-squares fitting.
 
-Projection is everywhere in ML:
-- Linear regression minimizes the distance from observations to the column space -- the solution IS a projection
-- PCA projects data onto the directions of maximum variance
-- Attention in transformers computes projections of queries onto keys
+Projection 是 everywhere 在 ML:
+- Linear 回归 minimizes distance 从 observations 到 column space -- solution IS projection
+- PCA projects 数据 onto directions 的 maximum variance
+- Attention 在 transformers computes projections 的 queries onto keys
 
 ```mermaid
 graph LR
@@ -143,21 +143,21 @@ graph LR
     end
 ```
 
-**Example:** a = [3, 4], b = [1, 0]
+**Example:** = [3, 4], b = [1, 0]
 
-proj_b(a) = (3*1 + 4*0) / (1*1 + 0*0) * [1, 0] = 3 * [1, 0] = [3, 0]
+proj_b() = (3*1 + 4*0) / (1*1 + 0*0) * [1, 0] = 3 * [1, 0] = [3, 0]
 
-The projection drops the y-component. This is dimensionality reduction in its simplest form -- throw away the directions you don't care about.
+projection drops y-component. 这是 dimensionality reduction 在 its simplest form -- throw away directions you don't care about.
 
 ### Gram-Schmidt Process
 
-Converting any set of independent vectors into an orthonormal basis. Orthonormal means every vector has length 1 and every pair is perpendicular.
+Converting any set 的 independent 向量 into orthonormal basis. Orthonormal means every 向量 has length 1 和 every pair 是 perpendicular.
 
-The algorithm:
-1. Take the first vector, normalize it
-2. Take the second vector, subtract its projection onto the first, normalize
-3. Take the third vector, subtract its projections onto all previous vectors, normalize
-4. Repeat for remaining vectors
+算法:
+1. Take first 向量, normalize it
+2. Take second 向量, subtract its projection onto first, normalize
+3. Take third 向量, subtract its projections onto all previous 向量, normalize
+4. Repeat 为了 remaining 向量
 
 ```
 Input:  v1, v2, v3, ... (linearly independent)
@@ -173,26 +173,26 @@ u3 = w3 / |w3|
 Output: u1, u2, u3, ... (orthonormal basis)
 ```
 
-This is how QR decomposition works internally. Q is the orthonormal basis, R captures the projection coefficients. QR decomposition is used in:
+这是 how QR decomposition works internally. Q 是 orthonormal basis, R captures projection coefficients. QR decomposition 是 used 在:
 - Solving linear systems (more stable than Gaussian elimination)
-- Computing eigenvalues (QR algorithm)
-- Least-squares regression (the standard numerical method)
+- Computing eigenvalues (QR 算法)
+- Least-squares 回归 ( standard numerical method)
 
-## 从零实现
+## Build It
 
-### Step 1: 向量s from scratch (Python)
+### Step 1: Vectors 从 scratch (Python)
 
 ```python
-class 向量:
+class Vector:
     def __init__(self, components):
         self.components = list(components)
         self.dim = len(self.components)
 
     def __add__(self, other):
-        return 向量([a + b for a, b in zip(self.components, other.components)])
+        return Vector([a + b for a, b in zip(self.components, other.components)])
 
     def __sub__(self, other):
-        return 向量([a - b for a, b in zip(self.components, other.components)])
+        return Vector([a - b for a, b in zip(self.components, other.components)])
 
     def dot(self, other):
         return sum(a * b for a, b in zip(self.components, other.components))
@@ -202,17 +202,17 @@ class 向量:
 
     def normalize(self):
         mag = self.magnitude()
-        return 向量([x / mag for x in self.components])
+        return Vector([x / mag for x in self.components])
 
     def cosine_similarity(self, other):
         return self.dot(other) / (self.magnitude() * other.magnitude())
 
     def __repr__(self):
-        return f"向量({self.components})"
+        return f"Vector({self.components})"
 
 
-a = 向量([1, 2, 3])
-b = 向量([4, 5, 6])
+a = Vector([1, 2, 3])
+b = Vector([4, 5, 6])
 
 print(f"a + b = {a + b}")
 print(f"a · b = {a.dot(b)}")
@@ -220,17 +220,17 @@ print(f"|a| = {a.magnitude():.4f}")
 print(f"cosine similarity = {a.cosine_similarity(b):.4f}")
 ```
 
-### Step 2: Matrices from scratch (Python)
+### Step 2: Matrices 从 scratch (Python)
 
 ```python
-class 矩阵:
+class Matrix:
     def __init__(self, rows):
         self.rows = [list(row) for row in rows]
         self.shape = (len(self.rows), len(self.rows[0]))
 
     def __matmul__(self, other):
-        if isinstance(other, 向量):
-            return 向量([
+        if isinstance(other, Vector):
+            return Vector([
                 sum(self.rows[i][j] * other.components[j] for j in range(self.shape[1]))
                 for i in range(self.shape[0])
             ])
@@ -243,34 +243,34 @@ class 矩阵:
                     for k in range(self.shape[1])
                 ))
             rows.append(row)
-        return 矩阵(rows)
+        return Matrix(rows)
 
     def transpose(self):
-        return 矩阵([
+        return Matrix([
             [self.rows[j][i] for j in range(self.shape[0])]
             for i in range(self.shape[1])
         ])
 
     def __repr__(self):
-        return f"矩阵({self.rows})"
+        return f"Matrix({self.rows})"
 
 
-rotation_90 = 矩阵([[0, -1], [1, 0]])
-point = 向量([3, 1])
+rotation_90 = Matrix([[0, -1], [1, 0]])
+point = Vector([3, 1])
 
 rotated = rotation_90 @ point
 print(f"Original: {point}")
 print(f"Rotated 90°: {rotated}")
 ```
 
-### Step 3: Why this matters for AI
+### Step 3: Why 这个 matters 为了 AI
 
 ```python
 import random
 
 random.seed(42)
-weights = 矩阵([[random.gauss(0, 0.1) for _ in range(3)] for _ in range(2)])
-input_vector = 向量([1.0, 0.5, -0.3])
+weights = Matrix([[random.gauss(0, 0.1) for _ in range(3)] for _ in range(2)])
+input_vector = Vector([1.0, 0.5, -0.3])
 
 output = weights @ input_vector
 print(f"Input (3D): {input_vector}")
@@ -289,20 +289,20 @@ println("a · b = ", a ⋅ b)       # Julia supports unicode operators
 println("|a| = ", √(a ⋅ a))
 println("cosine = ", (a ⋅ b) / (√(a ⋅ a) * √(b ⋅ b)))
 
-# 矩阵-vector multiplication
+# Matrix-vector multiplication
 W = [0.1 -0.2 0.3; 0.4 0.5 -0.1]
 x = [1.0, 0.5, -0.3]
 println("Wx = ", W * x)
 println("This is a neural network layer.")
 ```
 
-### Step 5: Linear independence and projection from scratch (Python)
+### Step 5: Linear independence 和 projection 从 scratch (Python)
 
 ```python
 def is_linearly_independent(vectors):
     n = len(vectors)
     dim = len(vectors[0].components)
-    mat = 矩阵([v.components[:] for v in vectors])
+    mat = Matrix([v.components[:] for v in vectors])
     rows = [row[:] for row in mat.rows]
     rank = 0
     for col in range(dim):
@@ -326,7 +326,7 @@ def is_linearly_independent(vectors):
 
 def project(a, b):
     scalar = a.dot(b) / b.dot(b)
-    return 向量([scalar * x for x in b.components])
+    return Vector([scalar * x for x in b.components])
 
 
 def gram_schmidt(vectors):
@@ -342,9 +342,9 @@ def gram_schmidt(vectors):
     return orthonormal
 
 
-v1 = 向量([1, 0, 0])
-v2 = 向量([1, 1, 0])
-v3 = 向量([1, 1, 1])
+v1 = Vector([1, 0, 0])
+v2 = Vector([1, 1, 0])
+v3 = Vector([1, 1, 1])
 basis = gram_schmidt([v1, v2, v3])
 for i, u in enumerate(basis):
     print(f"u{i+1} = {u}")
@@ -355,9 +355,9 @@ print(f"u1 · u3 = {basis[0].dot(basis[2]):.6f}")
 print(f"u2 · u3 = {basis[1].dot(basis[2]):.6f}")
 ```
 
-## 框架应用
+## Use It
 
-Now the same thing with NumPy -- what you'll actually use in practice:
+Now same thing 使用 NumPy -- what you'll actually use 在 practice:
 
 ```python
 import numpy as np
@@ -375,7 +375,7 @@ x = np.array([1.0, 0.5, -0.3])
 print(f"Wx = {W @ x}")
 ```
 
-### Rank, Projection, and QR with NumPy
+### Rank, Projection, 和 QR 使用 NumPy
 
 ```python
 import numpy as np
@@ -393,7 +393,7 @@ print(f"Q is orthogonal: {np.allclose(Q @ Q.T, np.eye(3))}")
 print(f"R is upper triangular: {np.allclose(R, np.triu(R))}")
 ```
 
-### PyTorch -- Tensors Are 向量s with Autodiff
+### PyTorch -- Tensors Are Vectors 使用 Autodiff
 
 ```python
 import torch
@@ -410,50 +410,50 @@ print(f"dot product = {similarity.item():.4f}")
 print(f"d(dot)/dx = {x.grad}")
 ```
 
-The gradient of the dot product with respect to x is just y. PyTorch computed this automatically. Every operation in a neural network is built from operations like this -- matrix multiplies, dot products, projections -- and autodiff tracks gradients through all of them.
+gradient 的 dot product 使用 respect 到 x 是 just y. PyTorch computed 这个 automatically. Every operation 在 神经网络 是 built 从 operations like 这个 -- 矩阵 multiplies, dot products, projections -- 和 autodiff tracks gradients through all 的 them.
 
-You just built from scratch what NumPy does in one line. Now you know what's happening under the hood.
+You just built 从 scratch what NumPy does 在 one line. Now you know what's happening under hood.
 
-## 产物交付
+## Ship It
 
 This lesson produces:
-- `outputs/prompt-linear-algebra-tutor.md` -- a prompt for AI assistants to teach linear algebra through geometric intuition
+- `输出/prompt-linear-algebra-tutor.md` -- prompt 为了 AI assistants 到 teach 线性代数 through geometric intuition
 
 ## Connections
 
-Everything in this lesson connects to specific parts of modern AI:
+Everything 在 这个 lesson connects 到 specific parts 的 modern AI:
 
 | Concept | Where it shows up |
 |---------|------------------|
-| Dot product | Attention scores in transformers, cosine similarity in RAG |
-| 矩阵 multiply | Every neural network layer, every linear transformation |
-| Linear independence | Feature selection, avoiding multicollinearity |
-| Rank | Determining if a system is solvable, LoRA (low-rank adaptation) |
-| Projection | Linear regression (projecting onto column space), PCA |
+| Dot product | Attention scores 在 transformers, cosine similarity 在 RAG |
+| 矩阵 multiply | Every 神经网络 层, every linear transformation |
+| Linear independence | 特征 selection, avoiding multicollinearity |
+| Rank | Determining if system 是 solvable, LoRA (low-rank adaptation) |
+| Projection | Linear 回归 (projecting onto column space), PCA |
 | Gram-Schmidt / QR | Numerical solvers, eigenvalue computation |
 | Orthonormal basis | Stable numerical computation, whitening transforms |
 
-LoRA deserves special mention. It fine-tunes large language models by decomposing weight updates into low-rank matrices. Instead of updating a 4096x4096 weight matrix (16M parameters), LoRA updates two matrices of size 4096x16 and 16x4096 (131K parameters). The rank-16 constraint means LoRA assumes the weight update lives in a 16-dimensional subspace of the full 4096-dimensional space. That is linear algebra doing real work.
+LoRA deserves special mention. It fine-tunes large language 模型 通过 decomposing 权重 updates into low-rank 矩阵. Instead 的 updating 4096x4096 权重 矩阵 (16M 参数), LoRA updates two 矩阵 的 size 4096x16 和 16x4096 (131K 参数). rank-16 constraint means LoRA assumes 权重 update lives 在 16-dimensional subspace 的 full 4096-dimensional space. 那是 线性代数 doing real work.
 
-## 练习
+## Exercises
 
-1. Implement `向量.angle_between(other)` that returns the angle in degrees between two vectors
-2. Create a 2D scaling matrix that doubles the x-coordinate and triples the y-coordinate, then apply it to the vector [1, 1]
-3. Given 5 random word-like vectors (dimension 50), find the two most similar using cosine similarity
-4. Verify that the Gram-Schmidt output is truly orthonormal: check that every pair has dot product 0 and every vector has magnitude 1
-5. Create a 3x3 matrix with rank 2. Verify using the `rank()` method. Then explain what geometric object the columns span.
-6. Project the vector [1, 2, 3] onto [1, 1, 1]. What does the result represent geometrically?
+1. Implement `向量.angle_between(other)` returns angle 在 degrees between two 向量
+2. Create 2D scaling 矩阵 doubles x-coordinate 和 triples y-coordinate, then apply it 到 向量 [1, 1]
+3. Given 5 random word-like 向量 (dimension 50), find two most similar using cosine similarity
+4. Verify Gram-Schmidt 输出 是 truly orthonormal: check every pair has dot product 0 和 every 向量 has magnitude 1
+5. Create 3x3 矩阵 使用 rank 2. Verify using `rank()` method. Then explain what geometric object columns span.
+6. Project 向量 [1, 2, 3] onto [1, 1, 1]. What does result represent geometrically?
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| 向量 | "An arrow" | A list of numbers representing a point or direction in n-dimensional space |
-| 矩阵 | "A table of numbers" | A transformation that maps vectors from one space to another |
-| Dot product | "Multiply and sum" | A measure of how aligned two vectors are -- the core of similarity search |
-| Embedding | "Some AI magic" | A vector that represents the meaning of something (word, image, user) |
-| Linear independence | "They don't overlap" | No vector in the set can be written as a combination of the others |
-| Rank | "How many dimensions" | The number of linearly independent columns (or rows) in a matrix |
-| Projection | "The shadow" | The component of one vector in the direction of another |
-| Basis | "The coordinate axes" | A minimal set of independent vectors that span the space |
-| Orthonormal | "Perpendicular unit vectors" | 向量s that are mutually perpendicular and each have length 1 |
+| 向量 | " arrow" | list 的 numbers representing point 或 direction 在 n-dimensional space |
+| 矩阵 | " table 的 numbers" | transformation maps 向量 从 one space 到 another |
+| Dot product | "Multiply 和 sum" | measure 的 how aligned two 向量 是 -- core 的 similarity search |
+| Embedding | "Some AI magic" | 向量 represents meaning 的 something (word, image, user) |
+| Linear independence | "They don't overlap" | No 向量 在 set can be written 作为 combination 的 others |
+| Rank | "How many dimensions" | number 的 linearly independent columns (或 rows) 在 矩阵 |
+| Projection | " shadow" | component 的 one 向量 在 direction 的 another |
+| Basis | " coordinate axes" | minimal set 的 independent 向量 span space |
+| Orthonormal | "Perpendicular unit 向量" | Vectors 是 mutually perpendicular 和 each have length 1 |

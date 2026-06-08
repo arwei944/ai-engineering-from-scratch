@@ -1,32 +1,32 @@
-# 特征工程 & Selection
+# 特征 Engineering & Selection
 
-> A good feature is worth a thousand data points.
+> good 特征 是 worth thousand 数据 points.
 
-**类型:** 实现
-**语言:** Python
-**Prerequisites:** Phase 1 (Statistics for ML, Linear Algebra), Phase 2 Lessons 1-7
+**Type:** Build
+**Languages:** Python
+**Prerequisites:** Phase 1 (统计学 为了 ML, 线性代数), Phase 2 Lessons 1-7
 **Time:** ~90 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement numerical transforms (standardization, min-max scaling, log transform, binning) and explain when each is appropriate
-- Build one-hot, label, and target encoding for categorical features and identify the data leakage risk in target encoding
-- Construct a TF-IDF vectorizer from scratch and explain why it outperforms raw word counts for text classification
-- Apply filter-based feature selection (方差 threshold, correlation, mutual information) to reduce dimensionality
+- Implement numerical transforms (standardization, min-max scaling, log transform, binning) 和 explain when each 是 appropriate
+- Build one-hot, label, 和 target encoding 为了 categorical 特征 和 identify 数据 leakage risk 在 target encoding
+- Construct TF-IDF vectorizer 从 scratch 和 explain why it outperforms raw word counts 为了 text 分类
+- Apply filter-based 特征 selection (variance threshold, correlation, mutual information) 到 reduce dimensionality
 
-## The Problem
+## Problem
 
-You have a dataset. You pick an algorithm. You train it. The results are mediocre. You try a fancier algorithm. Still mediocre. You spend a week tuning 超参数s. Marginal improvement.
+You have 数据集. You pick 算法. You train it. results 是 mediocre. You try fancier 算法. Still mediocre. You spend week tuning 超参数. Marginal improvement.
 
-Then someone transforms the raw data into better features and a simple logistic regression beats your tuned gradient-boosted ensemble.
+Then someone transforms raw 数据 into better 特征 和 simple logistic 回归 beats your tuned gradient-boosted ensemble.
 
-This happens constantly. In classical ML, the representation of the data matters more than the choice of algorithm. A house price model with "square footage" and "number of bedrooms" will beat a model with "address as a raw string" no matter how sophisticated the learner is. The algorithm can only work with what you give it.
+This happens constantly. In classical ML, representation 的 数据 matters more than choice 的 算法. house price 模型 使用 "square footage" 和 "number 的 bedrooms" will beat 模型 使用 "address 作为 raw string" no matter how sophisticated learner 是. 算法 can only work 使用 what you give it.
 
-Feature engineering is the process of transforming raw data into representations that make patterns easier for models to find. Feature selection is the process of throwing away features that add noise without adding signal. Together, they are the highest-leverage activity in classical ML.
+特征 engineering 是 process 的 transforming raw 数据 into representations make patterns easier 为了 模型 到 find. 特征 selection 是 process 的 throwing away 特征 add noise without adding signal. Together, they 是 highest-leverage activity 在 classical ML.
 
-## The Concept
+## Concept
 
-### The Feature Pipeline
+### 特征 Pipeline
 
 ```mermaid
 flowchart LR
@@ -43,31 +43,31 @@ flowchart LR
 
 ### Numerical Features
 
-Raw numbers are rarely model-ready. Common transforms:
+Raw numbers 是 rarely 模型-ready. Common transforms:
 
-**Scaling:** Put features on the same range so distance-based algorithms (K均值, KNN, SVM) treat all features equally. Min-max scaling maps to [0, 1]. Standardization (z-score) maps to mean=0, std=1.
+**Scaling:** Put 特征 在 same range so distance-based 算法 (K-Means, KNN, SVM) treat all 特征 equally. Min-max scaling maps 到 [0, 1]. Standardization (z-score) maps 到 mean=0, std=1.
 
 **Log transform:** Compresses right-skewed distributions (income, population, word counts). Turns multiplicative relationships into additive ones.
 
-**Binning:** Converts continuous values into categories. Useful when the relationship between feature and target is non-linear but step-wise (e.g., age groups).
+**Binning:** Converts continuous values into categories. Useful when relationship between 特征 和 target 是 non-linear but step-wise (e.g., age groups).
 
-**Polynomial features:** Creates x^2, x^3, x1*x2 terms. Lets linear models capture non-linear relationships at the cost of more features.
+**Polynomial 特征:** Creates x^2, x^3, x1*x2 terms. Lets linear 模型 capture non-linear relationships 在 cost 的 more 特征.
 
 ### Categorical Features
 
 Models need numbers. Categories need encoding.
 
-**One-hot encoding:** Creates a binary column for each category. "color = red/blue/green" becomes three columns: is_red, is_blue, is_green. Works well for low-cardinality features but explodes with many categories.
+**One-hot encoding:** Creates binary column 为了 each category. "color = red/blue/green" becomes three columns: is_red, is_blue, is_green. Works well 为了 low-cardinality 特征 but explodes 使用 many categories.
 
-**Label encoding:** Maps each category to an integer: red=0, blue=1, green=2. Introduces false ordering (the model might think green > blue > red). Only appropriate for tree-based models that split on individual values.
+**Label encoding:** Maps each category 到 integer: red=0, blue=1, green=2. Introduces false ordering ( 模型 might think green > blue > red). Only appropriate 为了 tree-based 模型 split 在 individual values.
 
-**Target encoding:** Replaces each category with the mean of the target variable for that category. Powerful but dangerous: high risk of data leakage. Must be computed only on training data and applied to test data.
+**Target encoding:** Replaces each category 使用 mean 的 target variable 为了 category. Powerful but dangerous: high risk 的 数据 leakage. Must be computed only 在 训练 数据 和 applied 到 test 数据.
 
 ### Text Features
 
-**Count vectorizer:** Counts how many times each word appears in a document. "the cat sat on the mat" becomes {the: 2, cat: 1, sat: 1, on: 1, mat: 1}.
+**Count vectorizer:** Counts how many times each word appears 在 document. " cat sat 在 mat" becomes {: 2, cat: 1, sat: 1, 在: 1, mat: 1}.
 
-**TF-IDF:** Term Frequency-Inverse Document Frequency. Weighs words by how unique they are across documents. Common words like "the" get low weight. Rare, distinctive words get high weight.
+**TF-IDF:** Term Frequency-Inverse Document Frequency. Weighs words 通过 how unique they 是 across documents. Common words like "" get low 权重. Rare, distinctive words get high 权重.
 
 ```
 TF(word, doc) = count(word in doc) / total words in doc
@@ -77,36 +77,36 @@ TF-IDF = TF * IDF
 
 ### Missing Values
 
-Real data has holes. Strategies:
+Real 数据 has holes. Strategies:
 
-- **Drop rows:** Only when missing data is rare and random
-- **Mean/median imputation:** Simple, preserves distribution shape (median is more robust to outliers)
-- **Mode imputation:** For categorical features
-- **Indicator column:** Add a binary column "was_this_missing" before imputing. The fact that data is missing can itself be informative
-- **Forward/backward fill:** For time series data
+- **Drop rows:** Only when missing 数据 是 rare 和 random
+- **Mean/median imputation:** Simple, preserves distribution shape (median 是 more robust 到 outliers)
+- **Mode imputation:** For categorical 特征
+- **Indicator column:** Add binary column "was_this_missing" before imputing. fact 数据 是 missing can itself be informative
+- **Forward/backward fill:** For time series 数据
 
-### Feature Interaction
+### 特征 Interaction
 
-Sometimes the relationship is in the combination. "Height" and "weight" alone are less predictive than "BMI = weight / height^2". Feature interactions multiply the feature space, so use domain knowledge to pick the right ones.
+Sometimes relationship 是 在 combination. "Height" 和 "权重" alone 是 less predictive than "BMI = 权重 / height^2". 特征 interactions multiply 特征 space, so use domain knowledge 到 pick right ones.
 
-### Feature Selection
+### 特征 Selection
 
-More features is not always better. Irrelevant features add noise, increase training time, and can cause 过拟合.
+More 特征 是 not always better. Irrelevant 特征 add noise, increase 训练 time, 和 can cause 过拟合.
 
-**Filter methods (pre-model):**
-- Correlation: remove features highly correlated with each other (redundant)
-- Mutual information: measures how much knowing a feature reduces uncertainty about the target
-- 方差 threshold: remove features that barely vary
+**Filter methods (pre-模型):**
+- Correlation: remove 特征 highly correlated 使用 each other (redundant)
+- Mutual information: measures how much knowing 特征 reduces uncertainty about target
+- Variance threshold: remove 特征 barely vary
 
-**Wrapper methods (model-based):**
-- L1 regularization (Lasso): drives irrelevant feature weights to exactly zero
-- Recursive feature elimination: train, remove least important feature, repeat
+**Wrapper methods (模型-based):**
+- L1 正则化 (Lasso): drives irrelevant 特征 权重 到 exactly zero
+- Recursive 特征 elimination: train, remove least important 特征, repeat
 
-**Why selection matters:** A model with 10 good features will usually outperform a model with 10 good features and 90 noisy ones. The noisy features give the model opportunities to overfit on training data patterns that do not generalize.
+**Why selection matters:** 模型 使用 10 good 特征 will usually outperform 模型 使用 10 good 特征 和 90 noisy ones. noisy 特征 give 模型 opportunities 到 overfit 在 训练 数据 patterns do not generalize.
 
 ## Build It
 
-### Step 1: Numerical transforms from scratch
+### Step 1: Numerical transforms 从 scratch
 
 ```python
 import math
@@ -123,8 +123,8 @@ def min_max_scale(values):
 def standardize(values):
     n = len(values)
     mean = sum(values) / n
-    方差 = sum((v - mean) ** 2 for v in values) / n
-    std = math.sqrt(方差) if 方差 > 0 else 1.0
+    variance = sum((v - mean) ** 2 for v in values) / n
+    std = math.sqrt(variance) if variance > 0 else 1.0
     return [(v - mean) / std for v in values]
 
 
@@ -158,7 +158,7 @@ def polynomial_features(row, degree=2):
     return result
 ```
 
-### Step 2: Categorical encoding from scratch
+### Step 2: Categorical encoding 从 scratch
 
 ```python
 def one_hot_encode(values):
@@ -200,7 +200,7 @@ def target_encode(feature_values, target_values, smoothing=10):
     return [encoding[v] for v in feature_values], encoding
 ```
 
-### Step 3: Text features from scratch
+### Step 3: Text 特征 从 scratch
 
 ```python
 def count_vectorize(documents):
@@ -259,7 +259,7 @@ def tfidf(documents):
     return vectors, vocab
 ```
 
-### Step 4: Missing value imputation from scratch
+### Step 4: Missing value imputation 从 scratch
 
 ```python
 def impute_mean(values):
@@ -297,7 +297,7 @@ def add_missing_indicator(values):
     return [0 if v is not None else 1 for v in values]
 ```
 
-### Step 5: Feature selection from scratch
+### Step 5: 特征 selection 从 scratch
 
 ```python
 def correlation(x, y):
@@ -345,7 +345,7 @@ def mutual_information(feature, target, n_bins=10):
     return mi
 
 
-def 方差_threshold(features, threshold=0.01):
+def variance_threshold(features, threshold=0.01):
     n_features = len(features[0])
     n_samples = len(features)
     selected = []
@@ -380,7 +380,7 @@ def remove_correlated(features, threshold=0.9):
     return [i for i in range(n_features) if i not in to_remove]
 ```
 
-### Step 6: Full pipeline and demo
+### Step 6: Full pipeline 和 demo
 
 ```python
 import random
@@ -498,8 +498,8 @@ if __name__ == "__main__":
 
     print(f"  Total features: {len(feature_matrix[0])}")
 
-    surviving_var = 方差_threshold(feature_matrix, threshold=0.01)
-    print(f"  After 方差 threshold (0.01): {len(surviving_var)} features kept")
+    surviving_var = variance_threshold(feature_matrix, threshold=0.01)
+    print(f"  After variance threshold (0.01): {len(surviving_var)} features kept")
 
     surviving_corr = remove_correlated(feature_matrix, threshold=0.9)
     print(f"  After correlation filter (0.9): {len(surviving_corr)} features kept")
@@ -521,13 +521,13 @@ if __name__ == "__main__":
 
 ## Use It
 
-With scikit-learn, these transforms are composable pipelines:
+With scikit-learn, 这些 transforms 是 composable pipelines:
 
 ```python
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
 from sklearn.impute import SimpleImputer
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_selection import mutual_info_classif, 方差Threshold
+from sklearn.feature_selection import mutual_info_classif, VarianceThreshold
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
@@ -546,35 +546,35 @@ preprocessor = ColumnTransformer([
 ])
 ```
 
-The from-scratch versions show exactly what happens inside each transform. The library versions add edge-case handling, sparse matrix support, and pipeline composition, but the math is the same.
+从-scratch versions show exactly what happens inside each transform. library versions add edge-case handling, sparse 矩阵 support, 和 pipeline composition, but math 是 same.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/prompt-feature-engineer.md` - a prompt for systematically engineering features from raw data
+- `输出/prompt-特征-engineer.md` - prompt 为了 systematically engineering 特征 从 raw 数据
 
 ## Exercises
 
-1. Add robust scaling (using median and interquartile range instead of mean and standard deviation) to the numerical transforms. Compare it to standard scaling on data with extreme outliers.
-2. Implement leave-one-out target encoding: for each row, compute the target mean excluding that row's own target value. Show how this reduces 过拟合 compared to naive target encoding.
-3. Build an automated feature selection pipeline that combines 方差 threshold, correlation filtering, and mutual information ranking. Apply it to the housing dataset and compare model performance (use a simple linear regression) with all features vs selected features.
+1. Add robust scaling (using median 和 interquartile range instead 的 mean 和 standard deviation) 到 numerical transforms. Compare it 到 standard scaling 在 数据 使用 extreme outliers.
+2. Implement leave-one-out target encoding: 为了 each row, compute target mean excluding row's own target value. Show how 这个 reduces 过拟合 compared 到 naive target encoding.
+3. Build automated 特征 selection pipeline combines variance threshold, correlation filtering, 和 mutual information ranking. Apply it 到 housing 数据集 和 compare 模型 performance (use simple linear 回归) 使用 all 特征 vs selected 特征.
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Feature engineering | "Making new columns" | Transforming raw data into representations that expose patterns to the model |
-| Standardization | "Making it normal" | Subtracting the mean and dividing by standard deviation so the feature has mean=0 and std=1 |
-| One-hot encoding | "Making dummy variables" | Creating one binary column per category, where exactly one column is 1 for each row |
-| Target encoding | "Using the answer to encode" | Replacing each category with the average target value for that category, with smoothing to prevent 过拟合 |
-| TF-IDF | "Fancy word counts" | Term Frequency times Inverse Document Frequency: words weighted by how distinctive they are across the corpus |
-| Imputation | "Filling in blanks" | Replacing missing values with estimated values (mean, median, mode, or model-predicted) |
-| Feature selection | "Throwing out bad columns" | Removing features that add noise or redundancy, keeping only those with signal about the target |
-| Mutual information | "How much one thing tells you about another" | A measure of the reduction in uncertainty about variable Y gained by observing variable X |
-| Data leakage | "Accidentally cheating" | Using information during training that would not be available at prediction time, giving falsely optimistic results |
+| 特征 engineering | "Making new columns" | Transforming raw 数据 into representations expose patterns 到 模型 |
+| Standardization | "Making it normal" | Subtracting mean 和 dividing 通过 standard deviation so 特征 has mean=0 和 std=1 |
+| One-hot encoding | "Making dummy variables" | Creating one binary column per category, where exactly one column 是 1 为了 each row |
+| Target encoding | "Using answer 到 encode" | Replacing each category 使用 average target value 为了 category, 使用 smoothing 到 prevent 过拟合 |
+| TF-IDF | "Fancy word counts" | Term Frequency times Inverse Document Frequency: words weighted 通过 how distinctive they 是 across corpus |
+| Imputation | "Filling 在 blanks" | Replacing missing values 使用 estimated values (mean, median, mode, 或 模型-predicted) |
+| 特征 selection | "Throwing out bad columns" | Removing 特征 add noise 或 redundancy, keeping only 那些 使用 signal about target |
+| Mutual information | "How much one thing tells you about another" | measure 的 reduction 在 uncertainty about variable Y gained 通过 observing variable X |
+| 数据 leakage | "Accidentally cheating" | Using information during 训练 would not be available 在 prediction time, giving falsely optimistic results |
 
 ## Further Reading
 
-- [特征工程 and Selection (Max Kuhn & Kjell Johnson)](http://www.feat.engineering/) - free online book covering the full landscape of 特征工程
-- [scikit-learn Preprocessing Guide](https://scikit-learn.org/stable/modules/preprocessing.html) - practical reference for all standard transforms
-- [Target Encoding Done Right (Micci-Barreca, 2001)](https://dl.acm.org/doi/10.1145/507533.507538) - the original paper on target encoding with smoothing
+- [特征 Engineering 和 Selection (Max Kuhn & Kjell Johnson)](http://www.feat.engineering/) - free online book covering full landscape 的 特征 engineering
+- [scikit-learn Preprocessing Guide](https://scikit-learn.org/stable/modules/preprocessing.html) - practical reference 为了 all standard transforms
+- [Target Encoding Done Right (Micci-Barreca, 2001)](https://dl.acm.org/doi/10.1145/507533.507538) - original paper 在 target encoding 使用 smoothing

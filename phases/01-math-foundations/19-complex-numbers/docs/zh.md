@@ -1,34 +1,34 @@
-# 复数 for AI
+# Complex Numbers 为了 AI
 
-> The square root of -1 is not imaginary. It is the key to rotations, frequencies, and half of signal processing.
+> square root 的 -1 是 not imaginary. 它是 key 到 rotations, frequencies, 和 half 的 signal processing.
 
-**类型:** 学习
+**Type:** Learn
 **Language:** Python
-**前置要求:** 阶段1, Lessons 01-04 (linear algebra, calculus)
+**Prerequisites:** Phase 1, Lessons 01-04 (线性代数, 微积分)
 **Time:** ~60 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Perform complex arithmetic (add, multiply, divide, conjugate) in both rectangular and polar form
-- Apply Euler's formula to convert between complex exponentials and trigonometric functions
-- Implement the Discrete 傅里叶变换 using complex roots of unity
-- Explain how complex rotations underlie RoPE and sinusoidal positional encodings in transformers
+- Perform complex arithmetic (add, multiply, divide, conjugate) 在 both rectangular 和 polar form
+- Apply Euler's formula 到 convert between complex exponentials 和 trigonometric 函数
+- Implement Discrete Fourier Transform using complex roots 的 unity
+- Explain how complex rotations underlie RoPE 和 sinusoidal positional encodings 在 transformers
 
-## 问题引入
+## Problem
 
-You open a paper on Fourier transforms and there is `i` everywhere. You look at transformer positional encodings and see `sin` and `cos` at different frequencies -- the real and imaginary parts of complex exponentials. You read about quantum computing and find everything expressed in complex vector spaces.
+You open paper 在 Fourier transforms 和 there 是 `i` everywhere. You look 在 transformer positional encodings 和 see `sin` 和 `cos` 在 different frequencies -- real 和 imaginary parts 的 complex exponentials. You read about quantum computing 和 find everything expressed 在 complex 向量 spaces.
 
-Complex numbers seem abstract. A number system built on the square root of -1 feels like a mathematical trick. But it is not a trick. It is the natural language of rotations and oscillations. Every time something spins, vibrates, or oscillates, complex numbers are the right tool.
+Complex numbers seem abstract. number system built 在 square root 的 -1 feels like mathematical trick. But it 是 not trick. 它是 natural language 的 rotations 和 oscillations. Every time something spins, vibrates, 或 oscillates, complex numbers 是 right tool.
 
-Without understanding complex numbers, you cannot understand the Discrete 傅里叶变换. You cannot understand FFT. You cannot understand how RoPE (Rotary Position Embedding) works in modern language models. You cannot understand why sinusoidal positional encodings in the original Transformer paper use the frequencies they do.
+Without understanding complex numbers, you cannot understand Discrete Fourier Transform. You cannot understand FFT. You cannot understand how RoPE (Rotary Position Embedding) works 在 modern language 模型. You cannot understand why sinusoidal positional encodings 在 original Transformer paper use frequencies they do.
 
-This lesson builds complex arithmetic from scratch, connects it to geometry, and shows you exactly where complex numbers appear in machine learning.
+This lesson builds complex arithmetic 从 scratch, connects it 到 geometry, 和 shows you exactly where complex numbers appear 在 machine learning.
 
-## 概念讲解
+## Concept
 
-### What is a complex number?
+### What 是 complex number?
 
-A complex number has two parts: a real part and an imaginary part.
+complex number has two parts: real part 和 imaginary part.
 
 ```
 z = a + bi
@@ -39,11 +39,11 @@ where:
   i is the imaginary unit, defined by i^2 = -1
 ```
 
-That is it. You extend the number line into a plane. The real numbers sit on one axis. The imaginary numbers sit on the other. Every complex number is a point in this plane.
+那是 it. You extend number line into plane. real numbers sit 在 one axis. imaginary numbers sit 在 other. Every complex number 是 point 在 这个 plane.
 
 ### Complex arithmetic
 
-**Addition.** Add the real parts together, add the imaginary parts together.
+**Addition.** Add real parts together, add imaginary parts together.
 
 ```
 (a + bi) + (c + di) = (a + c) + (b + d)i
@@ -51,7 +51,7 @@ That is it. You extend the number line into a plane. The real numbers sit on one
 Example: (3 + 2i) + (1 + 4i) = 4 + 6i
 ```
 
-**Multiplication.** Use the distributive law and remember that i^2 = -1.
+**Multiplication.** Use distributive law 和 remember i^2 = -1.
 
 ```
 (a + bi)(c + di) = ac + adi + bci + bdi^2
@@ -63,29 +63,29 @@ Example: (3 + 2i)(1 + 4i) = 3 + 12i + 2i + 8i^2
                             = -5 + 14i
 ```
 
-**Conjugate.** Flip the sign of the imaginary part.
+**Conjugate.** Flip sign 的 imaginary part.
 
 ```
 conjugate of (a + bi) = a - bi
 ```
 
-The product of a complex number and its conjugate is always real:
+product 的 complex number 和 its conjugate 是 always real:
 
 ```
 (a + bi)(a - bi) = a^2 + b^2
 ```
 
-**Division.** Multiply numerator and denominator by the conjugate of the denominator.
+**Division.** Multiply numerator 和 denominator 通过 conjugate 的 denominator.
 
 ```
 (a + bi) / (c + di) = (a + bi)(c - di) / (c^2 + d^2)
 ```
 
-This eliminates the imaginary part from the denominator, giving you a clean complex number.
+This eliminates imaginary part 从 denominator, giving you clean complex number.
 
-### The complex plane
+### complex plane
 
-The complex plane maps every complex number to a 2D point. The horizontal axis is the real axis, the vertical axis is the imaginary axis.
+complex plane maps every complex number 到 2D point. horizontal axis 是 real axis, vertical axis 是 imaginary axis.
 
 ```
 z = 3 + 2i  corresponds to the point (3, 2)
@@ -93,11 +93,11 @@ z = -1 + 0i corresponds to the point (-1, 0) on the real axis
 z = 0 + 4i  corresponds to the point (0, 4) on the imaginary axis
 ```
 
-A complex number is simultaneously a point and a vector from the origin. This dual interpretation is what makes complex numbers useful for geometry.
+complex number 是 simultaneously point 和 向量 从 origin. This dual interpretation 是 what makes complex numbers useful 为了 geometry.
 
 ### Polar form
 
-Any point in the plane can be described by its distance from the origin and its angle from the positive real axis.
+Any point 在 plane can be described 通过 its distance 从 origin 和 its angle 从 positive real axis.
 
 ```
 z = r * (cos(theta) + i*sin(theta))
@@ -107,9 +107,9 @@ where:
   theta = atan2(b, a)             (phase, or argument)
 ```
 
-Rectangular form (a + bi) is good for addition. Polar form (r, theta) is good for multiplication.
+Rectangular form ( + bi) 是 good 为了 addition. Polar form (r, theta) 是 good 为了 multiplication.
 
-**Multiplication in polar form.** Multiply the magnitudes, add the angles.
+**Multiplication 在 polar form.** Multiply magnitudes, add angles.
 
 ```
 z1 = r1 * e^(i*theta1)
@@ -118,17 +118,17 @@ z2 = r2 * e^(i*theta2)
 z1 * z2 = (r1 * r2) * e^(i*(theta1 + theta2))
 ```
 
-This is why complex numbers are perfect for rotations. Multiplying by a complex number with magnitude 1 is a pure rotation.
+这是 why complex numbers 是 perfect 为了 rotations. Multiplying 通过 complex number 使用 magnitude 1 是 pure rotation.
 
 ### Euler's formula
 
-The bridge between complex exponentials and trigonometry:
+bridge between complex exponentials 和 trigonometry:
 
 ```
 e^(i*theta) = cos(theta) + i*sin(theta)
 ```
 
-This is the most important formula in this lesson. When theta = pi:
+这是 most important formula 在 这个 lesson. When theta = pi:
 
 ```
 e^(i*pi) = cos(pi) + i*sin(pi) = -1 + 0i = -1
@@ -136,17 +136,17 @@ e^(i*pi) = cos(pi) + i*sin(pi) = -1 + 0i = -1
 Therefore: e^(i*pi) + 1 = 0
 ```
 
-Five fundamental constants (e, i, pi, 1, 0) linked in one equation.
+Five fundamental constants (e, i, pi, 1, 0) linked 在 one equation.
 
-### Why Euler's formula matters for ML
+### Why Euler's formula matters 为了 ML
 
-Euler's formula says that `e^(i*theta)` traces the unit circle as theta varies. At theta = 0, you are at (1, 0). At theta = pi/2, you are at (0, 1). At theta = pi, you are at (-1, 0). At theta = 3*pi/2, you are at (0, -1). A full rotation is theta = 2*pi.
+Euler's formula says `e^(i*theta)` traces unit circle 作为 theta varies. At theta = 0, you 是 在 (1, 0). At theta = pi/2, you 是 在 (0, 1). At theta = pi, you 是 在 (-1, 0). At theta = 3*pi/2, you 是 在 (0, -1). full rotation 是 theta = 2*pi.
 
-This means complex exponentials ARE rotations. And rotations are everywhere in signal processing and ML.
+This means complex exponentials ARE rotations. And rotations 是 everywhere 在 signal processing 和 ML.
 
-### Connection to 2D rotations
+### Connection 到 2D rotations
 
-Multiplying the complex number (x + yi) by e^(i*theta) rotates the point (x, y) by angle theta around the origin.
+Multiplying complex number (x + yi) 通过 e^(i*theta) rotates point (x, y) 通过 angle theta around origin.
 
 ```
 Rotation via complex multiplication:
@@ -158,7 +158,7 @@ Rotation via matrix multiplication:
   [sin(theta)   cos(theta)] [y] = [x*sin(theta) + y*cos(theta)]
 ```
 
-They produce identical results. Complex multiplication IS 2D rotation. The rotation matrix is just complex multiplication written in matrix notation.
+They produce identical results. Complex multiplication IS 2D rotation. rotation 矩阵 是 just complex multiplication written 在 矩阵 notation.
 
 ```mermaid
 graph TD
@@ -171,11 +171,11 @@ graph TD
     B -.->|"same result"| D
 ```
 
-### Phasors and rotating signals
+### Phasors 和 rotating signals
 
-A complex exponential e^(i*omega*t) is a point rotating around the unit circle at angular frequency omega. As t increases, the point traces the circle.
+complex exponential e^(i*omega*t) 是 point rotating around unit circle 在 angular frequency omega. As t increases, point traces circle.
 
-The real part of this rotating point is cos(omega*t). The imaginary part is sin(omega*t). A sinusoidal signal is the shadow of a rotating complex number.
+real part 的 这个 rotating point 是 cos(omega*t). imaginary part 是 sin(omega*t). sinusoidal signal 是 shadow 的 rotating complex number.
 
 ```
 e^(i*omega*t) = cos(omega*t) + i*sin(omega*t)
@@ -184,48 +184,48 @@ Real part:      cos(omega*t)    -- a cosine wave
 Imaginary part: sin(omega*t)    -- a sine wave
 ```
 
-This is the phasor representation. Instead of tracking a wiggly sine wave, you track a smoothly rotating arrow. Phase shifts become angle offsets. Amplitude changes become magnitude changes. Addition of signals becomes vector addition.
+这是 phasor representation. Instead 的 tracking wiggly sine wave, you track smoothly rotating arrow. Phase shifts become angle offsets. Amplitude changes become magnitude changes. Addition 的 signals becomes 向量 addition.
 
-### Roots of unity
+### Roots 的 unity
 
-The N-th roots of unity are N points equally spaced on the unit circle:
+N-th roots 的 unity 是 N points equally spaced 在 unit circle:
 
 ```
 w_k = e^(2*pi*i*k/N)    for k = 0, 1, 2, ..., N-1
 ```
 
-For N = 4, the roots are: 1, i, -1, -i (the four compass points).
-For N = 8, you get the four compass points plus the four diagonals.
+For N = 4, roots 是: 1, i, -1, -i ( four compass points).
+For N = 8, you get four compass points plus four diagonals.
 
-Roots of unity are the foundation of the Discrete 傅里叶变换. The DFT decomposes a signal into components at these N equally-spaced frequencies.
+Roots 的 unity 是 foundation 的 Discrete Fourier Transform. DFT decomposes signal into components 在 这些 N equally-spaced frequencies.
 
-### Connection to the DFT
+### Connection 到 DFT
 
-The Discrete 傅里叶变换 of a signal x[0], x[1], ..., x[N-1] is:
+Discrete Fourier Transform 的 signal x[0], x[1], ..., x[N-1] 是:
 
 ```
 X[k] = sum_{n=0}^{N-1} x[n] * e^(-2*pi*i*k*n/N)
 ```
 
-Each X[k] measures how much the signal correlates with the k-th root of unity -- a complex sinusoid at frequency k. The DFT breaks a signal into N rotating phasors and tells you the amplitude and phase of each one.
+Each X[k] measures how much signal correlates 使用 k-th root 的 unity -- complex sinusoid 在 frequency k. DFT breaks signal into N rotating phasors 和 tells you amplitude 和 phase 的 each one.
 
-### Why i is not imaginary
+### Why i 是 not imaginary
 
-The word "imaginary" is a historical accident. Descartes used it dismissively. But i is no more imaginary than negative numbers were when people first rejected them. Negative numbers answer "what do you subtract 5 from 3 to get?" The imaginary unit answers "what do you square to get -1?"
+word "imaginary" 是 historical accident. Descartes used it dismissively. But i 是 no more imaginary than negative numbers were when people first rejected them. Negative numbers answer "what do you subtract 5 从 3 到 get?" imaginary unit answers "what do you square 到 get -1?"
 
-More usefully: i is a 90-degree rotation operator. Multiply a real number by i once, you rotate 90 degrees to the imaginary axis. Multiply by i again (i^2), you rotate another 90 degrees -- now you are pointing in the negative real direction. That is why i^2 = -1. It is not mysterious. It is a half-turn built from two quarter-turns.
+More usefully: i 是 90-degree rotation operator. Multiply real number 通过 i once, you rotate 90 degrees 到 imaginary axis. Multiply 通过 i again (i^2), you rotate another 90 degrees -- now you 是 pointing 在 negative real direction. 那是 why i^2 = -1. 它是 not mysterious. 它是 half-turn built 从 two quarter-turns.
 
-This is why complex numbers are everywhere in engineering. Anything that rotates -- electromagnetic waves, quantum states, signal oscillations, positional encodings -- is naturally described by complex numbers.
+这是 why complex numbers 是 everywhere 在 engineering. Anything rotates -- electromagnetic waves, quantum states, signal oscillations, positional encodings -- 是 naturally described 通过 complex numbers.
 
-### Complex exponentials vs trigonometric functions
+### Complex exponentials vs trigonometric 函数
 
-Before Euler's formula, engineers wrote signals as A*cos(omega*t + phi) -- amplitude A, frequency omega, phase phi. This works but makes arithmetic painful. Adding two cosines with different phases requires trigonometric identities.
+Before Euler's formula, engineers wrote signals 作为 *cos(omega*t + phi) -- amplitude , frequency omega, phase phi. This works but makes arithmetic painful. Adding two cosines 使用 different phases requires trigonometric identities.
 
-With complex exponentials, the same signal is A*e^(i*(omega*t + phi)). Adding two signals is just adding two complex numbers. Multiplying (modulating) is just multiplying magnitudes and adding angles. Phase shifts become angle additions. Frequency shifts become multiplications by phasors.
+With complex exponentials, same signal 是 *e^(i*(omega*t + phi)). Adding two signals 是 just adding two complex numbers. Multiplying (modulating) 是 just multiplying magnitudes 和 adding angles. Phase shifts become angle additions. Frequency shifts become multiplications 通过 phasors.
 
-The entire field of signal processing switched to complex exponential notation because the math is cleaner. The "real signal" is always just the real part of the complex representation. The imaginary part is carried along as bookkeeping, making all the algebra work out naturally.
+entire field 的 signal processing switched 到 complex exponential notation because math 是 cleaner. "real signal" 是 always just real part 的 complex representation. imaginary part 是 carried along 作为 bookkeeping, making all algebra work out naturally.
 
-### Connection to transformers
+### Connection 到 transformers
 
 **Sinusoidal positional encodings** (original Transformer paper):
 
@@ -234,19 +234,19 @@ PE(pos, 2i) = sin(pos / 10000^(2i/d))
 PE(pos, 2i+1) = cos(pos / 10000^(2i/d))
 ```
 
-The sin and cos pairs are the real and imaginary parts of complex exponentials at different frequencies. Each frequency provides a different "resolution" for encoding position. Low frequencies change slowly (coarse position). High frequencies change quickly (fine position). Together they give each position a unique frequency fingerprint.
+sin 和 cos pairs 是 real 和 imaginary parts 的 complex exponentials 在 different frequencies. Each frequency provides different "resolution" 为了 encoding position. Low frequencies change slowly (coarse position). High frequencies change quickly (fine position). Together they give each position unique frequency fingerprint.
 
-**RoPE (Rotary Position Embedding)** takes this further. It explicitly multiplies query and key vectors by complex rotation matrices. The relative position between two tokens becomes a rotation angle. Attention is computed using these rotated vectors, making the model sensitive to relative position through complex multiplication.
+**RoPE (Rotary Position Embedding)** takes 这个 further. It explicitly multiplies query 和 key 向量 通过 complex rotation 矩阵. relative position between two tokens becomes rotation angle. Attention 是 computed using 这些 rotated 向量, making 模型 sensitive 到 relative position through complex multiplication.
 
 | Operation | Algebraic Form | Geometric Meaning |
 |-----------|---------------|-------------------|
-| Addition | (a+c) + (b+d)i | Vector addition in the plane |
-| Multiplication | (ac-bd) + (ad+bc)i | Rotate and scale |
-| Conjugate | a - bi | Reflect over real axis |
-| Magnitude | sqrt(a^2 + b^2) | Distance from origin |
-| Phase | atan2(b, a) | Angle from positive real axis |
-| Division | multiply by conjugate | Reverse rotation and rescale |
-| Power | r^n * e^(i*n*theta) | Rotate n times, scale by r^n |
+| Addition | (+c) + (b+d)i | 向量 addition 在 plane |
+| Multiplication | (ac-bd) + (ad+bc)i | Rotate 和 scale |
+| Conjugate | - bi | Reflect over real axis |
+| Magnitude | sqrt(^2 + b^2) | Distance 从 origin |
+| Phase | atan2(b, ) | Angle 从 positive real axis |
+| Division | multiply 通过 conjugate | Reverse rotation 和 rescale |
+| Power | r^n * e^(i*n*theta) | Rotate n times, scale 通过 r^n |
 
 ```mermaid
 graph LR
@@ -267,11 +267,11 @@ graph LR
     U1 --> A3
 ```
 
-## 从零实现
+## Build It
 
 ### Step 1: Complex class
 
-Build a Complex number class that supports arithmetic, magnitude, phase, and conversion between rectangular and polar forms.
+Build Complex number class supports arithmetic, magnitude, phase, 和 conversion between rectangular 和 polar forms.
 
 ```python
 import math
@@ -305,7 +305,7 @@ class Complex:
         return Complex(self.real, -self.imag)
 ```
 
-### Step 2: Polar conversion and Euler's formula
+### Step 2: Polar conversion 和 Euler's formula
 
 ```python
 def to_polar(z):
@@ -322,16 +322,16 @@ Verify: `euler(theta).magnitude()` should always be 1.0. `euler(0)` should give 
 
 ### Step 3: Rotation
 
-Rotating a point (x, y) by angle theta is one complex multiplication:
+Rotating point (x, y) 通过 angle theta 是 one complex multiplication:
 
 ```python
 point = Complex(3, 4)
 rotated = point * euler(math.pi / 4)
 ```
 
-The magnitude stays the same. Only the angle changes.
+magnitude stays same. Only angle changes.
 
-### Step 4: DFT from complex arithmetic
+### Step 4: DFT 从 complex arithmetic
 
 ```python
 def dft(signal):
@@ -346,11 +346,11 @@ def dft(signal):
     return result
 ```
 
-This is the O(N^2) DFT. Each output X[k] is the sum of the signal samples multiplied by roots of unity.
+这是 O(N^2) DFT. Each 输出 X[k] 是 sum 的 signal samples multiplied 通过 roots 的 unity.
 
 ### Step 5: Inverse DFT
 
-The inverse DFT reconstructs the original signal from its spectrum. The only changes from the forward DFT: flip the sign in the exponent and divide by N.
+inverse DFT reconstructs original signal 从 its spectrum. only changes 从 forward DFT: flip sign 在 exponent 和 divide 通过 N.
 
 ```python
 def idft(spectrum):
@@ -365,9 +365,9 @@ def idft(spectrum):
     return result
 ```
 
-This gives you perfect reconstruction. Apply DFT, then IDFT, and you get back the original signal to machine precision. No information is lost.
+This gives you perfect reconstruction. Apply DFT, then IDFT, 和 you get back original signal 到 machine 精确率. No information 是 lost.
 
-### Step 6: Roots of unity
+### Step 6: Roots 的 unity
 
 ```python
 def roots_of_unity(N):
@@ -376,13 +376,13 @@ def roots_of_unity(N):
 
 Verify two properties:
 - Every root has magnitude exactly 1.
-- The sum of all N roots is zero (they cancel out by symmetry).
+- sum 的 all N roots 是 zero (they cancel out 通过 symmetry).
 
-These properties are what make the DFT invertible. The roots of unity form an orthogonal basis for the frequency domain.
+These properties 是 what make DFT invertible. roots 的 unity form orthogonal basis 为了 frequency domain.
 
-## 框架应用
+## Use It
 
-Python has built-in complex number support. The literal `j` represents the imaginary unit.
+Python has built-在 complex number support. literal `j` represents imaginary unit.
 
 ```python
 z = 3 + 2j
@@ -414,44 +414,44 @@ spectrum = np.fft.fft(signal)
 freqs = np.fft.fftfreq(128, d=1/128)
 ```
 
-## 产物交付
+## Ship It
 
-Run `code/complex_numbers.py` to generate `outputs/skill-complex-arithmetic.md`.
+Run `代码/complex_numbers.py` 到 generate `输出/skill-complex-arithmetic.md`.
 
-## 练习
+## Exercises
 
-1. **Complex arithmetic by hand.** Compute (2 + 3i) * (4 - i) and verify with the code. Then compute (5 + 2i) / (1 - 3i). Draw both results on the complex plane and check that multiplication rotated and scaled the first number.
+1. **Complex arithmetic 通过 hand.** Compute (2 + 3i) * (4 - i) 和 verify 使用 代码. Then compute (5 + 2i) / (1 - 3i). Draw both results 在 complex plane 和 check multiplication rotated 和 scaled first number.
 
-2. **Rotation sequence.** Start with the point (1, 0). Multiply by e^(i*pi/6) twelve times. Verify that you return to (1, 0) after 12 multiplications. Print the coordinates at each step and confirm they trace a regular 12-gon.
+2. **Rotation sequence.** Start 使用 point (1, 0). Multiply 通过 e^(i*pi/6) twelve times. Verify you return 到 (1, 0) after 12 multiplications. Print coordinates 在 each step 和 confirm they trace regular 12-gon.
 
-3. **DFT of a known signal.** Create a signal that is the sum of sin(2*pi*3*t) and 0.5*sin(2*pi*7*t) sampled at 32 points. Run your DFT. Verify that the magnitude spectrum has peaks at frequencies 3 and 7, with the peak at 7 being half the height of the peak at 3.
+3. **DFT 的 known signal.** Create signal 是 sum 的 sin(2*pi*3*t) 和 0.5*sin(2*pi*7*t) sampled 在 32 points. Run your DFT. Verify magnitude spectrum has peaks 在 frequencies 3 和 7, 使用 peak 在 7 being half height 的 peak 在 3.
 
-4. **Roots of unity visualization.** Compute the 8th roots of unity. Verify that they sum to zero. Verify that multiplying any root by the primitive root e^(2*pi*i/8) gives the next root.
+4. **Roots 的 unity visualization.** Compute 8th roots 的 unity. Verify they sum 到 zero. Verify multiplying any root 通过 primitive root e^(2*pi*i/8) gives next root.
 
-5. **Rotation matrix equivalence.** For 10 random angles and 10 random points, verify that complex multiplication gives the same result as matrix-vector multiplication with the 2x2 rotation matrix. Print the maximum numerical difference.
+5. **Rotation 矩阵 equivalence.** For 10 random angles 和 10 random points, verify complex multiplication gives same result 作为 矩阵-向量 multiplication 使用 2x2 rotation 矩阵. Print maximum numerical difference.
 
-## 关键术语
+## Key Terms
 
 | Term | What it means |
 |------|---------------|
-| Complex number | A number a + bi where a is the real part, b is the imaginary part, and i^2 = -1 |
-| Imaginary unit | The number i, defined by i^2 = -1. Not imaginary in the philosophical sense -- it is a rotation operator |
-| Complex plane | The 2D plane where the x-axis is real and the y-axis is imaginary. Also called the Argand plane |
-| Magnitude (modulus) | The distance from the origin: sqrt(a^2 + b^2). Written as \|z\| |
-| Phase (argument) | The angle from the positive real axis: atan2(b, a). Written as arg(z) |
-| Conjugate | The mirror image across the real axis: conjugate of a + bi is a - bi |
-| Polar form | Expressing z as r * e^(i*theta) instead of a + bi. Makes multiplication easy |
-| Euler's formula | e^(i*theta) = cos(theta) + i*sin(theta). Connects exponentials to trigonometry |
-| Phasor | A rotating complex number e^(i*omega*t) representing a sinusoidal signal |
-| Roots of unity | The N complex numbers e^(2*pi*i*k/N) for k = 0 to N-1. N equally spaced points on the unit circle |
-| DFT | Discrete 傅里叶变换. Decomposes a signal into complex sinusoidal components using roots of unity |
-| RoPE | Rotary Position Embedding. Uses complex multiplication to encode relative position in transformer attention |
+| Complex number | number + bi where 是 real part, b 是 imaginary part, 和 i^2 = -1 |
+| Imaginary unit | number i, defined 通过 i^2 = -1. Not imaginary 在 philosophical sense -- it 是 rotation operator |
+| Complex plane | 2D plane where x-axis 是 real 和 y-axis 是 imaginary. Also called Argand plane |
+| Magnitude (modulus) | distance 从 origin: sqrt(^2 + b^2). Written 作为 \|z\| |
+| Phase (argument) | angle 从 positive real axis: atan2(b, ). Written 作为 arg(z) |
+| Conjugate | mirror image across real axis: conjugate 的 + bi 是 - bi |
+| Polar form | Expressing z 作为 r * e^(i*theta) instead 的 + bi. Makes multiplication easy |
+| Euler's formula | e^(i*theta) = cos(theta) + i*sin(theta). Connects exponentials 到 trigonometry |
+| Phasor | rotating complex number e^(i*omega*t) representing sinusoidal signal |
+| Roots 的 unity | N complex numbers e^(2*pi*i*k/N) 为了 k = 0 到 N-1. N equally spaced points 在 unit circle |
+| DFT | Discrete Fourier Transform. Decomposes signal into complex sinusoidal components using roots 的 unity |
+| RoPE | Rotary Position Embedding. Uses complex multiplication 到 encode relative position 在 transformer attention |
 
 ## Further Reading
 
-- [Visual Introduction to Euler's Formula](https://betterexplained.com/articles/intuitive-understanding-of-eulers-formula/) - builds geometric intuition without heavy notation
-- [Su et al.: RoFormer (2021)](https://arxiv.org/abs/2104.09864) - the paper introducing Rotary Position Embedding using complex rotations
-- [Vaswani et al.: Attention Is All You Need (2017)](https://arxiv.org/abs/1706.03762) - the original Transformer paper with sinusoidal positional encodings
-- [3Blue1Brown: Euler's formula with introductory group theory](https://www.youtube.com/watch?v=mvmuCPvRoWQ) - visual explanation of why e^(i*pi) = -1
-- [Needham: Visual Complex Analysis](https://global.oup.com/academic/product/visual-complex-analysis-9780198534464) - the best visual treatment of complex numbers, full of geometric insight
-- [Strang: Introduction to Linear Algebra, Ch. 10](https://math.mit.edu/~gs/linearalgebra/) - complex numbers in the context of linear algebra and eigenvalues
+- [Visual Introduction 到 Euler's Formula](https://betterexplained.com/articles/intuitive-understanding-的-eulers-formula/) - builds geometric intuition without heavy notation
+- [Su et al.: RoFormer (2021)](https://arxiv.org/abs/2104.09864) - paper introducing Rotary Position Embedding using complex rotations
+- [Vaswani et al.: Attention Is All You Need (2017)](https://arxiv.org/abs/1706.03762) - original Transformer paper 使用 sinusoidal positional encodings
+- [3Blue1Brown: Euler's formula 使用 introductory group theory](https://www.youtube.com/watch?v=mvmuCPvRoWQ) - visual explanation 的 why e^(i*pi) = -1
+- [Needham: Visual Complex Analysis](https://global.oup.com/academic/product/visual-complex-analysis-9780198534464) - best visual treatment 的 complex numbers, full 的 geometric insight
+- [Strang: Introduction 到 线性代数, Ch. 10](https://math.mit.edu/~gs/linearalgebra/) - complex numbers 在 context 的 线性代数 和 eigenvalues

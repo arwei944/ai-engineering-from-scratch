@@ -1,28 +1,28 @@
-# AI 开发 Docker
+# Docker 为了 AI
 
-> Containers make "works on my machine" a thing of the past.
+> Containers make "works 在 my machine" thing 的 past.
 
-**类型:** 实现
+**Type:** Build
 **Languages:** Docker
-**Prerequisites:** Phase 0, Lessons 01 and 03
+**Prerequisites:** Phase 0, Lessons 01 和 03
 **Time:** ~60 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Build a GPU-enabled Docker image with CUDA, PyTorch, and AI libraries from a Dockerfile
-- Mount host directories as volumes to persist models, datasets, and code across container rebuilds
-- Configure the NVIDIA Container Toolkit to expose GPUs inside containers
-- Orchestrate multi-service AI applications (inference server + vector database) using Docker Compose
+- Build GPU-enabled Docker image 使用 CUDA, PyTorch, 和 AI libraries 从 Dockerfile
+- Mount host directories 作为 volumes 到 persist 模型, 数据集, 和 代码 across container rebuilds
+- Configure NVIDIA Container Toolkit 到 expose GPUs inside containers
+- Orchestrate multi-service AI applications (inference server + 向量 database) using Docker Compose
 
-## 问题引入
+## Problem
 
-You trained a model on your laptop with PyTorch 2.3, CUDA 12.4, and Python 3.12. Your colleague has PyTorch 2.1, CUDA 11.8, and Python 3.10. Your model crashes on their machine. Your Dockerfile works on both.
+You trained 模型 在 your laptop 使用 PyTorch 2.3, CUDA 12.4, 和 Python 3.12. Your colleague has PyTorch 2.1, CUDA 11.8, 和 Python 3.10. Your 模型 crashes 在 their machine. Your Dockerfile works 在 both.
 
-AI projects are dependency nightmares. A typical stack includes Python, PyTorch, CUDA drivers, cuDNN, system-level C libraries, and specialized packages like flash-attn that need exact compiler versions. Docker packages all of this into a single image that runs identically everywhere.
+AI projects 是 dependency nightmares. typical stack includes Python, PyTorch, CUDA drivers, cuDNN, system-level C libraries, 和 specialized packages like flash-attn need exact compiler versions. Docker packages all 的 这个 into single image runs identically everywhere.
 
-## 概念讲解
+## Concept
 
-Docker wraps your code, runtime, libraries, and system tools into an isolated unit called a container. Think of it as a lightweight virtual machine, except it shares the host OS kernel instead of running its own, so it starts in seconds instead of minutes.
+Docker wraps your 代码, runtime, libraries, 和 system tools into isolated unit called container. Think 的 it 作为 lightweight virtual machine, except it shares host OS kernel instead 的 running its own, so it starts 在 seconds instead 的 minutes.
 
 ```mermaid
 graph TD
@@ -41,23 +41,23 @@ graph TD
 
 ### Why AI projects need Docker more than most
 
-1. **GPU drivers are fragile.** CUDA 12.4 code does not run on CUDA 11.8. Docker isolates the CUDA toolkit inside the container while sharing the host GPU driver through the NVIDIA Container Toolkit.
+1. **GPU drivers 是 fragile.** CUDA 12.4 代码 does not run 在 CUDA 11.8. Docker isolates CUDA toolkit inside container while sharing host GPU driver through NVIDIA Container Toolkit.
 
-2. **Model weights are large.** A 7B parameter model is 14 GB in fp16. You do not want to re-download it every time you rebuild. Docker volumes let you mount a models directory from the host.
+2. **模型 权重 是 large.** 7B 参数 模型 是 14 GB 在 fp16. You do not want 到 re-download it every time you rebuild. Docker volumes let you mount 模型 directory 从 host.
 
-3. **Multi-service architectures are common.** A real AI application is not just a Python script. It is an inference server, a vector database for RAG, maybe a web frontend. Docker Compose orchestrates all of these with one command.
+3. **Multi-service architectures 是 common.** real AI application 是 not just Python script. 它是 inference server, 向量 database 为了 RAG, maybe web frontend. Docker Compose orchestrates all 的 这些 使用 one command.
 
 ### Key vocabulary
 
 | Term | What it means |
 |------|---------------|
-| Image | A read-only template. Your recipe. Built from a Dockerfile. |
-| Container | A running instance of an image. Your kitchen. |
-| Dockerfile | Instructions to build an image. Layer by layer. |
-| Volume | Persistent storage that survives container restarts. |
-| docker-compose | A tool for defining multi-container applications in YAML. |
+| Image | read-only template. Your recipe. Built 从 Dockerfile. |
+| Container | running instance 的 image. Your kitchen. |
+| Dockerfile | Instructions 到 build image. 层 通过 层. |
+| Volume | Persistent storage survives container restarts. |
+| docker-compose | tool 为了 defining multi-container applications 在 YAML. |
 
-### Common container patterns in AI
+### Common container patterns 在 AI
 
 ```
 Dev Container
@@ -73,7 +73,7 @@ Inference Container
   Runs behind a load balancer in production.
 ```
 
-## 从零实现
+## Build It
 
 ### Step 1: Install Docker
 
@@ -95,9 +95,9 @@ docker --version
 docker run hello-world
 ```
 
-### Step 2: Install NVIDIA Container Toolkit (Linux with NVIDIA GPU)
+### Step 2: Install NVIDIA Container Toolkit (Linux 使用 NVIDIA GPU)
 
-This lets Docker containers access your GPU. macOS and Windows (WSL2) users can skip this; Docker Desktop handles GPU passthrough differently on those platforms.
+This lets Docker containers access your GPU. macOS 和 Windows (WSL2) users can skip 这个; Docker Desktop handles GPU passthrough differently 在 那些 platforms.
 
 ```bash
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
@@ -112,17 +112,17 @@ sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
 ```
 
-Test GPU access inside a container:
+Test GPU access inside container:
 
 ```bash
 docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
 ```
 
-If you see your GPU info, the toolkit is working.
+If you see your GPU info, toolkit 是 working.
 
 ### Step 3: Understand base images
 
-Choosing the right base image saves hours of debugging.
+Choosing right base image saves hours 的 debugging.
 
 ```
 nvidia/cuda:12.4.1-devel-ubuntu22.04
@@ -146,9 +146,9 @@ python:3.12-slim
   Size: ~150 MB
 ```
 
-### Step 4: Write a Dockerfile for AI development
+### Step 4: Write Dockerfile 为了 AI development
 
-Here is the Dockerfile in `code/Dockerfile`. Walk through it:
+Here 是 Dockerfile 在 `代码/Dockerfile`. Walk through it:
 
 ```dockerfile
 FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
@@ -202,7 +202,7 @@ Build it:
 docker build -t ai-dev -f phases/00-setup-and-tooling/07-docker-for-ai/code/Dockerfile .
 ```
 
-This takes a while the first time (downloading CUDA base image + PyTorch). Subsequent builds use cached layers.
+This takes while first time (downloading CUDA base image + PyTorch). Subsequent builds use cached 层.
 
 Run it:
 
@@ -213,7 +213,7 @@ docker run --rm -it --gpus all \
     ai-dev python -c "import torch; print(f'PyTorch {torch.__version__}, CUDA: {torch.cuda.is_available()}')"
 ```
 
-Run Jupyter inside the container:
+Run Jupyter inside container:
 
 ```bash
 docker run --rm -it --gpus all \
@@ -223,9 +223,9 @@ docker run --rm -it --gpus all \
     ai-dev jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 ```
 
-### Step 5: Volume mounts for data and models
+### Step 5: Volume mounts 为了 数据 和 模型
 
-Volume mounts are critical for AI work. Without them, your 14 GB model downloads vanish when the container stops.
+Volume mounts 是 critical 为了 AI work. Without them, your 14 GB 模型 downloads vanish when container stops.
 
 ```bash
 # Mount your code
@@ -238,7 +238,7 @@ Volume mounts are critical for AI work. Without them, your 14 GB model downloads
 -v ~/datasets:/data
 ```
 
-Inside your training script, load from the mounted path:
+Inside your 训练 script, load 从 mounted path:
 
 ```python
 from transformers import AutoModel
@@ -246,13 +246,13 @@ from transformers import AutoModel
 model = AutoModel.from_pretrained("/models/llama-7b")
 ```
 
-The model lives on your host filesystem. Rebuild the container as often as you want without re-downloading.
+模型 lives 在 your host filesystem. Rebuild container 作为 often 作为 you want without re-downloading.
 
-### Step 6: Docker Compose for multi-service AI apps
+### Step 6: Docker Compose 为了 multi-service AI apps
 
-A real RAG application needs an inference server and a vector database. Docker Compose runs both with one command.
+real RAG application needs inference server 和 向量 database. Docker Compose runs both 使用 one command.
 
-See `code/docker-compose.yml`:
+See `代码/docker-compose.yml`:
 
 ```yaml
 services:
@@ -296,9 +296,9 @@ cd phases/00-setup-and-tooling/07-docker-for-ai/code
 docker compose up -d
 ```
 
-Now your AI dev container can reach the vector database at `http://qdrant:6333` by service name. Docker Compose creates a shared network automatically.
+Now your AI dev container can reach 向量 database 在 `http://qdrant:6333` 通过 service name. Docker Compose creates shared network automatically.
 
-Test the connection from inside the AI container:
+Test connection 从 inside AI container:
 
 ```python
 from qdrant_client import QdrantClient
@@ -313,13 +313,13 @@ Stop everything:
 docker compose down
 ```
 
-Add `-v` to also delete the qdrant volume:
+Add `-v` 到 also delete qdrant volume:
 
 ```bash
 docker compose down -v
 ```
 
-### Step 7: Useful Docker commands for AI work
+### Step 7: Useful Docker commands 为了 AI work
 
 ```bash
 # List running containers
@@ -341,32 +341,32 @@ docker cp <container_id>:/workspace/results.csv ./results.csv
 docker logs -f <container_id>
 ```
 
-## 框架应用
+## Use It
 
-You now have a reproducible AI development environment. For the rest of this course:
+You now have reproducible AI development environment. For rest 的 这个 course:
 
-- Use `docker compose up` to start your dev environment and vector database together
-- Mount your code, models, and data as volumes so nothing is lost between rebuilds
-- When a lesson requires a new Python package, add it to the Dockerfile and rebuild
-- Share your Dockerfile with teammates. They get the exact same environment.
+- Use `docker compose up` 到 start your dev environment 和 向量 database together
+- Mount your 代码, 模型, 和 数据 作为 volumes so nothing 是 lost between rebuilds
+- When lesson requires new Python package, add it 到 Dockerfile 和 rebuild
+- Share your Dockerfile 使用 teammates. They get exact same environment.
 
 ### No GPU?
 
-Remove the `--gpus all` flag and the NVIDIA deploy block. The container still works for CPU-based lessons. PyTorch detects the absence of CUDA and falls back to CPU automatically.
+Remove `--gpus all` flag 和 NVIDIA deploy block. container still works 为了 CPU-based lessons. PyTorch detects absence 的 CUDA 和 falls back 到 CPU automatically.
 
-## 练习
+## Exercises
 
-1. Build the Dockerfile and run `python -c "import torch; print(torch.__version__)"` inside the container
-2. Start the docker-compose stack and verify Qdrant is accessible from the AI container at `http://qdrant:6333/collections`
-3. Add `flask` to the Dockerfile, rebuild, and run a simple API server on port 5000. Map the port with `-p 5000:5000`
-4. Measure the image size with `docker images`. Try switching the base image from `devel` to `runtime` and compare sizes
+1. Build Dockerfile 和 run `python -c "import torch; print(torch.__version__)"` inside container
+2. Start docker-compose stack 和 verify Qdrant 是 accessible 从 AI container 在 `http://qdrant:6333/collections`
+3. Add `flask` 到 Dockerfile, rebuild, 和 run simple API server 在 port 5000. Map port 使用 `-p 5000:5000`
+4. Measure image size 使用 `docker images`. Try switching base image 从 `devel` 到 `runtime` 和 compare sizes
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Container | "Lightweight VM" | An isolated process using the host kernel, with its own filesystem and network |
-| Image layer | "Cached step" | Each Dockerfile instruction creates a layer. Unchanged layers are cached, so rebuilds are fast. |
-| NVIDIA Container Toolkit | "GPU in Docker" | A runtime hook that exposes host GPUs to containers via `--gpus` flag |
-| Volume mount | "Shared folder" | A directory on the host mapped into the container. Changes persist after the container stops. |
-| Base image | "Starting point" | The `FROM` image your Dockerfile builds on top of. Determines what is pre-installed. |
+| Container | "Lightweight VM" | isolated process using host kernel, 使用 its own filesystem 和 network |
+| Image 层 | "Cached step" | Each Dockerfile instruction creates 层. Unchanged 层 是 cached, so rebuilds 是 fast. |
+| NVIDIA Container Toolkit | "GPU 在 Docker" | runtime hook exposes host GPUs 到 containers via `--gpus` flag |
+| Volume mount | "Shared folder" | directory 在 host mapped into container. Changes persist after container stops. |
+| Base image | "Starting point" | `FROM` image your Dockerfile builds 在 top 的. Determines what 是 pre-installed. |

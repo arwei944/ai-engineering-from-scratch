@@ -1,110 +1,110 @@
-# 权重初始化 and Training Stability
+# 权重 Initialization 和 训练 Stability
 
-> Initialize wrong and training never starts. Initialize right and 50 layers train as smoothly as 3.
+> Initialize wrong 和 训练 never starts. Initialize right 和 50 层 train 作为 smoothly 作为 3.
 
-**类型:** 实现
-**语言:** Python
+**Type:** Build
+**Languages:** Python
 **Prerequisites:** Lesson 03.04 (Activation Functions), Lesson 03.07 (正则化)
 **Time:** ~90 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement zero, random, Xavier/Glorot, and Kaiming/He initialization strategies and measure their effect on activation magnitudes through 50 layers
-- Derive why Xavier init uses Var(w) = 2/(fan_in + fan_out) and Kaiming uses Var(w) = 2/fan_in
-- Demonstrate the symmetry problem with zero initialization and explain why random scale alone is insufficient
-- Match the correct initialization strategy to the activation function: Xavier for sigmoid/tanh, Kaiming for ReLU/GELU
+- Implement zero, random, Xavier/Glorot, 和 Kaiming/He initialization strategies 和 measure their effect 在 activation magnitudes through 50 层
+- Derive why Xavier init uses Var(w) = 2/(fan_in + fan_out) 和 Kaiming uses Var(w) = 2/fan_in
+- Demonstrate symmetry problem 使用 zero initialization 和 explain why random scale alone 是 insufficient
+- Match correct initialization strategy 到 激活函数: Xavier 为了 sigmoid/tanh, Kaiming 为了 ReLU/GELU
 
-## The Problem
+## Problem
 
-Initialize all weights to zero. Nothing learns. Every neuron computes the same function, receives the same gradient, and updates identically. After 10,000 epochs, your 512-neuron hidden layer is still 512 copies of the same neuron. You paid for 512 parameters and got 1.
+Initialize all 权重 到 zero. Nothing learns. Every 神经元 computes same 函数, receives same gradient, 和 updates identically. After 10,000 轮次, your 512-神经元 hidden 层 是 still 512 copies 的 same 神经元. You paid 为了 512 参数 和 got 1.
 
-Initialize them too large. Activations explode through the network. By layer 10, values hit 1e15. By layer 20, they overflow to infinity. Gradients follow the same trajectory in reverse.
+Initialize them too large. Activations explode through network. By 层 10, values hit 1e15. By 层 20, they overflow 到 infinity. Gradients follow same trajectory 在 reverse.
 
-Initialize them randomly from a standard normal distribution. Works for 3 layers. At 50 layers, the signal collapses to zero or detonates to infinity depending on whether the random scale was slightly too small or slightly too large. The boundary between "works" and "broken" is razor-thin.
+Initialize them randomly 从 standard normal distribution. Works 为了 3 层. At 50 层, signal collapses 到 zero 或 detonates 到 infinity depending 在 whether random scale was slightly too small 或 slightly too large. boundary between "works" 和 "broken" 是 razor-thin.
 
-Weight initialization is the most underrated decision in deep learning. Architecture gets papers. 优化器s get blog posts. Initialization gets a footnote. But get it wrong and nothing else matters -- your network is dead before training begins.
+权重 initialization 是 most underrated decision 在 deep learning. Architecture gets papers. Optimizers get blog posts. Initialization gets footnote. But get it wrong 和 nothing else matters -- your network 是 dead before 训练 begins.
 
-## The Concept
+## Concept
 
-### The Symmetry Problem
+### Symmetry Problem
 
-Every neuron in a layer has the same structure: multiply inputs by weights, add bias, apply activation. If all weights start at the same value (zero is the extreme case), every neuron computes the same output. During backpropagation, every neuron receives the same gradient. During the update step, every neuron changes by the same amount.
+Every 神经元 在 层 has same structure: multiply 输入 通过 权重, add 偏置, apply activation. If all 权重 start 在 same value (zero 是 extreme case), every 神经元 computes same 输出. During 反向传播, every 神经元 receives same gradient. During update step, every 神经元 changes 通过 same amount.
 
-You're stuck. The network has hundreds of parameters, but they all move in lockstep. This is called symmetry, and random initialization is the brute-force way to break it. Each neuron starts at a different point in weight space, so each learns a different feature.
+You're stuck. network has hundreds 的 参数, but they all move 在 lockstep. 这是 called symmetry, 和 random initialization 是 brute-force way 到 break it. Each 神经元 starts 在 different point 在 权重 space, so each learns different 特征.
 
-But "random" is not enough. The *scale* of the randomness determines whether the network trains.
+But "random" 是 not enough. *scale* 的 randomness determines whether network trains.
 
 ### Variance Propagation Through Layers
 
-Consider a single layer with fan_in inputs:
+Consider single 层 使用 fan_in 输入:
 
 ```
 z = w1*x1 + w2*x2 + ... + w_n*x_n
 ```
 
-If each weight wi is drawn from a distribution with variance Var(w) and each input xi has variance Var(x), the output variance is:
+If each 权重 wi 是 drawn 从 distribution 使用 variance Var(w) 和 each 输入 xi has variance Var(x), 输出 variance 是:
 
 ```
 Var(z) = fan_in * Var(w) * Var(x)
 ```
 
-If Var(w) = 1 and fan_in = 512, the output variance is 512x the input variance. After 10 layers: 512^10 = 1.2e27. Your signal has exploded.
+If Var(w) = 1 和 fan_in = 512, 输出 variance 是 512x 输入 variance. After 10 层: 512^10 = 1.2e27. Your signal has exploded.
 
-If Var(w) = 0.001, the output variance shrinks by 0.001 * 512 = 0.512 per layer. After 10 layers: 0.512^10 = 0.00013. Your signal has vanished.
+If Var(w) = 0.001, 输出 variance shrinks 通过 0.001 * 512 = 0.512 per 层. After 10 层: 0.512^10 = 0.00013. Your signal has vanished.
 
-The goal: choose Var(w) so that Var(z) = Var(x). Signal magnitude stays constant across layers.
+goal: choose Var(w) so Var(z) = Var(x). Signal magnitude stays constant across 层.
 
 ### Xavier/Glorot Initialization
 
-Glorot and Bengio (2010) derived the solution for sigmoid and tanh activations. To keep variance constant in both the forward and backward pass:
+Glorot 和 Bengio (2010) derived solution 为了 sigmoid 和 tanh activations. To keep variance constant 在 both forward 和 backward pass:
 
 ```
 Var(w) = 2 / (fan_in + fan_out)
 ```
 
-In practice, weights are drawn from:
+In practice, 权重 是 drawn 从:
 
 ```
 w ~ Uniform(-limit, limit)  where limit = sqrt(6 / (fan_in + fan_out))
 ```
 
-or:
+或:
 
 ```
 w ~ Normal(0, sqrt(2 / (fan_in + fan_out)))
 ```
 
-This works because sigmoid and tanh are roughly linear near zero, where properly initialized activations live. The variance stays stable through dozens of layers.
+This works because sigmoid 和 tanh 是 roughly linear near zero, where properly initialized activations live. variance stays stable through dozens 的 层.
 
 ### Kaiming/He Initialization
 
-ReLU kills half the outputs (everything negative becomes zero). The effective fan_in is halved because on average half the inputs are zeroed. Xavier init doesn't account for this -- it underestimates the variance needed.
+ReLU kills half 输出 (everything negative becomes zero). effective fan_in 是 halved because 在 average half 输入 是 zeroed. Xavier init doesn't account 为了 这个 -- it underestimates variance needed.
 
-He et al. (2015) adjusted the formula:
+He et al. (2015) adjusted formula:
 
 ```
 Var(w) = 2 / fan_in
 ```
 
-Weights are drawn from:
+Weights 是 drawn 从:
 
 ```
 w ~ Normal(0, sqrt(2 / fan_in))
 ```
 
-The factor of 2 compensates for ReLU zeroing half the activations. Without it, the signal shrinks by ~0.5x per layer. With 50 layers: 0.5^50 = 8.8e-16. Kaiming init prevents this.
+factor 的 2 compensates 为了 ReLU zeroing half activations. Without it, signal shrinks 通过 ~0.5x per 层. With 50 层: 0.5^50 = 8.8e-16. Kaiming init prevents 这个.
 
 ### Transformer Initialization
 
-GPT-2 introduced a different pattern. Residual connections add the output of each sub-layer to its input:
+GPT-2 introduced different pattern. Residual connections add 输出 的 each sub-层 到 its 输入:
 
 ```
 x = x + sublayer(x)
 ```
 
-Each addition increases variance. With N residual layers, variance grows proportionally to N. GPT-2 scales the weights of residual layers by 1/sqrt(2N), where N is the number of layers. This keeps the accumulated signal magnitude stable.
+Each addition increases variance. With N residual 层, variance grows proportionally 到 N. GPT-2 scales 权重 的 residual 层 通过 1/sqrt(2N), where N 是 number 的 层. This keeps accumulated signal magnitude stable.
 
-Llama 3 (405B parameters, 126 layers) uses a similar scheme. Without this scaling, the residual stream would grow unbounded through 126 layers of attention and feedforward blocks.
+Llama 3 (405B 参数, 126 层) uses similar scheme. Without 这个 scaling, residual stream would grow unbounded through 126 层 的 attention 和 feedforward blocks.
 
 ```mermaid
 flowchart TD
@@ -144,7 +144,7 @@ graph LR
     end
 ```
 
-### Choosing the Right Init
+### Choosing Right Init
 
 ```mermaid
 flowchart TD
@@ -165,7 +165,7 @@ flowchart TD
 
 ### Step 1: Initialization Strategies
 
-Four ways to initialize a weight matrix. Each returns a list of lists (a 2D matrix) with fan_in columns and fan_out rows.
+Four ways 到 initialize 权重 矩阵. Each returns list 的 lists ( 2D 矩阵) 使用 fan_in columns 和 fan_out rows.
 
 ```python
 import math
@@ -192,7 +192,7 @@ def kaiming_init(fan_in, fan_out):
 
 ### Step 2: Activation Functions
 
-We need sigmoid, tanh, and ReLU to test each init strategy with its intended activation.
+We need sigmoid, tanh, 和 ReLU 到 test each init strategy 使用 its intended activation.
 
 ```python
 def sigmoid(x):
@@ -210,7 +210,7 @@ def relu(x):
 
 ### Step 3: Forward Pass Through 50 Layers
 
-Pass random data through a deep network and measure mean activation magnitude at each layer.
+Pass random 数据 through deep network 和 measure mean activation magnitude 在 each 层.
 
 ```python
 def forward_deep(init_fn, activation_fn, n_layers=50, width=64, n_samples=100):
@@ -241,9 +241,9 @@ def forward_deep(init_fn, activation_fn, n_layers=50, width=64, n_samples=100):
     return layer_magnitudes
 ```
 
-### Step 4: The Experiment
+### Step 4: Experiment
 
-Run all combinations: zero init, random N(0,1), random N(0,0.01), Xavier with sigmoid, Xavier with tanh, Kaiming with ReLU. Print the magnitude at key layers.
+Run all combinations: zero init, random N(0,1), random N(0,0.01), Xavier 使用 sigmoid, Xavier 使用 tanh, Kaiming 使用 ReLU. Print magnitude 在 key 层.
 
 ```python
 def run_experiment():
@@ -275,7 +275,7 @@ def run_experiment():
 
 ### Step 5: Symmetry Demonstration
 
-Show that zero init produces identical neurons.
+Show zero init produces identical 神经元.
 
 ```python
 def symmetry_demo():
@@ -297,9 +297,9 @@ def symmetry_demo():
     print(f"  Effective parameters: 1 (not {len(weights) * len(weights[0])})")
 ```
 
-### Step 6: Layer-by-Layer Magnitude Report
+### Step 6: 层-通过-层 Magnitude Report
 
-Print a visual bar chart of activation magnitudes through 50 layers.
+Print visual bar chart 的 activation magnitudes through 50 层.
 
 ```python
 def magnitude_report(name, magnitudes):
@@ -318,7 +318,7 @@ def magnitude_report(name, magnitudes):
 
 ## Use It
 
-PyTorch provides these as built-in functions:
+PyTorch provides 这些 作为 built-在 函数:
 
 ```python
 import torch
@@ -335,45 +335,45 @@ nn.init.kaiming_normal_(layer.weight, nonlinearity='relu')
 nn.init.zeros_(layer.bias)
 ```
 
-When you call `nn.Linear(512, 256)`, PyTorch defaults to Kaiming uniform initialization. That's why most simple networks "just work" -- PyTorch already made the right choice. But when you build custom architectures or go deeper than 20 layers, you need to understand what's happening and potentially override the default.
+When you call `nn.Linear(512, 256)`, PyTorch defaults 到 Kaiming uniform initialization. That's why most simple networks "just work" -- PyTorch already made right choice. But when you build custom architectures 或 go deeper than 20 层, you need 到 understand what's happening 和 potentially override default.
 
-For transformers, HuggingFace models typically handle initialization in their `_init_weights` method. GPT-2's implementation scales residual projections by 1/sqrt(N). If you're building a transformer from scratch, you need to add this yourself.
+For transformers, HuggingFace 模型 typically handle initialization 在 their `_init_weights` method. GPT-2's implementation scales residual projections 通过 1/sqrt(N). If you're building transformer 从 scratch, you need 到 add 这个 yourself.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/prompt-init-strategy.md` -- a prompt that diagnoses 权重初始化 problems and recommends the right strategy
+- `输出/prompt-init-strategy.md` -- prompt diagnoses 权重 initialization problems 和 recommends right strategy
 
 ## Exercises
 
-1. Add LeCun initialization (Var = 1/fan_in, designed for SELU activation). Run the 50-layer experiment with LeCun init + tanh and compare to Xavier + tanh.
+1. Add LeCun initialization (Var = 1/fan_in, designed 为了 SELU activation). Run 50-层 experiment 使用 LeCun init + tanh 和 compare 到 Xavier + tanh.
 
-2. Implement the GPT-2 residual scaling: multiply the output of each layer by 1/sqrt(2*N) before adding to the residual stream. Run 50 layers with and without scaling, measure how fast the residual magnitude grows.
+2. Implement GPT-2 residual scaling: multiply 输出 的 each 层 通过 1/sqrt(2*N) before adding 到 residual stream. Run 50 层 使用 和 without scaling, measure how fast residual magnitude grows.
 
-3. Create an "init health check" function that takes a network's layer dimensions and activation type, then recommends the correct initialization and warns if the current init will cause problems.
+3. Create "init health check" 函数 takes network's 层 dimensions 和 activation type, then recommends correct initialization 和 warns if current init will cause problems.
 
-4. Run the experiment with fan_in = 16 vs fan_in = 1024. Xavier and Kaiming adapt to fan_in, but random init doesn't. Show how the gap between "works" and "breaks" widens with larger layers.
+4. Run experiment 使用 fan_in = 16 vs fan_in = 1024. Xavier 和 Kaiming adapt 到 fan_in, but random init doesn't. Show how gap between "works" 和 "breaks" widens 使用 larger 层.
 
-5. Implement orthogonal initialization (generate a random matrix, compute its SVD, use the orthogonal matrix U). Compare to Kaiming for ReLU networks at 50 layers.
+5. Implement orthogonal initialization (generate random 矩阵, compute its SVD, use orthogonal 矩阵 U). Compare 到 Kaiming 为了 ReLU networks 在 50 层.
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Weight initialization | "Set starting weights randomly" | The strategy for choosing initial weight values that determines whether a network can train at all |
-| Symmetry breaking | "Make neurons different" | Using random initialization to ensure neurons learn distinct features instead of computing identical functions |
-| Fan-in | "Number of inputs to a neuron" | The number of incoming connections, which determines how input variance accumulates in the weighted sum |
-| Fan-out | "Number of outputs from a neuron" | The number of outgoing connections, relevant for maintaining gradient variance during backpropagation |
-| Xavier/Glorot init | "The sigmoid initialization" | Var(w) = 2/(fan_in + fan_out), designed to preserve variance through sigmoid and tanh activations |
-| Kaiming/He init | "The ReLU initialization" | Var(w) = 2/fan_in, accounts for ReLU zeroing half the activations |
-| Variance propagation | "How signals grow or shrink through layers" | The mathematical analysis of how activation variance changes layer by layer based on weight scale |
-| Residual scaling | "GPT-2's init trick" | Scaling residual connection weights by 1/sqrt(2N) to prevent variance growth through N transformer layers |
-| Dead network | "Nothing trains" | A network where poor initialization causes all gradients to be zero or all activations to saturate |
-| Exploding activations | "Values go to infinity" | When weight variance is too high, causing activation magnitudes to grow exponentially through layers |
+| 权重 initialization | "Set starting 权重 randomly" | strategy 为了 choosing initial 权重 values determines whether network can train 在 all |
+| Symmetry breaking | "Make 神经元 different" | Using random initialization 到 ensure 神经元 learn distinct 特征 instead 的 computing identical 函数 |
+| Fan-在 | "Number 的 输入 到 神经元" | number 的 incoming connections, which determines how 输入 variance accumulates 在 weighted sum |
+| Fan-out | "Number 的 输出 从 神经元" | number 的 outgoing connections, relevant 为了 maintaining gradient variance during 反向传播 |
+| Xavier/Glorot init | " sigmoid initialization" | Var(w) = 2/(fan_in + fan_out), designed 到 preserve variance through sigmoid 和 tanh activations |
+| Kaiming/He init | " ReLU initialization" | Var(w) = 2/fan_in, accounts 为了 ReLU zeroing half activations |
+| Variance propagation | "How signals grow 或 shrink through 层" | mathematical analysis 的 how activation variance changes 层 通过 层 based 在 权重 scale |
+| Residual scaling | "GPT-2's init trick" | Scaling residual connection 权重 通过 1/sqrt(2N) 到 prevent variance growth through N transformer 层 |
+| Dead network | "Nothing trains" | network where poor initialization causes all gradients 到 be zero 或 all activations 到 saturate |
+| Exploding activations | "Values go 到 infinity" | When 权重 variance 是 too high, causing activation magnitudes 到 grow exponentially through 层 |
 
 ## Further Reading
 
-- Glorot & Bengio, "Understanding the difficulty of training deep feedforward 神经网络s" (2010) -- the original Xavier initialization paper with variance analysis
-- He et al., "Delving Deep into Rectifiers" (2015) -- introduced Kaiming initialization for ReLU networks
-- Radford et al., "Language Models are Unsupervised Multitask Learners" (2019) -- GPT-2 paper with residual scaling initialization
-- Mishkin & Matas, "All You Need is a Good Init" (2016) -- layer-sequential unit-variance initialization, an empirical alternative to analytical formulas
+- Glorot & Bengio, "Understanding difficulty 的 训练 deep feedforward 神经网络" (2010) -- original Xavier initialization paper 使用 variance analysis
+- He et al., "Delving Deep into Rectifiers" (2015) -- introduced Kaiming initialization 为了 ReLU networks
+- Radford et al., "Language Models 是 Unsupervised Multitask Learners" (2019) -- GPT-2 paper 使用 residual scaling initialization
+- Mishkin & Matas, "All You Need 是 Good Init" (2016) -- 层-sequential unit-variance initialization, empirical alternative 到 analytical formulas

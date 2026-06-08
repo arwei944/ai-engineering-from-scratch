@@ -1,30 +1,30 @@
-# 朴素贝叶斯
+# Naive Bayes
 
-> The "naive" assumption is wrong, and it works anyway. That's the beauty of it.
+> "naive" assumption 是 wrong, 和 it works anyway. That's beauty 的 it.
 
-**类型:** 实现
+**Type:** Build
 **Language:** Python
-**Prerequisites:** Phase 2, Lessons 01-07 (classification, Bayes' theorem)
+**Prerequisites:** Phase 2, Lessons 01-07 (分类, Bayes' theorem)
 **Time:** ~75 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement Multinomial 朴素贝叶斯 from scratch with Laplace smoothing for text classification
-- Explain why the naive independence assumption is mathematically wrong but produces correct class rankings in practice
-- Compare Multinomial, Bernoulli, and Gaussian 朴素贝叶斯 variants and select the right one for a given feature type
-- Evaluate 朴素贝叶斯 against logistic regression on high-dimensional sparse data and explain the bias-variance tradeoff at work
+- Implement Multinomial Naive Bayes 从 scratch 使用 Laplace smoothing 为了 text 分类
+- Explain why naive independence assumption 是 mathematically wrong but produces correct class rankings 在 practice
+- Compare Multinomial, Bernoulli, 和 Gaussian Naive Bayes variants 和 select right one 为了 given 特征 type
+- Evaluate Naive Bayes against logistic 回归 在 high-dimensional sparse 数据 和 explain 偏置-variance tradeoff 在 work
 
-## The Problem
+## Problem
 
-You need to classify text. Emails into spam or not-spam. Customer reviews into positive or negative. Support tickets into categories. You have thousands of features (one per word) and limited training data.
+你需要 到 classify text. Emails into spam 或 not-spam. Customer reviews into positive 或 negative. Support tickets into categories. You have thousands 的 特征 (one per word) 和 limited 训练 数据.
 
-Most classifiers choke here. Logistic regression needs enough samples to estimate thousands of weights reliably. Decision trees split on one word at a time and overfit wildly. KNN in 10,000 dimensions is meaningless because every point is equally far from every other point.
+Most classifiers choke here. Logistic 回归 needs enough samples 到 estimate thousands 的 权重 reliably. Decision trees split 在 one word 在 time 和 overfit wildly. KNN 在 10,000 dimensions 是 meaningless because every point 是 equally far 从 every other point.
 
-朴素贝叶斯 handles this. It makes a mathematically wrong assumption (that every feature is independent of every other feature given the class), and it still outperforms "smarter" models on text classification, especially with small training sets. It trains in a single pass through the data. It scales to millions of features. It produces probability estimates (though often poorly calibrated due to the independence assumption).
+Naive Bayes handles 这个. It makes mathematically wrong assumption ( every 特征 是 independent 的 every other 特征 given class), 和 it still outperforms "smarter" 模型 在 text 分类, especially 使用 small 训练 sets. It trains 在 single pass through 数据. It scales 到 millions 的 特征. It produces 概率 estimates (though often poorly calibrated due 到 independence assumption).
 
-Understanding why a wrong assumption leads to good predictions teaches you something fundamental about machine learning: the best model is not the most correct one, it is the one with the best bias-variance tradeoff for your data.
+Understanding why wrong assumption leads 到 good predictions teaches you something fundamental about machine learning: best 模型 是 not most correct one, it 是 one 使用 best 偏置-variance tradeoff 为了 your 数据.
 
-## The Concept
+## Concept
 
 ### Bayes' Theorem (Quick Review)
 
@@ -34,47 +34,47 @@ Bayes' theorem flips conditional probabilities:
 P(class | features) = P(features | class) * P(class) / P(features)
 ```
 
-We want `P(class | features)` -- the probability that a document belongs to a class given the words in it. We can compute this from:
-- `P(features | class)` -- the likelihood of seeing these words in documents of this class
-- `P(class)` -- the prior probability of the class (how common is spam in general?)
-- `P(features)` -- the evidence, same for all classes, so we can ignore it when comparing
+We want `P(class | 特征)` -- 概率 document belongs 到 class given words 在 it. 我们可以 compute 这个 从:
+- `P(特征 | class)` -- likelihood 的 seeing 这些 words 在 documents 的 这个 class
+- `P(class)` -- prior 概率 的 class (how common 是 spam 在 general?)
+- `P(特征)` -- evidence, same 为了 all classes, so we can ignore it when comparing
 
-The class with the highest `P(class | features)` wins.
+class 使用 highest `P(class | 特征)` wins.
 
-### The Naive Independence Assumption
+### Naive Independence Assumption
 
-Computing `P(features | class)` exactly requires estimating the joint probability of all features together. With a vocabulary of 10,000 words, you would need to estimate a distribution over 2^10,000 possible combinations. Impossible.
+Computing `P(特征 | class)` exactly requires estimating joint 概率 的 all 特征 together. With vocabulary 的 10,000 words, you would need 到 estimate distribution over 2^10,000 possible combinations. Impossible.
 
-The naive assumption: every feature is conditionally independent given the class.
+naive assumption: every 特征 是 conditionally independent given class.
 
 ```
 P(w1, w2, ..., wn | class) = P(w1 | class) * P(w2 | class) * ... * P(wn | class)
 ```
 
-Instead of one impossible joint distribution, you estimate n simple per-feature distributions. Each one needs only a count.
+Instead 的 one impossible joint distribution, you estimate n simple per-特征 distributions. Each one needs only count.
 
-This assumption is obviously wrong. The words "machine" and "learning" are not independent in any document. But the classifier does not need correct probability estimates. It needs correct rankings -- which class has the highest probability. The independence assumption introduces systematic errors, but those errors affect all classes similarly, so the ranking stays correct.
+This assumption 是 obviously wrong. words "machine" 和 "learning" 是 not independent 在 any document. But classifier does not need correct 概率 estimates. It needs correct rankings -- which class has highest 概率. independence assumption introduces systematic errors, but 那些 errors affect all classes similarly, so ranking stays correct.
 
 ### Why It Still Works
 
 Three reasons:
 
-1. **Ranking over calibration.** Classification only needs the top-ranked class to be correct. Even if P(spam) = 0.99999 when the true probability is 0.7, the classifier still picks spam correctly. We do not need correct probabilities. We need the correct winner.
+1. **Ranking over calibration.** 分类 only needs top-ranked class 到 be correct. Even if P(spam) = 0.99999 when true 概率 是 0.7, classifier still picks spam correctly. We do not need correct probabilities. We need correct winner.
 
-2. **High bias, low variance.** The independence assumption is a strong prior. It constrains the model heavily, which prevents 过拟合. With limited training data, a model that is slightly wrong but stable beats a model that is theoretically right but wildly unstable. This is the bias-variance tradeoff in action.
+2. **High 偏置, low variance.** independence assumption 是 strong prior. It constrains 模型 heavily, which prevents 过拟合. With limited 训练 数据, 模型 是 slightly wrong but stable beats 模型 是 theoretically right but wildly unstable. 这是 偏置-variance tradeoff 在 action.
 
-3. **Feature redundancy cancels out.** Correlated features provide redundant evidence. The classifier double-counts this evidence, but it double-counts it for the correct class too. If "machine" and "learning" always appear together, both provide evidence for the "tech" class. NB counts them twice, but it counts them twice for the right class.
+3. **特征 redundancy cancels out.** Correlated 特征 provide redundant evidence. classifier double-counts 这个 evidence, but it double-counts it 为了 correct class too. If "machine" 和 "learning" always appear together, both provide evidence 为了 "tech" class. NB counts them twice, but it counts them twice 为了 right class.
 
-A fourth, practical reason: 朴素贝叶斯 is extremely fast. Training is a single pass through the data counting frequencies. Prediction is a matrix multiplication. You can train on a million documents in seconds. This speed means you can iterate faster, try more feature sets, and run more experiments than with slower models.
+fourth, practical reason: Naive Bayes 是 extremely fast. 训练 是 single pass through 数据 counting frequencies. Prediction 是 矩阵 multiplication. 你可以 train 在 million documents 在 seconds. This speed means you can iterate faster, try more 特征 sets, 和 run more experiments than 使用 slower 模型.
 
-### The Math Step by Step
+### Math Step 通过 Step
 
-Let us trace through a concrete example. Suppose we have two classes: spam and not-spam. Our vocabulary has three words: "free", "money", "meeting".
+让我们 trace through concrete example. Suppose we have two classes: spam 和 not-spam. Our vocabulary has three words: "free", "money", "meeting".
 
-Training data:
+训练 数据:
 - Spam emails mention "free" 80 times, "money" 60 times, "meeting" 10 times (150 total words)
 - Not-spam emails mention "free" 5 times, "money" 10 times, "meeting" 100 times (115 total words)
-- 40% of emails are spam, 60% are not-spam
+- 40% 的 emails 是 spam, 60% 是 not-spam
 
 With Laplace smoothing (alpha=1):
 
@@ -100,111 +100,111 @@ log P(not-spam | email) = log(0.6) + 2*log(0.051) + 1*log(0.093) + 0*log(0.856)
                         = -8.838
 ```
 
-Spam wins by a large margin. The word "free" appearing twice is strong evidence for spam. Note that "meeting" not appearing contributes zero to both log sums (0 * log(P)) -- in Multinomial NB, absent words have no effect. It is Bernoulli NB that explicitly models word absence.
+Spam wins 通过 large margin. word "free" appearing twice 是 strong evidence 为了 spam. 注意 "meeting" not appearing contributes zero 到 both log sums (0 * log(P)) -- 在 Multinomial NB, absent words have no effect. 它是 Bernoulli NB explicitly 模型 word absence.
 
 ### Three Variants
 
-朴素贝叶斯 comes in three flavors. Each models `P(feature | class)` differently.
+Naive Bayes comes 在 three flavors. Each 模型 `P(特征 | class)` differently.
 
-#### Multinomial 朴素贝叶斯
+#### Multinomial Naive Bayes
 
-Models each feature as a count. Best for text data where features are word frequencies or TF-IDF values.
+Models each 特征 作为 count. Best 为了 text 数据 where 特征 是 word frequencies 或 TF-IDF values.
 
 ```
 P(word_i | class) = (count of word_i in class + alpha) / (total words in class + alpha * vocab_size)
 ```
 
-The `alpha` is Laplace smoothing (explained below). This variant is the workhorse for text classification.
+`alpha` 是 Laplace smoothing (explained below). This variant 是 workhorse 为了 text 分类.
 
-#### Gaussian 朴素贝叶斯
+#### Gaussian Naive Bayes
 
-Models each feature as a normal distribution. Best for continuous features.
+Models each 特征 作为 normal distribution. Best 为了 continuous 特征.
 
 ```
 P(x_i | class) = (1 / sqrt(2 * pi * var)) * exp(-(x_i - mean)^2 / (2 * var))
 ```
 
-Each class gets its own mean and variance per feature. This works well when features genuinely follow a bell curve within each class.
+Each class gets its own mean 和 variance per 特征. This works well when 特征 genuinely follow bell curve within each class.
 
-#### Bernoulli 朴素贝叶斯
+#### Bernoulli Naive Bayes
 
-Models each feature as binary (present or absent). Best for short text or binary feature vectors.
+Models each 特征 作为 binary (present 或 absent). Best 为了 short text 或 binary 特征 向量.
 
 ```
 P(word_i | class) = (docs in class containing word_i + alpha) / (total docs in class + 2 * alpha)
 ```
 
-Unlike Multinomial, Bernoulli explicitly penalizes the absence of a word. If "free" typically appears in spam but is absent from this email, Bernoulli counts that as evidence against spam.
+Unlike Multinomial, Bernoulli explicitly penalizes absence 的 word. If "free" typically appears 在 spam but 是 absent 从 这个 email, Bernoulli counts 作为 evidence against spam.
 
-### When to Use Each Variant
+### When 到 Use Each Variant
 
-| Variant | Feature Type | Best For | Example |
+| Variant | 特征 Type | Best For | Example |
 |---------|-------------|----------|---------|
-| Multinomial | Counts or frequencies | Text classification, bag-of-words | Email spam, topic classification |
-| Gaussian | Continuous values | Tabular data with normal-ish features | Iris classification, sensor data |
-| Bernoulli | Binary (0/1) | Short text, binary feature vectors | SMS spam, presence/absence features |
+| Multinomial | Counts 或 frequencies | Text 分类, bag-的-words | Email spam, topic 分类 |
+| Gaussian | Continuous values | Tabular 数据 使用 normal-ish 特征 | Iris 分类, sensor 数据 |
+| Bernoulli | Binary (0/1) | Short text, binary 特征 向量 | SMS spam, presence/absence 特征 |
 
 ### Laplace Smoothing
 
-What happens when a word appears in the test data but never appeared in the training data for a particular class?
+What happens when word appears 在 test 数据 but never appeared 在 训练 数据 为了 particular class?
 
-Without smoothing: `P(word | class) = 0/N = 0`. One zero multiplied through the entire product makes `P(class | features) = 0`, regardless of all other evidence. A single unseen word destroys the entire prediction, no matter how much other evidence supports it.
+Without smoothing: `P(word | class) = 0/N = 0`. One zero multiplied through entire product makes `P(class | 特征) = 0`, regardless 的 all other evidence. single unseen word destroys entire prediction, no matter how much other evidence supports it.
 
-Laplace smoothing adds a small count `alpha` (usually 1) to every feature count:
+Laplace smoothing adds small count `alpha` (usually 1) 到 every 特征 count:
 
 ```
 P(word_i | class) = (count(word_i, class) + alpha) / (total_words_in_class + alpha * vocab_size)
 ```
 
-With alpha=1, every word gets at least a tiny probability. The word "discombobulate" appearing in a test email no longer kills the spam probability. The smoothing has a Bayesian interpretation: it is equivalent to placing a uniform Dirichlet prior on the word distributions.
+With alpha=1, every word gets 在 least tiny 概率. word "discombobulate" appearing 在 test email no longer kills spam 概率. smoothing has Bayesian interpretation: it 是 equivalent 到 placing uniform Dirichlet prior 在 word distributions.
 
-Higher alpha means stronger smoothing (more uniform distributions). Lower alpha means the model trusts the data more. Alpha is a hyperparameter you tune.
+Higher alpha means stronger smoothing (more uniform distributions). Lower alpha means 模型 trusts 数据 more. Alpha 是 超参数 you tune.
 
-The effect of alpha:
+effect 的 alpha:
 
-| Alpha | Effect | When to use |
+| Alpha | Effect | When 到 use |
 |-------|--------|-------------|
-| 0.001 | Almost no smoothing, trust the data | Very large training set, no unseen features expected |
-| 0.1 | Light smoothing | Large training set |
+| 0.001 | Almost no smoothing, trust 数据 | Very large 训练 set, no unseen 特征 expected |
+| 0.1 | Light smoothing | Large 训练 set |
 | 1.0 | Standard Laplace smoothing | Default starting point |
-| 10.0 | Heavy smoothing, flattens distributions | Very small training set, many unseen features expected |
+| 10.0 | Heavy smoothing, flattens distributions | Very small 训练 set, many unseen 特征 expected |
 
 ### Log-Space Computation
 
-Multiplying hundreds of probabilities (each less than 1) causes floating-point underflow. The product becomes zero in floating point even though the true value is a very small positive number.
+Multiplying hundreds 的 probabilities (each less than 1) causes floating-point underflow. product becomes zero 在 floating point even though true value 是 very small positive number.
 
-The solution: work in log space. Instead of multiplying probabilities, add their logarithms:
+solution: work 在 log space. Instead 的 multiplying probabilities, add their logarithms:
 
 ```
 log P(class | x1, x2, ..., xn) = log P(class) + sum_i log P(xi | class)
 ```
 
-This turns the prediction into a dot product:
+This turns prediction into dot product:
 
 ```
 log_scores = X @ log_feature_probs.T + log_class_priors
 prediction = argmax(log_scores)
 ```
 
-Matrix multiplication. That is why 朴素贝叶斯 prediction is so fast -- it is the same operation as a single-layer linear model.
+矩阵 multiplication. 那是 why Naive Bayes prediction 是 so fast -- it 是 same operation 作为 single-层 linear 模型.
 
-### 朴素贝叶斯 vs Logistic Regression
+### Naive Bayes vs Logistic 回归
 
-Both are linear classifiers for text. The difference is in what they model.
+Both 是 linear classifiers 为了 text. difference 是 在 what they 模型.
 
-| Aspect | 朴素贝叶斯 | Logistic Regression |
+| Aspect | Naive Bayes | Logistic 回归 |
 |--------|------------|-------------------|
-| Type | Generative (models P(X\|Y)) | Discriminative (models P(Y\|X)) |
-| Training | Count frequencies | Optimize loss function |
-| Small data | Better (strong prior helps) | Worse (not enough to estimate weights) |
-| Large data | Worse (wrong assumption hurts) | Better (flexible boundary) |
+| Type | Generative (模型 P(X\|Y)) | Discriminative (模型 P(Y\|X)) |
+| 训练 | Count frequencies | Optimize 损失函数 |
+| Small 数据 | Better (strong prior helps) | Worse (not enough 到 estimate 权重) |
+| Large 数据 | Worse (wrong assumption hurts) | Better (flexible boundary) |
 | Features | Assumes independence | Handles correlations |
 | Speed | Single pass, very fast | Iterative optimization |
 | Calibration | Poor probabilities | Better probabilities |
 
-Rule of thumb: start with 朴素贝叶斯. If you have enough data and NB plateaus, switch to logistic regression.
+Rule 的 thumb: start 使用 Naive Bayes. If you have enough 数据 和 NB plateaus, switch 到 logistic 回归.
 
-### Classification 流水线
+### 分类 Pipeline
 
 ```mermaid
 flowchart LR
@@ -219,7 +219,7 @@ flowchart LR
     style G fill:#9f9,stroke:#333
 ```
 
-In practice, we work in log space to avoid floating-point underflow. Instead of multiplying many small probabilities, we add their logarithms:
+In practice, we work 在 log space 到 avoid floating-point underflow. Instead 的 multiplying many small probabilities, we add their logarithms:
 
 ```
 log P(class | features) = log P(class) + sum_i log P(feature_i | class)
@@ -227,17 +227,17 @@ log P(class | features) = log P(class) + sum_i log P(feature_i | class)
 
 ## Build It
 
-The code in `code/naive_bayes.py` implements both MultinomialNB and GaussianNB from scratch.
+代码 在 `代码/naive_bayes.py` implements both MultinomialNB 和 GaussianNB 从 scratch.
 
 ### MultinomialNB
 
-The from-scratch implementation:
+从-scratch implementation:
 
-1. **fit(X, y)**: For each class, count the frequency of each feature. Add Laplace smoothing. Compute log probabilities. Store class priors (log of class frequencies).
+1. **fit(X, y)**: For each class, count frequency 的 each 特征. Add Laplace smoothing. Compute log probabilities. Store class priors (log 的 class frequencies).
 
-2. **predict_log_proba(X)**: For each sample, compute log P(class) + sum of log P(feature_i | class) for all classes. This is a matrix multiplication: X @ log_probs.T + log_priors.
+2. **predict_log_proba(X)**: For each sample, compute log P(class) + sum 的 log P(feature_i | class) 为了 all classes. 这是 矩阵 multiplication: X @ log_probs.T + log_priors.
 
-3. **predict(X)**: Return the class with highest log probability.
+3. **predict(X)**: Return class 使用 highest log 概率.
 
 ```python
 class MultinomialNB:
@@ -262,11 +262,11 @@ class MultinomialNB:
         return self
 ```
 
-The key insight: after fitting, prediction is just matrix multiplication plus a bias. This is why 朴素贝叶斯 is so fast.
+key insight: after fitting, prediction 是 just 矩阵 multiplication plus 偏置. 这是 why Naive Bayes 是 so fast.
 
 ### GaussianNB
 
-For continuous features, we estimate mean and variance per class per feature:
+For continuous 特征, we estimate mean 和 variance per class per 特征:
 
 ```python
 class GaussianNB:
@@ -289,34 +289,34 @@ class GaussianNB:
         return self
 ```
 
-Prediction uses the Gaussian PDF per feature, multiplied across features (added in log space).
+Prediction uses Gaussian PDF per 特征, multiplied across 特征 (added 在 log space).
 
-### Demo: Text Classification
+### Demo: Text 分类
 
-The code generates synthetic bag-of-words data simulating two classes (tech articles vs sports articles). Each class has a different word frequency distribution. MultinomialNB classifies them using word counts.
+代码 generates synthetic bag-的-words 数据 simulating two classes (tech articles vs sports articles). Each class has different word frequency distribution. MultinomialNB classifies them using word counts.
 
-The synthetic data works like this: we create 200 "words" (feature columns). Words 0-39 have high frequency in tech articles and low in sports. Words 80-119 have high frequency in sports and low in tech. Words 40-79 are medium frequency in both. This creates a realistic scenario where some words are strong class indicators and others are noise.
+synthetic 数据 works like 这个: we create 200 "words" (特征 columns). Words 0-39 have high frequency 在 tech articles 和 low 在 sports. Words 80-119 have high frequency 在 sports 和 low 在 tech. Words 40-79 是 medium frequency 在 both. This creates realistic scenario where some words 是 strong class indicators 和 others 是 noise.
 
 ### Demo: Continuous Features
 
-The code generates Iris-like data (3 classes, 4 features, Gaussian clusters). GaussianNB classifies using per-class mean and variance. Each class has a different center (mean vector) and different spread (variance), mimicking real-world data where measurements differ systematically between categories.
+代码 generates Iris-like 数据 (3 classes, 4 特征, Gaussian clusters). GaussianNB classifies using per-class mean 和 variance. Each class has different center (mean 向量) 和 different spread (variance), mimicking real-world 数据 where measurements differ systematically between categories.
 
-The code also demonstrates:
-- **Smoothing comparison:** Training MultinomialNB with different alpha values to show the effect of smoothing strength on accuracy.
-- **Training size experiment:** How NB accuracy improves as training data grows from 20 to 1600 samples. NB reaches decent accuracy even with very few samples -- this is its main advantage.
-- **Confusion matrix:** Per-class precision, recall, and F1 score to show where NB makes mistakes.
+代码 also demonstrates:
+- **Smoothing comparison:** 训练 MultinomialNB 使用 different alpha values 到 show effect 的 smoothing strength 在 准确率.
+- **训练 size experiment:** How NB 准确率 improves 作为 训练 数据 grows 从 20 到 1600 samples. NB reaches decent 准确率 even 使用 very few samples -- 这个 是 its main advantage.
+- **Confusion 矩阵:** Per-class 精确率, 召回率, 和 F1 score 到 show where NB makes mistakes.
 
 ### Prediction Speed
 
-朴素贝叶斯 prediction is a matrix multiplication. For n samples with d features and k classes:
-- MultinomialNB: one matrix multiply (n x d) @ (d x k) = O(n * d * k)
-- GaussianNB: n * k Gaussian PDF evaluations, each over d features = O(n * d * k)
+Naive Bayes prediction 是 矩阵 multiplication. For n samples 使用 d 特征 和 k classes:
+- MultinomialNB: one 矩阵 multiply (n x d) @ (d x k) = O(n * d * k)
+- GaussianNB: n * k Gaussian PDF evaluations, each over d 特征 = O(n * d * k)
 
-Both are linear in every dimension. Compare this to KNN (which requires distance computation to all training points) or SVM with RBF kernel (which requires kernel evaluation against all support vectors). NB is faster by orders of magnitude at prediction time.
+Both 是 linear 在 every dimension. Compare 这个 到 KNN (which requires distance computation 到 all 训练 points) 或 SVM 使用 RBF kernel (which requires kernel evaluation against all support 向量). NB 是 faster 通过 orders 的 magnitude 在 prediction time.
 
 ## Use It
 
-With sklearn, both variants are one-liners:
+With sklearn, both variants 是 one-liners:
 
 ```python
 from sklearn.naive_bayes import GaussianNB, MultinomialNB
@@ -330,14 +330,14 @@ mnb.fit(X_train_counts, y_train)
 print(f"MultinomialNB accuracy: {mnb.score(X_test_counts, y_test):.3f}")
 ```
 
-For text classification with sklearn:
+For text 分类 使用 sklearn:
 
 ```python
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.流水线 import 流水线
+from sklearn.pipeline import Pipeline
 
-text_clf = 流水线([
+text_clf = Pipeline([
     ("vectorizer", CountVectorizer()),
     ("classifier", MultinomialNB(alpha=1.0)),
 ])
@@ -346,44 +346,44 @@ text_clf.fit(train_texts, train_labels)
 accuracy = text_clf.score(test_texts, test_labels)
 ```
 
-The code in `naive_bayes.py` compares from-scratch implementations against sklearn on the same data to verify correctness.
+代码 在 `naive_bayes.py` compares 从-scratch implementations against sklearn 在 same 数据 到 verify correctness.
 
-### TF-IDF with 朴素贝叶斯
+### TF-IDF 使用 Naive Bayes
 
-Raw word counts give every word equal weight per occurrence. But common words like "the" and "is" appear frequently in every class -- they carry no information. TF-IDF (Term Frequency - Inverse Document Frequency) downweights common words and upweights rare, discriminative words.
+Raw word counts give every word equal 权重 per occurrence. But common words like "" 和 "是" appear frequently 在 every class -- they carry no information. TF-IDF (Term Frequency - Inverse Document Frequency) downweights common words 和 upweights rare, discriminative words.
 
 ```python
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.流水线 import 流水线
+from sklearn.pipeline import Pipeline
 
-text_clf = 流水线([
+text_clf = Pipeline([
     ("tfidf", TfidfVectorizer()),
     ("classifier", MultinomialNB(alpha=0.1)),
 ])
 ```
 
-TF-IDF values are non-negative, so they work with MultinomialNB. The combination of TF-IDF + MultinomialNB is one of the strongest baselines for text classification. It frequently beats more complex models on datasets with fewer than 10,000 training samples.
+TF-IDF values 是 non-negative, so they work 使用 MultinomialNB. combination 的 TF-IDF + MultinomialNB 是 one 的 strongest baselines 为了 text 分类. It frequently beats more complex 模型 在 数据集 使用 fewer than 10,000 训练 samples.
 
-### BernoulliNB for Short Text
+### BernoulliNB 为了 Short Text
 
-For short text (tweets, SMS, chat messages), BernoulliNB can outperform MultinomialNB. Short texts have low word counts, so the frequency information that MultinomialNB relies on is noisy. BernoulliNB only cares about presence or absence, which is more reliable with short text.
+For short text (tweets, SMS, chat messages), BernoulliNB can outperform MultinomialNB. Short texts have low word counts, so frequency information MultinomialNB relies 在 是 noisy. BernoulliNB only cares about presence 或 absence, which 是 more reliable 使用 short text.
 
 ```python
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.feature_extraction.text import CountVectorizer
 
-text_clf = 流水线([
+text_clf = Pipeline([
     ("vectorizer", CountVectorizer(binary=True)),
     ("classifier", BernoulliNB(alpha=1.0)),
 ])
 ```
 
-The `binary=True` flag in CountVectorizer converts all counts to 0/1. Without it, BernoulliNB still works but is seeing counts that it was not designed for.
+`binary=True` flag 在 CountVectorizer converts all counts 到 0/1. Without it, BernoulliNB still works but 是 seeing counts it was not designed 为了.
 
 ### Calibrating NB Probabilities
 
-NB probabilities are poorly calibrated. When NB says P(spam) = 0.95, the true probability might be 0.7. If you need reliable probability estimates (for example, to set a threshold or to combine with other models), use sklearn's CalibratedClassifierCV:
+NB probabilities 是 poorly calibrated. When NB says P(spam) = 0.95, true 概率 might be 0.7. If you need reliable 概率 estimates (为了 example, 到 set threshold 或 到 combine 使用 other 模型), use sklearn's CalibratedClassifierCV:
 
 ```python
 from sklearn.calibration import CalibratedClassifierCV
@@ -393,65 +393,65 @@ calibrated_nb.fit(X_train, y_train)
 proba = calibrated_nb.predict_proba(X_test)
 ```
 
-This fits a logistic regression on top of NB's raw scores using cross-validation. The resulting probabilities are much closer to the true class frequencies.
+This fits logistic 回归 在 top 的 NB's raw scores using cross-验证. resulting probabilities 是 much closer 到 true class frequencies.
 
 ### Common Gotchas
 
-1. **Negative feature values.** MultinomialNB requires non-negative features. If you have negative values (like TF-IDF with certain settings or standardized features), use GaussianNB instead, or shift the features to be positive.
+1. **Negative 特征 values.** MultinomialNB requires non-negative 特征. If you have negative values (like TF-IDF 使用 certain settings 或 standardized 特征), use GaussianNB instead, 或 shift 特征 到 be positive.
 
-2. **Zero variance features.** GaussianNB divides by variance. If a feature has zero variance for a class (all values identical), the probability computation breaks. The code adds a small smoothing term (1e-9) to all variances to prevent this.
+2. **Zero variance 特征.** GaussianNB divides 通过 variance. If 特征 has zero variance 为了 class (all values identical), 概率 computation breaks. 代码 adds small smoothing term (1e-9) 到 all variances 到 prevent 这个.
 
-3. **Class imbalance.** If 99% of emails are not-spam, the prior P(not-spam) = 0.99 is so strong that it overwhelms the likelihood evidence. You can set class priors manually or use class_prior parameter in sklearn.
+3. **Class imbalance.** If 99% 的 emails 是 not-spam, prior P(not-spam) = 0.99 是 so strong it overwhelms likelihood evidence. 你可以 set class priors manually 或 use class_prior 参数 在 sklearn.
 
-4. **Feature scaling.** MultinomialNB does not need scaling (it works on counts). GaussianNB does not need scaling either (it estimates per-feature statistics). This is an advantage over logistic regression and SVM, which are sensitive to feature scales.
+4. **特征 scaling.** MultinomialNB does not need scaling (it works 在 counts). GaussianNB does not need scaling either (it estimates per-特征 统计学). 这是 advantage over logistic 回归 和 SVM, which 是 sensitive 到 特征 scales.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/skill-naive-bayes-chooser.md` -- a decision skill for picking the right NB variant
-- `code/naive_bayes.py` -- MultinomialNB and GaussianNB from scratch, with sklearn comparison
+- `输出/skill-naive-bayes-chooser.md` -- decision skill 为了 picking right NB variant
+- `代码/naive_bayes.py` -- MultinomialNB 和 GaussianNB 从 scratch, 使用 sklearn comparison
 
-### When 朴素贝叶斯 Fails
+### When Naive Bayes Fails
 
-NB fails when the independence assumption causes incorrect rankings (not just incorrect probabilities). This happens when:
+NB fails when independence assumption causes incorrect rankings (not just incorrect probabilities). This happens when:
 
-1. **Strong feature interactions.** If the class depends on the combination of two features but not either alone (XOR-like patterns), NB will miss it entirely. Each feature alone provides no evidence, and NB cannot combine them nonlinearly.
+1. **Strong 特征 interactions.** If class depends 在 combination 的 two 特征 but not either alone (XOR-like patterns), NB will miss it entirely. Each 特征 alone provides no evidence, 和 NB cannot combine them nonlinearly.
 
-2. **Highly correlated features with opposing evidence.** If feature A says "spam" and feature B says "not-spam", but A and B are perfectly correlated (they always agree in reality), NB will see conflicting evidence where there is none.
+2. **Highly correlated 特征 使用 opposing evidence.** If 特征 says "spam" 和 特征 B says "not-spam", but 和 B 是 perfectly correlated (they always agree 在 reality), NB will see conflicting evidence where there 是 none.
 
-3. **Very large training sets.** With enough data, discriminative models like logistic regression learn the true decision boundary and outperform NB. The independence assumption that helped with small data now holds the model back.
+3. **Very large 训练 sets.** With enough 数据, discriminative 模型 like logistic 回归 learn true decision boundary 和 outperform NB. independence assumption helped 使用 small 数据 now holds 模型 back.
 
-In practice, these failure modes are rare for text classification. Text features are numerous, individually weak, and the independence assumption's errors tend to cancel out. For tabular data with few strongly correlated features, consider logistic regression or tree-based models first.
+In practice, 这些 failure modes 是 rare 为了 text 分类. Text 特征 是 numerous, individually weak, 和 independence assumption's errors tend 到 cancel out. For tabular 数据 使用 few strongly correlated 特征, consider logistic 回归 或 tree-based 模型 first.
 
 ## Exercises
 
-1. **Smoothing experiment.** Train MultinomialNB on text data with alpha values of 0.01, 0.1, 1.0, 10.0, and 100.0. Plot accuracy vs alpha. Where does performance peak? Why does very high alpha hurt?
+1. **Smoothing experiment.** Train MultinomialNB 在 text 数据 使用 alpha values 的 0.01, 0.1, 1.0, 10.0, 和 100.0. Plot 准确率 vs alpha. Where does performance peak? Why does very high alpha hurt?
 
-2. **Feature independence test.** Take a real text dataset. Pick two words that are obviously correlated ("machine" and "learning"). Compute P(word1 | class) * P(word2 | class) and compare to P(word1 AND word2 | class). How wrong is the independence assumption? Does it affect classification accuracy?
+2. **特征 independence test.** Take real text 数据集. Pick two words 是 obviously correlated ("machine" 和 "learning"). Compute P(word1 | class) * P(word2 | class) 和 compare 到 P(word1 AND word2 | class). How wrong 是 independence assumption? Does it affect 分类 准确率?
 
-3. **Bernoulli implementation.** Extend the code with a BernoulliNB class. Convert bag-of-words to binary (present/absent) and compare accuracy against MultinomialNB on text data. When does Bernoulli win?
+3. **Bernoulli implementation.** Extend 代码 使用 BernoulliNB class. Convert bag-的-words 到 binary (present/absent) 和 compare 准确率 against MultinomialNB 在 text 数据. When does Bernoulli win?
 
-4. **NB vs Logistic Regression.** Train both on text data. Start with 100 training samples and increase to 10,000. Plot accuracy vs training set size for both. At what point does Logistic Regression overtake 朴素贝叶斯?
+4. **NB vs Logistic 回归.** Train both 在 text 数据. Start 使用 100 训练 samples 和 increase 到 10,000. Plot 准确率 vs 训练 set size 为了 both. At what point does Logistic 回归 overtake Naive Bayes?
 
-5. **Spam filter.** Build a complete spam classifier: tokenize raw email text, build vocabulary, create bag-of-words features, train MultinomialNB, evaluate with precision and recall (not just accuracy -- why?).
+5. **Spam filter.** Build complete spam classifier: tokenize raw email text, build vocabulary, create bag-的-words 特征, train MultinomialNB, evaluate 使用 精确率 和 召回率 (not just 准确率 -- why?).
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| 朴素贝叶斯 | "Simple probabilistic classifier" | A classifier that applies Bayes' theorem with the assumption that features are conditionally independent given the class |
-| Conditional independence | "Features don't affect each other" | P(A, B \| C) = P(A \| C) * P(B \| C) -- knowing B tells you nothing new about A once you know C |
-| Laplace smoothing | "Add-one smoothing" | Adding a small count to every feature to prevent zero probabilities from dominating the prediction |
-| Prior | "What you believed before seeing data" | P(class) -- the probability of each class before observing any features |
-| Likelihood | "How well the data fits" | P(features \| class) -- the probability of observing these features if the class is known |
-| Posterior | "What you believe after seeing data" | P(class \| features) -- the updated probability of the class after observing the features |
-| Generative model | "Models how data is generated" | A model that learns P(X \| Y) and P(Y), then uses Bayes' theorem to get P(Y \| X) |
-| Discriminative model | "Models the decision boundary" | A model that directly learns P(Y \| X) without modeling how X is generated |
-| Log probability | "Avoid underflow" | Working with log P instead of P to prevent the product of many small numbers from becoming zero in floating point |
+| Naive Bayes | "Simple probabilistic classifier" | classifier applies Bayes' theorem 使用 assumption 特征 是 conditionally independent given class |
+| Conditional independence | "Features don't affect each other" | P(, B \| C) = P( \| C) * P(B \| C) -- knowing B tells you nothing new about once you know C |
+| Laplace smoothing | "Add-one smoothing" | Adding small count 到 every 特征 到 prevent zero probabilities 从 dominating prediction |
+| Prior | "What you believed before seeing 数据" | P(class) -- 概率 的 each class before observing any 特征 |
+| Likelihood | "How well 数据 fits" | P(特征 \| class) -- 概率 的 observing 这些 特征 if class 是 known |
+| Posterior | "What you believe after seeing 数据" | P(class \| 特征) -- updated 概率 的 class after observing 特征 |
+| Generative 模型 | "Models how 数据 是 generated" | 模型 learns P(X \| Y) 和 P(Y), then uses Bayes' theorem 到 get P(Y \| X) |
+| Discriminative 模型 | "Models decision boundary" | 模型 directly learns P(Y \| X) without modeling how X 是 generated |
+| Log 概率 | "Avoid underflow" | Working 使用 log P instead 的 P 到 prevent product 的 many small numbers 从 becoming zero 在 floating point |
 
 ## Further Reading
 
-- [scikit-learn 朴素贝叶斯 docs](https://scikit-learn.org/stable/modules/naive_bayes.html) -- all three variants with mathematical details
-- [McCallum and Nigam, A Comparison of Event Models for 朴素贝叶斯 Text Classification (1998)](https://www.cs.cmu.edu/~knigam/papers/multinomial-aaaiws98.pdf) -- the classic comparison of Multinomial vs Bernoulli for text
-- [Rennie et al., Tackling the Poor Assumptions of 朴素贝叶斯 Text Classifiers (2003)](https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf) -- improvements to NB for text
-- [Ng and Jordan, On Discriminative vs. Generative Classifiers (2001)](https://ai.stanford.edu/~ang/papers/nips01-discriminativegenerative.pdf) -- proves NB converges faster than LR with less data
+- [scikit-learn Naive Bayes docs](https://scikit-learn.org/stable/modules/naive_bayes.html) -- all three variants 使用 mathematical details
+- [McCallum 和 Nigam, Comparison 的 Event Models 为了 Naive Bayes Text 分类 (1998)](https://www.cs.cmu.edu/~knigam/papers/multinomial-aaaiws98.pdf) -- classic comparison 的 Multinomial vs Bernoulli 为了 text
+- [Rennie et al., Tackling Poor Assumptions 的 Naive Bayes Text Classifiers (2003)](https://people.csail.mit.edu/jrennie/papers/icml03-nb.pdf) -- improvements 到 NB 为了 text
+- [Ng 和 Jordan, On Discriminative vs. Generative Classifiers (2001)](https://ai.stanford.edu/~ang/papers/nips01-discriminativegenerative.pdf) -- proves NB converges faster than LR 使用 less 数据

@@ -1,42 +1,42 @@
-# 支持向量机
+# Support 向量 Machines
 
-> Find the widest street between two classes. That is the entire idea.
+> Find widest street between two classes. 那是 entire idea.
 
-**类型:** 实现
+**Type:** Build
 **Language:** Python
-**Prerequisites:** Phase 1 (Lessons 08 Optimization, 14 Norms and Distances, 18 Convex Optimization)
+**Prerequisites:** Phase 1 (Lessons 08 Optimization, 14 Norms 和 Distances, 18 Convex Optimization)
 **Time:** ~90 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement a linear 支持向量机 from scratch using hinge loss and 梯度下降 on the primal formulation
-- Explain the maximum margin principle and identify support vectors from a trained model
-- Compare linear, polynomial, and RBF kernels and explain how the kernel trick avoids explicit high-dimensional mapping
-- Evaluate the tradeoff controlled by the C parameter between margin width and classification errors
+- Implement linear SVM 从 scratch using hinge loss 和 梯度下降 在 primal formulation
+- Explain maximum margin principle 和 identify support 向量 从 trained 模型
+- Compare linear, polynomial, 和 RBF kernels 和 explain how kernel trick avoids explicit high-dimensional mapping
+- Evaluate tradeoff controlled 通过 C 参数 between margin width 和 分类 errors
 
-## The Problem
+## Problem
 
-You have two classes of data points and need to draw a line (or hyperplane) separating them. Infinitely many lines could work. Which one should you pick?
+You have two classes 的 数据 points 和 need 到 draw line (或 hyperplane) separating them. Infinitely many lines could work. Which one should you pick?
 
-The one with the biggest margin. The margin is the distance between the decision boundary and the nearest data points on each side. A wider margin means the classifier is more confident and generalizes better to unseen data.
+one 使用 biggest margin. margin 是 distance between decision boundary 和 nearest 数据 points 在 each side. wider margin means classifier 是 more confident 和 generalizes better 到 unseen 数据.
 
-This intuition leads to 支持向量机s, one of the most mathematically elegant algorithms in ML. 支持向量机s were the dominant classification method before deep learning and remain the best choice for small datasets, high-dimensional data, and problems where you need a principled, well-understood model with theoretical guarantees.
+This intuition leads 到 Support 向量 Machines, one 的 most mathematically elegant 算法 在 ML. SVMs were dominant 分类 method before deep learning 和 remain best choice 为了 small 数据集, high-dimensional 数据, 和 problems where you need principled, well-understood 模型 使用 theoretical guarantees.
 
-支持向量机s connect directly to Phase 1: the optimization is convex (Lesson 18), the margin is measured with norms (Lesson 14), and the kernel trick exploits dot products to handle nonlinear boundaries without ever computing in the high-dimensional space.
+SVMs connect directly 到 Phase 1: optimization 是 convex (Lesson 18), margin 是 measured 使用 norms (Lesson 14), 和 kernel trick exploits dot products 到 handle nonlinear boundaries without ever computing 在 high-dimensional space.
 
-## The Concept
+## Concept
 
-### The maximum margin classifier
+### maximum margin classifier
 
-Given linearly separable data with labels y_i in {-1, +1} and feature vectors x_i, we want a hyperplane w^T x + b = 0 that separates the classes.
+Given linearly separable 数据 使用 labels y_i 在 {-1, +1} 和 特征 向量 x_i, we want hyperplane w^T x + b = 0 separates classes.
 
-The distance from a point x_i to the hyperplane is:
+distance 从 point x_i 到 hyperplane 是:
 
 ```
 distance = |w^T x_i + b| / ||w||
 ```
 
-For a correctly classified point: y_i * (w^T x_i + b) > 0. The margin is twice the distance from the hyperplane to the nearest point on either side.
+For correctly classified point: y_i * (w^T x_i + b) > 0. margin 是 twice distance 从 hyperplane 到 nearest point 在 either side.
 
 ```mermaid
 graph LR
@@ -49,23 +49,23 @@ graph LR
     B --- F["Decision boundary"]
 ```
 
-The optimization problem:
+optimization problem:
 
 ```
 maximize    2 / ||w||     (the margin width)
 subject to  y_i * (w^T x_i + b) >= 1  for all i
 ```
 
-Equivalently (minimizing ||w||^2 is easier to optimize):
+Equivalently (minimizing ||w||^2 是 easier 到 optimize):
 
 ```
 minimize    (1/2) ||w||^2
 subject to  y_i * (w^T x_i + b) >= 1  for all i
 ```
 
-This is a convex quadratic program. It has a unique global solution. The data points that sit exactly on the margin boundaries (where y_i * (w^T x_i + b) = 1) are the support vectors. They are the only points that determine the decision boundary. Move or remove any non-support-vector point, and the boundary does not change.
+这是 convex quadratic program. It has unique global solution. 数据 points sit exactly 在 margin boundaries (where y_i * (w^T x_i + b) = 1) 是 support 向量. They 是 only points determine decision boundary. Move 或 remove any non-support-向量 point, 和 boundary does not change.
 
-### Support vectors: the critical few
+### Support 向量: critical few
 
 ```mermaid
 graph TD
@@ -77,13 +77,13 @@ graph TD
     O2["Other - points<br>(do not affect boundary)"] -.-> SV2
 ```
 
-Most training points are irrelevant. Only the support vectors matter. This is why 支持向量机s are memory-efficient at prediction time: you only need to store the support vectors, not the entire training set.
+Most 训练 points 是 irrelevant. Only support 向量 matter. 这是 why SVMs 是 memory-efficient 在 prediction time: you only need 到 store support 向量, not entire 训练 set.
 
-The number of support vectors also gives a bound on generalization error. Fewer support vectors relative to the dataset size means better generalization.
+number 的 support 向量 also gives bound 在 generalization error. Fewer support 向量 relative 到 数据集 size means better generalization.
 
-### Soft margin: handling noise with the C parameter
+### Soft margin: handling noise 使用 C 参数
 
-Real data is rarely perfectly separable. Some points may be on the wrong side of the boundary, or inside the margin. The soft margin formulation allows violations by introducing slack variables.
+Real 数据 是 rarely perfectly separable. Some points may be 在 wrong side 的 boundary, 或 inside margin. soft margin formulation allows violations 通过 introducing slack variables.
 
 ```
 minimize    (1/2) ||w||^2 + C * sum(xi_i)
@@ -91,24 +91,24 @@ subject to  y_i * (w^T x_i + b) >= 1 - xi_i
             xi_i >= 0  for all i
 ```
 
-The slack variable xi_i measures how much point i violates the margin. C controls the trade-off:
+slack variable xi_i measures how much point i violates margin. C controls trade-off:
 
 | C value | Behavior |
 |---------|----------|
 | Large C | Penalizes violations heavily. Narrow margin, fewer misclassifications. Overfits |
 | Small C | Allows more violations. Wide margin, more misclassifications. Underfits |
 
-C is the 正则化 strength, inverted. Large C = less 正则化. Small C = more 正则化.
+C 是 正则化 strength, inverted. Large C = less 正则化. Small C = more 正则化.
 
-### Hinge loss: the 支持向量机 损失函数
+### Hinge loss: SVM 损失函数
 
-The soft margin 支持向量机 can be rewritten as an unconstrained optimization:
+soft margin SVM can be rewritten 作为 unconstrained optimization:
 
 ```
 minimize    (1/2) ||w||^2 + C * sum(max(0, 1 - y_i * (w^T x_i + b)))
 ```
 
-The term max(0, 1 - y_i * f(x_i)) is the hinge loss. It is zero when the point is correctly classified and beyond the margin. It is linear when the point is inside the margin or misclassified.
+term max(0, 1 - y_i * f(x_i)) 是 hinge loss. 它是 zero when point 是 correctly classified 和 beyond margin. 它是 linear when point 是 inside margin 或 misclassified.
 
 ```
 Hinge loss for a single point:
@@ -128,18 +128,18 @@ Zero loss when y*f(x) >= 1 (correctly classified, outside margin).
 Linear penalty when y*f(x) < 1.
 ```
 
-Compare with logistic loss (逻辑回归):
+Compare 使用 logistic loss (logistic 回归):
 
 ```
 Hinge:     max(0, 1 - y*f(x))          Hard cutoff at margin
 Logistic:  log(1 + exp(-y*f(x)))        Smooth, never exactly zero
 ```
 
-Hinge loss produces sparse solutions (only support vectors have nonzero contribution). Logistic loss uses all data points. This makes 支持向量机s more memory-efficient at prediction time.
+Hinge loss produces sparse solutions (only support 向量 have nonzero contribution). Logistic loss uses all 数据 points. This makes SVMs more memory-efficient 在 prediction time.
 
-### Training a linear 支持向量机 with 梯度下降
+### 训练 linear SVM 使用 梯度下降
 
-You can train a linear 支持向量机 using 梯度下降 on the hinge loss plus L2 正则化, without solving the constrained QP:
+你可以 train linear SVM using 梯度下降 在 hinge loss plus L2 正则化, without solving constrained QP:
 
 ```
 L(w, b) = (lambda/2) * ||w||^2 + (1/n) * sum(max(0, 1 - y_i * (w^T x_i + b)))
@@ -153,11 +153,11 @@ Gradient with respect to b:
   If y_i * (w^T x_i + b) < 1:   dL/db = -y_i
 ```
 
-This is called the primal formulation. It runs in O(n * d) per epoch, where n is the number of samples and d is the number of features. For large, sparse, high-dimensional data (text classification), this is fast.
+这是 called primal formulation. It runs 在 O(n * d) per 轮次, where n 是 number 的 samples 和 d 是 number 的 特征. For large, sparse, high-dimensional 数据 (text 分类), 这个 是 fast.
 
-### The dual formulation and the kernel trick
+### dual formulation 和 kernel trick
 
-The Lagrangian dual of the 支持向量机 problem (from Phase 1 Lesson 18, KKT conditions) is:
+Lagrangian dual 的 SVM problem (从 Phase 1 Lesson 18, KKT conditions) 是:
 
 ```
 maximize    sum(alpha_i) - (1/2) * sum_ij(alpha_i * alpha_j * y_i * y_j * (x_i . x_j))
@@ -165,7 +165,7 @@ subject to  0 <= alpha_i <= C
             sum(alpha_i * y_i) = 0
 ```
 
-The dual only involves dot products x_i . x_j between data points. This is the key insight. Replace every dot product with a kernel function K(x_i, x_j) and the 支持向量机 can learn nonlinear boundaries without ever computing the transformation explicitly.
+dual only involves dot products x_i . x_j between 数据 points. 这是 key insight. Replace every dot product 使用 kernel 函数 K(x_i, x_j) 和 SVM can learn nonlinear boundaries without ever computing transformation explicitly.
 
 ```
 Linear kernel:      K(x, z) = x . z
@@ -173,7 +173,7 @@ Polynomial kernel:  K(x, z) = (x . z + c)^d
 RBF (Gaussian):     K(x, z) = exp(-gamma * ||x - z||^2)
 ```
 
-The RBF kernel maps data into an infinite-dimensional space. Points that are close in input space have kernel value near 1. Points that are far apart have kernel value near 0. It can learn any smooth decision boundary.
+RBF kernel maps 数据 into infinite-dimensional space. Points 是 close 在 输入 space have kernel value near 1. Points 是 far apart have kernel value near 0. It can learn any smooth decision boundary.
 
 ```mermaid
 graph LR
@@ -186,11 +186,11 @@ graph LR
     A -->|"Kernel trick<br>K(x,z) = phi(x).phi(z)"| B
 ```
 
-The kernel trick computes the dot product in the high-dimensional space without ever going there. For the polynomial kernel of degree d in D dimensions, the explicit feature space has O(D^d) dimensions. But K(x, z) is computed in O(D) time.
+kernel trick computes dot product 在 high-dimensional space without ever going there. For polynomial kernel 的 degree d 在 D dimensions, explicit 特征 space has O(D^d) dimensions. But K(x, z) 是 computed 在 O(D) time.
 
-### 支持向量机 for regression (SVR)
+### SVM 为了 回归 (SVR)
 
-Support Vector Regression fits a tube of width epsilon around the data. Points inside the tube have zero loss. Points outside the tube are penalized linearly.
+Support 向量 回归 fits tube 的 width epsilon around 数据. Points inside tube have zero loss. Points outside tube 是 penalized linearly.
 
 ```
 minimize    (1/2) ||w||^2 + C * sum(xi_i + xi_i*)
@@ -199,33 +199,33 @@ subject to  y_i - (w^T x_i + b) <= epsilon + xi_i
             xi_i, xi_i* >= 0
 ```
 
-The epsilon parameter controls the tube width. Wider tube = fewer support vectors = smoother fit. Narrower tube = more support vectors = tighter fit.
+epsilon 参数 controls tube width. Wider tube = fewer support 向量 = smoother fit. Narrower tube = more support 向量 = tighter fit.
 
-### Why 支持向量机s lost to deep learning (and when they still win)
+### Why SVMs lost 到 deep learning (和 when they still win)
 
-支持向量机s dominated ML from the late 1990s through the early 2010s. Deep learning surpassed them for several reasons:
+SVMs dominated ML 从 late 1990s through early 2010s. Deep learning surpassed them 为了 several reasons:
 
-| Factor | 支持向量机s | Deep learning |
+| Factor | SVMs | Deep learning |
 |--------|------|---------------|
-| Feature engineering | Requires it | Learns features |
-| Scalability | O(n^2) to O(n^3) for kernel | O(n) per epoch with SGD |
-| Image/text/audio | Needs handcrafted features | Learns from raw data |
-| Large datasets (>100k) | Slow | Scales well |
+| 特征 engineering | Requires it | Learns 特征 |
+| Scalability | O(n^2) 到 O(n^3) 为了 kernel | O(n) per 轮次 使用 SGD |
+| Image/text/audio | Needs handcrafted 特征 | Learns 从 raw 数据 |
+| Large 数据集 (>100k) | Slow | Scales well |
 | GPU acceleration | Limited benefit | Massive speedup |
 
-支持向量机s still win in these situations:
-- Small datasets (hundreds to low thousands of samples)
-- High-dimensional sparse data (text with TF-IDF features)
+SVMs still win 在 这些 situations:
+- Small 数据集 (hundreds 到 low thousands 的 samples)
+- High-dimensional sparse 数据 (text 使用 TF-IDF 特征)
 - When you need mathematical guarantees (margin bounds)
-- When training time must be minimal (linear 支持向量机 is very fast)
-- Binary classification with clear margin structure
-- Anomaly detection (one-class 支持向量机)
+- When 训练 time must be minimal (linear SVM 是 very fast)
+- Binary 分类 使用 clear margin structure
+- Anomaly detection (one-class SVM)
 
 ## Build It
 
-### Step 1: Hinge loss and gradient
+### Step 1: Hinge loss 和 gradient
 
-The foundation. Compute hinge loss for a batch and its gradient.
+foundation. Compute hinge loss 为了 批次 和 its gradient.
 
 ```python
 def hinge_loss(X, y, w, b):
@@ -237,12 +237,12 @@ def hinge_loss(X, y, w, b):
     return total_loss / n
 ```
 
-### Step 2: Linear 支持向量机 via 梯度下降
+### Step 2: Linear SVM via 梯度下降
 
-Train by minimizing regularized hinge loss. No QP solver needed.
+Train 通过 minimizing regularized hinge loss. No QP solver needed.
 
 ```python
-class Linear支持向量机:
+class LinearSVM:
     def __init__(self, lr=0.001, lambda_param=0.01, n_epochs=1000):
         self.lr = lr
         self.lambda_param = lambda_param
@@ -270,9 +270,9 @@ class Linear支持向量机:
         return [1 if dot(self.w, x) + self.b >= 0 else -1 for x in X]
 ```
 
-### Step 3: Kernel functions
+### Step 3: Kernel 函数
 
-Implement linear, polynomial, and RBF kernels.
+Implement linear, polynomial, 和 RBF kernels.
 
 ```python
 def linear_kernel(x, z):
@@ -286,9 +286,9 @@ def rbf_kernel(x, z, gamma=0.5):
     return math.exp(-gamma * dot(diff, diff))
 ```
 
-### Step 4: Margin and support vector identification
+### Step 4: Margin 和 support 向量 identification
 
-After training, identify which points are support vectors and compute the margin width.
+After 训练, identify which points 是 support 向量 和 compute margin width.
 
 ```python
 def find_support_vectors(X, y, w, b, tol=1e-3):
@@ -300,7 +300,7 @@ def find_support_vectors(X, y, w, b, tol=1e-3):
     return support_vectors
 ```
 
-See `code/svm.py` for the complete implementation with all demos.
+See `代码/svm.py` 为了 complete implementation 使用 all demos.
 
 ## Use It
 
@@ -320,9 +320,9 @@ print(f"Accuracy: {clf.score(X_test, y_test):.4f}")
 print(f"Support vectors: {clf['svm'].n_support_}")
 ```
 
-Important: always scale your features before training an 支持向量机. 支持向量机s are sensitive to feature magnitudes because the margin depends on ||w||, and unscaled features distort the geometry.
+Important: always scale your 特征 before 训练 SVM. SVMs 是 sensitive 到 特征 magnitudes because margin depends 在 ||w||, 和 unscaled 特征 distort geometry.
 
-For large datasets, use `LinearSVC` (primal formulation, O(n) per epoch) instead of `SVC` (dual formulation, O(n^2) to O(n^3)):
+For large 数据集, use `LinearSVC` (primal formulation, O(n) per 轮次) instead 的 `SVC` (dual formulation, O(n^2) 到 O(n^3)):
 
 ```python
 from sklearn.svm import LinearSVC
@@ -335,38 +335,38 @@ clf = Pipeline([
 
 ## Exercises
 
-1. Generate a 2D linearly separable dataset. Train your Linear支持向量机 and identify the support vectors. Verify that the support vectors are the points closest to the decision boundary.
+1. Generate 2D linearly separable 数据集. Train your LinearSVM 和 identify support 向量. Verify support 向量 是 points closest 到 decision boundary.
 
-2. Vary C from 0.001 to 1000 on a noisy dataset. Plot the decision boundary for each C value. Observe the transition from wide margin (欠拟合) to narrow margin (过拟合).
+2. Vary C 从 0.001 到 1000 在 noisy 数据集. Plot decision boundary 为了 each C value. Observe transition 从 wide margin (欠拟合) 到 narrow margin (过拟合).
 
-3. Create a dataset where class boundaries are circular (not linear). Show that a linear 支持向量机 fails. Compute the RBF kernel matrix and show that the classes become separable in the kernel-induced feature space.
+3. Create 数据集 where class boundaries 是 circular (not linear). Show linear SVM fails. Compute RBF kernel 矩阵 和 show classes become separable 在 kernel-induced 特征 space.
 
-4. Compare hinge loss vs logistic loss on the same dataset. Train a linear 支持向量机 and 逻辑回归. Count how many training points contribute to each model's decision boundary (support vectors vs all points).
+4. Compare hinge loss vs logistic loss 在 same 数据集. Train linear SVM 和 logistic 回归. Count how many 训练 points contribute 到 each 模型's decision boundary (support 向量 vs all points).
 
-5. Implement SVR (epsilon-insensitive loss). Fit it to y = sin(x) + noise. Plot the epsilon tube around the predictions and highlight the support vectors (points outside the tube).
+5. Implement SVR (epsilon-insensitive loss). Fit it 到 y = sin(x) + noise. Plot epsilon tube around predictions 和 highlight support 向量 (points outside tube).
 
 ## Key Terms
 
 | Term | What it actually means |
 |------|----------------------|
-| Support vectors | The training points closest to the decision boundary. The only points that determine the hyperplane |
-| Margin | The distance between the decision boundary and the nearest support vectors. 支持向量机s maximize this |
-| Hinge loss | max(0, 1 - y*f(x)). Zero when correctly classified and outside the margin. Linear penalty otherwise |
-| C parameter | Trade-off between margin width and classification errors. Large C = narrow margin, small C = wide margin |
-| Soft margin | 支持向量机 formulation that allows margin violations via slack variables. Handles non-separable data |
-| Kernel trick | Computing dot products in a high-dimensional feature space without explicitly mapping to that space |
-| Linear kernel | K(x, z) = x . z. Equivalent to standard dot product. For linearly separable data |
-| RBF kernel | K(x, z) = exp(-gamma * \|\|x-z\|\|^2). Maps to infinite dimensions. Learns any smooth boundary |
-| Polynomial kernel | K(x, z) = (x . z + c)^d. Maps to a feature space of polynomial combinations |
-| Dual formulation | Reformulation of the 支持向量机 problem that depends only on dot products between data points. Enables kernels |
-| SVR | Support Vector Regression. Fits an epsilon-tube around the data. Points inside the tube have zero loss |
-| Slack variables | xi_i: measures how much a point violates the margin. Zero for correctly classified points outside margin |
-| Maximum margin | The principle of choosing the hyperplane that maximizes the distance to the nearest points of each class |
+| Support 向量 | 训练 points closest 到 decision boundary. only points determine hyperplane |
+| Margin | distance between decision boundary 和 nearest support 向量. SVMs maximize 这个 |
+| Hinge loss | max(0, 1 - y*f(x)). Zero when correctly classified 和 outside margin. Linear penalty otherwise |
+| C 参数 | Trade-off between margin width 和 分类 errors. Large C = narrow margin, small C = wide margin |
+| Soft margin | SVM formulation allows margin violations via slack variables. Handles non-separable 数据 |
+| Kernel trick | Computing dot products 在 high-dimensional 特征 space without explicitly mapping 到 space |
+| Linear kernel | K(x, z) = x . z. Equivalent 到 standard dot product. For linearly separable 数据 |
+| RBF kernel | K(x, z) = exp(-gamma * \|\|x-z\|\|^2). Maps 到 infinite dimensions. Learns any smooth boundary |
+| Polynomial kernel | K(x, z) = (x . z + c)^d. Maps 到 特征 space 的 polynomial combinations |
+| Dual formulation | Reformulation 的 SVM problem depends only 在 dot products between 数据 points. Enables kernels |
+| SVR | Support 向量 回归. Fits epsilon-tube around 数据. Points inside tube have zero loss |
+| Slack variables | xi_i: measures how much point violates margin. Zero 为了 correctly classified points outside margin |
+| Maximum margin | principle 的 choosing hyperplane maximizes distance 到 nearest points 的 each class |
 
 ## Further Reading
 
-- [Vapnik: The Nature of Statistical Learning Theory (1995)](https://link.springer.com/book/10.1007/978-1-4757-3264-1) - the foundational text on 支持向量机s and statistical learning
-- [Cortes & Vapnik: Support-vector networks (1995)](https://link.springer.com/article/10.1007/BF00994018) - the original 支持向量机 paper
-- [Platt: Sequential Minimal Optimization (1998)](https://www.microsoft.com/en-us/research/publication/sequential-minimal-optimization-a-fast-algorithm-for-training-support-vector-machines/) - the SMO algorithm that made 支持向量机 training practical
-- [scikit-learn 支持向量机 documentation](https://scikit-learn.org/stable/modules/svm.html) - practical guide with implementation details
-- [LIB支持向量机: A Library for 支持向量机s](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) - the C++ library behind most 支持向量机 implementations
+- [Vapnik: Nature 的 Statistical Learning Theory (1995)](https://link.springer.com/book/10.1007/978-1-4757-3264-1) - foundational text 在 SVMs 和 statistical learning
+- [Cortes & Vapnik: Support-向量 networks (1995)](https://link.springer.com/article/10.1007/BF00994018) - original SVM paper
+- [Platt: Sequential Minimal Optimization (1998)](https://www.microsoft.com/en-us/research/publication/sequential-minimal-optimization--fast-算法-为了-训练-support-向量-machines/) - SMO 算法 made SVM 训练 practical
+- [scikit-learn SVM documentation](https://scikit-learn.org/stable/modules/svm.html) - practical guide 使用 implementation details
+- [LIBSVM: Library 为了 Support 向量 Machines](https://www.csie.ntu.edu.tw/~cjlin/libsvm/) - C++ library behind most SVM implementations

@@ -1,26 +1,26 @@
-# 终端与 Shell
+# Terminal & Shell
 
-> The terminal is where AI engineers live. Get comfortable here.
+> terminal 是 where AI engineers live. Get comfortable here.
 
-**类型:** 学习
+**Type:** Learn
 **Languages:** --
-**前置要求:** 阶段0, 课程01
+**Prerequisites:** Phase 0, Lesson 01
 **Time:** ~35 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Use piping, redirects, and `grep` to filter and process training logs from the command line
-- Create persistent tmux sessions with multiple panes for concurrent training and GPU monitoring
-- Monitor system and GPU resources with `htop`, `nvtop`, and `nvidia-smi`
-- Transfer files between local and remote machines using SSH, `scp`, and `rsync`
+- Use piping, redirects, 和 `grep` 到 filter 和 process 训练 logs 从 command line
+- Create persistent tmux sessions 使用 multiple panes 为了 concurrent 训练 和 GPU monitoring
+- Monitor system 和 GPU resources 使用 `htop`, `nvtop`, 和 `nvidia-smi`
+- Transfer files between local 和 remote machines using SSH, `scp`, 和 `rsync`
 
-## 问题引入
+## Problem
 
-You will spend more time in the terminal than in any editor. Training runs, GPU monitoring, log tailing, remote SSH sessions, environment management. Every AI workflow touches the shell. If you're slow here, you're slow everywhere.
+You will spend more time 在 terminal than 在 any editor. 训练 runs, GPU monitoring, log tailing, remote SSH sessions, environment management. Every AI workflow touches shell. If you're slow here, you're slow everywhere.
 
-This lesson covers the terminal skills that matter for AI work. No history of Unix. No deep-dive into Bash scripting. Just what you need.
+This lesson covers terminal skills matter 为了 AI work. No history 的 Unix. No deep-dive into Bash scripting. Just what you need.
 
-## 概念讲解
+## Concept
 
 ```mermaid
 graph TD
@@ -33,9 +33,9 @@ graph TD
     end
 ```
 
-Three things running at once. One terminal. You can detach, go home, SSH back in, and reattach. The training keeps running.
+Three things running 在 once. One terminal. 你可以 detach, go home, SSH back 在, 和 reattach. 训练 keeps running.
 
-## 从零实现
+## Build It
 
 ### Step 1: Know your shell
 
@@ -45,9 +45,9 @@ Check which shell you're running:
 echo $SHELL
 ```
 
-Most systems use `bash` or `zsh`. Both work fine. The commands in this course work in either.
+Most systems use `bash` 或 `zsh`. Both work fine. commands 在 这个 course work 在 either.
 
-Key things to know:
+Key things 到 know:
 
 ```bash
 # Move around
@@ -69,9 +69,9 @@ clear   # or Ctrl+L
 # Ctrl+Z
 ```
 
-### Step 2: Piping and redirects
+### Step 2: Piping 和 redirects
 
-Piping connects commands together. This is how you process logs, filter output, and chain tools. You will use this constantly.
+Piping connects commands together. 这是 how you process logs, filter 输出, 和 chain tools. You will use 这个 constantly.
 
 ```bash
 # Count how many times "loss" appears in a log
@@ -93,19 +93,19 @@ python train.py > output.log 2> errors.log
 python train.py > train_full.log 2>&1
 ```
 
-The three redirects you need:
+three redirects you need:
 
 | Symbol | What it does |
 |--------|-------------|
-| `>` | Write stdout to file (overwrite) |
-| `>>` | Append stdout to file |
-| `2>` | Write stderr to file |
-| `2>&1` | Send stderr to same place as stdout |
-| `\|` | Send stdout of one command as stdin to the next |
+| `>` | Write stdout 到 file (overwrite) |
+| `>>` | Append stdout 到 file |
+| `2>` | Write stderr 到 file |
+| `2>&1` | Send stderr 到 same place 作为 stdout |
+| `\|` | Send stdout 的 one command 作为 stdin 到 next |
 
 ### Step 3: Background processes
 
-Training runs take hours. You don't want to keep your terminal open the whole time.
+训练 runs take hours. You don't want 到 keep your terminal open whole time.
 
 ```bash
 # Run in background (output still goes to terminal)
@@ -127,7 +127,7 @@ kill %1
 kill $(pgrep -f "train.py")
 ```
 
-The difference between `&`, `nohup`, and `screen`/`tmux`:
+difference between `&`, `nohup`, 和 `screen`/`tmux`:
 
 | Method | Survives terminal close? | Can reattach? |
 |--------|-------------------------|---------------|
@@ -135,11 +135,11 @@ The difference between `&`, `nohup`, and `screen`/`tmux`:
 | `nohup command &` | Yes | No (check log file) |
 | `screen` / `tmux` | Yes | Yes |
 
-For anything longer than a few minutes, use tmux.
+For anything longer than few minutes, use tmux.
 
 ### Step 4: tmux
 
-tmux lets you create persistent terminal sessions with multiple panes. This is the single most useful tool for managing training runs.
+tmux lets you create persistent terminal sessions 使用 multiple panes. 这是 single most useful tool 为了 managing 训练 runs.
 
 ```bash
 # Install
@@ -173,7 +173,7 @@ tmux ls
 tmux kill-session -t training
 ```
 
-A typical AI workflow session:
+typical AI workflow session:
 
 ```bash
 tmux new -s train
@@ -192,7 +192,7 @@ tail -f logs/experiment.log
 # tmux attach -t train
 ```
 
-### Step 5: Monitoring with htop and nvtop
+### Step 5: Monitoring 使用 htop 和 nvtop
 
 ```bash
 # System processes (better than top)
@@ -213,14 +213,14 @@ nvidia-smi --query-compute-apps=pid,name,used_memory --format=csv
 ```
 
 `htop` keybindings you'll use:
-- `F6` or `>` to sort by column (sort by memory to find memory leaks)
-- `F5` to toggle tree view (see child processes)
-- `F9` to kill a process
-- `/` to search for a process name
+- `F6` 或 `>` 到 sort 通过 column (sort 通过 memory 到 find memory leaks)
+- `F5` 到 toggle tree view (see child processes)
+- `F9` 到 kill process
+- `/` 到 search 为了 process name
 
-### Step 6: SSH for remote GPU boxes
+### Step 6: SSH 为了 remote GPU boxes
 
-When you rent a cloud GPU (Lambda, RunPod, Vast.ai), you connect via SSH.
+When you rent cloud GPU (Lambda, RunPod, Vast.ai), you connect via SSH.
 
 ```bash
 # Basic connection
@@ -253,15 +253,15 @@ ssh -L 8888:localhost:8888 user@gpu-box-ip
 # ssh gpu
 ```
 
-### Step 7: Useful aliases for AI work
+### Step 7: Useful aliases 为了 AI work
 
-Add these to your `~/.bashrc` or `~/.zshrc`:
+Add 这些 到 your `~/.bashrc` 或 `~/.zshrc`:
 
 ```bash
 source phases/00-setup-and-tooling/10-terminal-and-shell/code/shell_aliases.sh
 ```
 
-Or copy the ones you want. The key aliases:
+Or copy ones you want. key aliases:
 
 ```bash
 # GPU status at a glance
@@ -277,11 +277,11 @@ alias ae='source .venv/bin/activate'
 alias watchloss='tail -f logs/*.log | grep --line-buffered "loss"'
 ```
 
-See `code/shell_aliases.sh` for the full set.
+See `代码/shell_aliases.sh` 为了 full set.
 
 ### Step 8: Common AI terminal patterns
 
-These come up repeatedly in practice:
+These come up repeatedly 在 practice:
 
 ```bash
 # Run training, log everything, notify when done
@@ -311,34 +311,34 @@ env | grep -i cuda
 env | grep -i torch
 ```
 
-## 框架应用
+## Use It
 
-Here's when each tool comes into play during this course:
+Here's when each tool comes into play during 这个 course:
 
 | Tool | When you use it |
 |------|----------------|
-| tmux | Every training run (Phases 3+) |
-| `tail -f` + `grep` | Monitoring training logs |
+| tmux | Every 训练 run (Phases 3+) |
+| `tail -f` + `grep` | Monitoring 训练 logs |
 | `nohup` / `&` | Quick background tasks |
-| `htop` / `nvtop` | Debugging slow training, OOM errors |
-| SSH + `rsync` | Working on cloud GPUs |
+| `htop` / `nvtop` | Debugging slow 训练, OOM errors |
+| SSH + `rsync` | Working 在 cloud GPUs |
 | Piping + redirects | Processing experiment results |
-| Aliases | Saving time on repetitive commands |
+| Aliases | Saving time 在 repetitive commands |
 
-## 练习
+## Exercises
 
-1. Install tmux, create a session with three panes, and run `htop` in one, `watch -n1 date` in another, and a Python script in the third. Detach and reattach.
-2. Add the aliases from `code/shell_aliases.sh` to your shell config and reload with `source ~/.zshrc` (or `~/.bashrc`).
-3. Create a fake training log with `for i in $(seq 1 100); do echo "epoch $i loss: $(echo "scale=4; 1/$i" | bc)"; sleep 0.1; done > fake_train.log` and then use `grep`, `tail`, and `awk` to extract just the loss values.
-4. Set up an SSH config entry for a server you have access to (or use `localhost` to practice the syntax).
+1. Install tmux, create session 使用 three panes, 和 run `htop` 在 one, `watch -n1 date` 在 another, 和 Python script 在 third. Detach 和 reattach.
+2. Add aliases 从 `代码/shell_aliases.sh` 到 your shell config 和 reload 使用 `source ~/.zshrc` (或 `~/.bashrc`).
+3. Create fake 训练 log 使用 `为了 i 在 $(seq 1 100); do echo "轮次 $i loss: $(echo "scale=4; 1/$i" | bc)"; sleep 0.1; done > fake_train.log` 和 then use `grep`, `tail`, 和 `awk` 到 extract just loss values.
+4. Set up SSH config entry 为了 server you have access 到 (或 use `localhost` 到 practice syntax).
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Shell | "The terminal" | The program that interprets your commands (bash, zsh, fish) |
-| tmux | "Terminal multiplexer" | A program that lets you run multiple terminal sessions inside one window, and detach/reattach |
-| Pipe | "The bar thing" | The `\|` operator that sends one command's output as input to another |
-| PID | "Process ID" | A unique number assigned to every running process, used to monitor or kill it |
-| nohup | "No hangup" | Runs a command immune to the hangup signal, so closing the terminal won't kill it |
-| SSH | "Connecting to the server" | Secure Shell, an encrypted protocol for running commands on a remote machine |
+| Shell | " terminal" | program interprets your commands (bash, zsh, fish) |
+| tmux | "Terminal multiplexer" | program lets you run multiple terminal sessions inside one window, 和 detach/reattach |
+| Pipe | " bar thing" | `\|` operator sends one command's 输出 作为 输入 到 another |
+| PID | "Process ID" | unique number assigned 到 every running process, used 到 monitor 或 kill it |
+| nohup | "No hangup" | Runs command immune 到 hangup signal, so closing terminal won't kill it |
+| SSH | "Connecting 到 server" | Secure Shell, encrypted protocol 为了 running commands 在 remote machine |

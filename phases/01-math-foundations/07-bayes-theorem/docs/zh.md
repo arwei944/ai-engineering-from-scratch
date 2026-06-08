@@ -1,34 +1,34 @@
-# 贝叶斯' Theorem
+# Bayes' Theorem
 
-> Probability is about what you expect. 贝叶斯' theorem is about what you learn.
+> 概率 是 about what you expect. Bayes' theorem 是 about what you learn.
 
-**类型:** 实现
+**Type:** Build
 **Language:** Python
-**前置要求:** 阶段1, Lesson 06 (Probability Fundamentals)
+**Prerequisites:** Phase 1, Lesson 06 (概率 Fundamentals)
 **Time:** ~75 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Apply 贝叶斯' theorem to compute posterior probabilities from priors, likelihoods, and evidence
-- Build a Naive 贝叶斯 text classifier from scratch with Laplace smoothing and log-space computation
-- Compare MLE and MAP estimation and explain how MAP corresponds to L2 regularization
-- Implement sequential 贝叶斯ian updating using Beta-Binomial conjugate priors for A/B testing
+- Apply Bayes' theorem 到 compute posterior probabilities 从 priors, likelihoods, 和 evidence
+- Build Naive Bayes text classifier 从 scratch 使用 Laplace smoothing 和 log-space computation
+- Compare MLE 和 MAP estimation 和 explain how MAP corresponds 到 L2 正则化
+- Implement sequential Bayesian updating using Beta-Binomial conjugate priors 为了 /B 测试
 
-## 问题引入
+## Problem
 
-A medical test is 99% accurate. You test positive. What are the chances you actually have the disease?
+medical test 是 99% accurate. You test positive. What 是 chances you actually have disease?
 
-Most people say 99%. The real answer depends on how rare the disease is. If 1 in 10,000 people have it, a positive result only gives you about a 1% chance of being sick. The other 99% of positive results are false alarms from healthy people.
+Most people say 99%. real answer depends 在 how rare disease 是. If 1 在 10,000 people have it, positive result only gives you about 1% chance 的 being sick. other 99% 的 positive results 是 false alarms 从 healthy people.
 
-This is not a trick question. It is 贝叶斯' theorem. Every spam filter, every medical diagnostic, every machine learning model that quantifies uncertainty uses this exact reasoning. You start with a belief. You see evidence. You update.
+这是 not trick question. 它是 Bayes' theorem. Every spam filter, every medical diagnostic, every machine learning 模型 quantifies uncertainty uses 这个 exact reasoning. You start 使用 belief. You see evidence. You update.
 
-If you build ML systems without understanding this, you will misinterpret model outputs, set bad thresholds, and ship overconfident predictions.
+If you build ML systems without understanding 这个, you will misinterpret 模型 输出, set bad thresholds, 和 ship overconfident predictions.
 
-## 概念讲解
+## Concept
 
-### From joint probability to 贝叶斯
+### From joint 概率 到 Bayes
 
-You already know from Lesson 06 that conditional probability is:
+You already know 从 Lesson 06 conditional 概率 是:
 
 ```
 P(A|B) = P(A and B) / P(B)
@@ -40,7 +40,7 @@ And symmetrically:
 P(B|A) = P(A and B) / P(A)
 ```
 
-Both expressions share the same numerator: P(A and B). Set them equal and rearrange:
+Both expressions share same numerator: P( 和 B). Set them equal 和 rearrange:
 
 ```
 P(A and B) = P(A|B) * P(B) = P(B|A) * P(A)
@@ -50,18 +50,18 @@ Therefore:
 P(A|B) = P(B|A) * P(A) / P(B)
 ```
 
-That is 贝叶斯' theorem. Four quantities, one equation.
+那是 Bayes' theorem. Four quantities, one equation.
 
-### The four parts
+### four parts
 
 | Part | Name | What it means |
 |------|------|---------------|
-| P(A\|B) | Posterior | Your updated belief about A after seeing evidence B |
-| P(B\|A) | Likelihood | How probable the evidence B is if A is true |
-| P(A) | Prior | Your belief about A before seeing any evidence |
-| P(B) | Evidence | Total probability of seeing B under all possibilities |
+| P(\|B) | Posterior | Your updated belief about after seeing evidence B |
+| P(B\|) | Likelihood | How probable evidence B 是 if 是 true |
+| P() | Prior | Your belief about before seeing any evidence |
+| P(B) | Evidence | Total 概率 的 seeing B under all possibilities |
 
-The evidence term P(B) acts as a normalizer. You can expand it using the law of total probability:
+evidence term P(B) acts 作为 normalizer. 你可以 expand it using law 的 total 概率:
 
 ```
 P(B) = P(B|A) * P(A) + P(B|not A) * P(not A)
@@ -69,7 +69,7 @@ P(B) = P(B|A) * P(A) + P(B|not A) * P(not A)
 
 ### Medical test example
 
-A disease affects 1 in 10,000 people. The test is 99% accurate (catches 99% of sick people, gives false positives 1% of the time).
+disease affects 1 在 10,000 people. test 是 99% accurate (catches 99% 的 sick people, gives false positives 1% 的 time).
 
 ```
 P(sick)          = 0.0001     (prior: disease is rare)
@@ -87,11 +87,11 @@ P(sick|positive) = P(positive|sick) * P(sick) / P(positive)
                  = 0.98%
 ```
 
-Less than 1%. The prior dominates. When a condition is rare, even accurate tests produce mostly false positives. This is why doctors order confirmation tests.
+Less than 1%. prior dominates. When condition 是 rare, even accurate tests produce mostly false positives. 这是 why doctors order confirmation tests.
 
 ### Spam filter example
 
-You receive an email containing the word "lottery". Is it spam?
+You receive email containing word "lottery". Is it spam?
 
 ```
 P(spam)                = 0.3      (30% of email is spam)
@@ -107,11 +107,11 @@ P(spam|"lottery") = 0.05 * 0.3 / 0.0157
                   = 95.5%
 ```
 
-One word shifts the probability from 30% to 95.5%. A real spam filter applies 贝叶斯 across hundreds of words simultaneously.
+One word shifts 概率 从 30% 到 95.5%. real spam filter applies Bayes across hundreds 的 words simultaneously.
 
-### Naive 贝叶斯: independence assumption
+### Naive Bayes: independence assumption
 
-Naive 贝叶斯 extends this to multiple features by assuming all features are conditionally independent given the class:
+Naive Bayes extends 这个 到 multiple 特征 通过 assuming all 特征 是 conditionally independent given class:
 
 ```
 P(class | feature_1, feature_2, ..., feature_n)
@@ -119,85 +119,85 @@ P(class | feature_1, feature_2, ..., feature_n)
     / P(feature_1, feature_2, ..., feature_n)
 ```
 
-The "naive" part is the independence assumption. In text, word occurrences are not independent ("New" and "York" are correlated). But the assumption works surprisingly well in practice because the classifier only needs to rank classes, not produce calibrated probabilities.
+"naive" part 是 independence assumption. In text, word occurrences 是 not independent ("New" 和 "York" 是 correlated). But assumption works surprisingly well 在 practice because classifier only needs 到 rank classes, not produce calibrated probabilities.
 
-Since the denominator is the same for all classes, you can skip it and just compare numerators:
+Since denominator 是 same 为了 all classes, you can skip it 和 just compare numerators:
 
 ```
 score(class) = P(class) * product of P(feature_i | class)
 ```
 
-Pick the class with the highest score.
+Pick class 使用 highest score.
 
 ### Maximum likelihood estimation (MLE)
 
-How do you get P(feature|class) from training data? Count.
+How do you get P(特征|class) 从 训练 数据? Count.
 
 ```
 P("free"|spam) = (number of spam emails containing "free") / (total spam emails)
 ```
 
-This is MLE: choose the parameter values that make the observed data most likely. You are maximizing the likelihood function, which for discrete counts reduces to relative frequency.
+这是 MLE: choose 参数 values make observed 数据 most likely. You 是 maximizing likelihood 函数, which 为了 discrete counts reduces 到 relative frequency.
 
-Problem: if a word never appears in spam during training, MLE gives it probability zero. One unseen word kills the entire product. Fix this with Laplace smoothing:
+Problem: if word never appears 在 spam during 训练, MLE gives it 概率 zero. One unseen word kills entire product. Fix 这个 使用 Laplace smoothing:
 
 ```
 P(word|class) = (count(word, class) + 1) / (total_words_in_class + vocabulary_size)
 ```
 
-Adding 1 to every count ensures no probability is ever zero.
+Adding 1 到 every count ensures no 概率 是 ever zero.
 
-### Maximum a posteriori (MAP)
+### Maximum posteriori (MAP)
 
-MLE asks: what parameters maximize P(data|parameters)?
+MLE asks: what 参数 maximize P(数据|参数)?
 
-MAP asks: what parameters maximize P(parameters|data)?
+MAP asks: what 参数 maximize P(参数|数据)?
 
-By 贝叶斯' theorem:
+By Bayes' theorem:
 
 ```
 P(parameters|data) proportional to P(data|parameters) * P(parameters)
 ```
 
-MAP adds a prior over the parameters themselves. If you believe parameters should be small, you encode that as a prior that penalizes large values. This is identical to L2 regularization in ML. The "ridge" penalty in ridge regression is literally a Gaussian prior on the weights.
+MAP adds prior over 参数 themselves. If you believe 参数 should be small, you encode 作为 prior penalizes large values. 这是 identical 到 L2 正则化 在 ML. "ridge" penalty 在 ridge 回归 是 literally Gaussian prior 在 权重.
 
 | Estimation | Optimizes | ML equivalent |
 |------------|-----------|---------------|
-| MLE | P(data\|params) | Unregularized training |
-| MAP | P(data\|params) * P(params) | L2 / L1 regularization |
+| MLE | P(数据\|params) | Unregularized 训练 |
+| MAP | P(数据\|params) * P(params) | L2 / L1 正则化 |
 
-### 贝叶斯ian vs frequentist: the practical difference
+### Bayesian vs frequentist: practical difference
 
-Frequentists treat parameters as fixed unknowns. They ask: "If I repeated this experiment many times, what would happen?"
+Frequentists treat 参数 作为 fixed unknowns. They ask: "If I repeated 这个 experiment many times, what would happen?"
 
-贝叶斯ians treat parameters as distributions. They ask: "Given what I have observed, what do I believe about the parameters?"
+Bayesians treat 参数 作为 distributions. They ask: "Given what I have observed, what do I believe about 参数?"
 
-For building ML systems, the practical difference:
+For building ML systems, practical difference:
 
-| Aspect | Frequentist | 贝叶斯ian |
+| Aspect | Frequentist | Bayesian |
 |--------|-------------|----------|
-| Output | Point estimate | Distribution over values |
-| Uncertainty | Confidence intervals (about procedure) | Credible intervals (about parameter) |
-| Small data | Can overfit | Prior acts as regularization |
+| 输出 | Point estimate | Distribution over values |
+| Uncertainty | Confidence intervals (about procedure) | Credible intervals (about 参数) |
+| Small 数据 | Can overfit | Prior acts 作为 正则化 |
 | Computation | Usually faster | Often requires sampling (MCMC) |
 
-Most production ML is frequentist (SGD, point estimates). 贝叶斯ian methods shine when you need calibrated uncertainty (medical decisions, safety-critical systems) or when data is scarce (few-shot learning, cold start).
+Most production ML 是 frequentist (SGD, point estimates). Bayesian methods shine when you need calibrated uncertainty (medical decisions, safety-critical systems) 或 when 数据 是 scarce (few-shot learning, cold start).
 
-### Why 贝叶斯ian thinking matters for ML
+### Why Bayesian thinking matters 为了 ML
 
-The connection is deeper than analogy:
+connection 是 deeper than analogy:
 
-**Priors are regularization.** A Gaussian prior on weights is L2 regularization. A Laplace prior is L1. Every time you add a regularization term, you are making a 贝叶斯ian statement about what parameter values you expect.
+**Priors 是 正则化.** Gaussian prior 在 权重 是 L2 正则化. Laplace prior 是 L1. Every time you add 正则化 term, you 是 making Bayesian statement about what 参数 values you expect.
 
-**Posteriors are uncertainty.** A single predicted probability tells you nothing about how confident the model is in that estimate. 贝叶斯ian methods give you a distribution: "I think P(spam) is between 0.8 and 0.95."
+**Posteriors 是 uncertainty.** single predicted 概率 tells you nothing about how confident 模型 是 在 estimate. Bayesian methods give you distribution: "I think P(spam) 是 between 0.8 和 0.95."
 
-**贝叶斯 updates are online learning.** Today's posterior becomes tomorrow's prior. When your model sees new data, it updates its beliefs incrementally instead of retraining from scratch.
+**Bayes updates 是 online learning.** Today's posterior becomes tomorrow's prior. When your 模型 sees new 数据, it updates its beliefs incrementally instead 的 retraining 从 scratch.
 
-**Model comparison is 贝叶斯ian.** 贝叶斯ian information criterion (BIC), marginal likelihood, and 贝叶斯 factors all use 贝叶斯ian reasoning to choose between models without overfitting.
+**模型 comparison 是 Bayesian.** Bayesian information criterion (BIC), marginal likelihood, 和 Bayes factors all use Bayesian reasoning 到 choose between 模型 without 过拟合.
 
-## 从零实现
+## Build It
 
-### Step 1: 贝叶斯 theorem function
+### Step 1: Bayes theorem 函数
 
 ```python
 def bayes(prior, likelihood, false_positive_rate):
@@ -209,13 +209,13 @@ result = bayes(prior=0.0001, likelihood=0.99, false_positive_rate=0.01)
 print(f"P(sick|positive) = {result:.4f}")
 ```
 
-### Step 2: Naive 贝叶斯 classifier
+### Step 2: Naive Bayes classifier
 
 ```python
 import math
 from collections import defaultdict
 
-class Naive贝叶斯:
+class NaiveBayes:
     def __init__(self, smoothing=1.0):
         self.smoothing = smoothing
         self.class_counts = defaultdict(int)
@@ -250,9 +250,9 @@ class Naive贝叶斯:
         return best_class
 ```
 
-Log probabilities prevent underflow. Multiplying many small probabilities produces numbers too tiny for floating point. Summing log-probabilities is numerically stable and mathematically equivalent.
+Log probabilities prevent underflow. Multiplying many small probabilities produces numbers too tiny 为了 floating point. Summing log-probabilities 是 numerically stable 和 mathematically equivalent.
 
-### Step 3: Train on spam data
+### Step 3: Train 在 spam 数据
 
 ```python
 train_docs = [
@@ -275,7 +275,7 @@ train_labels = [
     "ham", "ham", "ham", "ham", "ham", "ham", "ham",
 ]
 
-classifier = Naive贝叶斯()
+classifier = NaiveBayes()
 classifier.train(train_docs, train_labels)
 
 test_messages = [
@@ -289,7 +289,7 @@ for msg in test_messages:
     print(f"  '{msg}' -> {classifier.predict(msg)}")
 ```
 
-### Step 4: Inspect the learned probabilities
+### Step 4: Inspect learned probabilities
 
 ```python
 def show_top_words(classifier, cls, n=5):
@@ -309,9 +309,9 @@ print("\nTop ham words:")
 show_top_words(classifier, "ham")
 ```
 
-## 框架应用
+## Use It
 
-Scikit-learn ships production-ready naive 贝叶斯 implementations:
+Scikit-learn ships production-ready naive Bayes implementations:
 
 ```python
 from sklearn.feature_extraction.text import CountVectorizer
@@ -329,33 +329,33 @@ for msg, pred in zip(test_messages, predictions):
     print(f"  '{msg}' -> {pred}")
 ```
 
-Same algorithm. CountVectorizer handles tokenization and vocabulary building. MultinomialNB handles smoothing and log-probabilities internally. Your from-scratch version does the same thing in 40 lines.
+Same 算法. CountVectorizer handles tokenization 和 vocabulary building. MultinomialNB handles smoothing 和 log-probabilities internally. Your 从-scratch version does same thing 在 40 lines.
 
-## 产物交付
+## Ship It
 
-The Naive贝叶斯 class built here demonstrates the full pipeline: tokenization, probability estimation with Laplace smoothing, log-space prediction. The code in `code/bayes.py` runs end-to-end with no dependencies beyond Python's standard library.
+NaiveBayes class built here demonstrates full pipeline: tokenization, 概率 estimation 使用 Laplace smoothing, log-space prediction. 代码 在 `代码/bayes.py` runs end-到-end 使用 no dependencies beyond Python's standard library.
 
 ### Conjugate Priors
 
-When the prior and posterior belong to the same family of distributions, the prior is called "conjugate." This makes 贝叶斯ian updating algebraically clean -- you get a closed-form posterior without numerical integration.
+When prior 和 posterior belong 到 same family 的 distributions, prior 是 called "conjugate." This makes Bayesian updating algebraically clean -- you get closed-form posterior without numerical integration.
 
 | Likelihood | Conjugate Prior | Posterior | Example |
 |-----------|----------------|-----------|---------|
-| Bernoulli | Beta(a, b) | Beta(a + successes, b + failures) | Coin flip bias estimation |
+| Bernoulli | Beta(, b) | Beta( + successes, b + failures) | Coin flip 偏置 estimation |
 | Normal (known variance) | Normal(mu_0, sigma_0) | Normal(weighted mean, smaller variance) | Sensor calibration |
-| Poisson | Gamma(a, b) | Gamma(a + sum of counts, b + n) | Modeling arrival rates |
-| Multinomial | Dirichlet(alpha) | Dirichlet(alpha + counts) | Topic modeling, language models |
+| Poisson | Gamma(, b) | Gamma( + sum 的 counts, b + n) | Modeling arrival rates |
+| Multinomial | Dirichlet(alpha) | Dirichlet(alpha + counts) | Topic modeling, language 模型 |
 
-Why this matters: without conjugate priors, you need Monte Carlo sampling or variational inference to approximate the posterior. With conjugate priors, you just update two numbers.
+Why 这个 matters: without conjugate priors, you need Monte Carlo sampling 或 variational inference 到 approximate posterior. With conjugate priors, you just update two numbers.
 
-The Beta distribution is the most common conjugate prior in practice. Beta(a, b) represents your belief about a probability parameter. The mean is a/(a+b). The larger a+b, the more concentrated (confident) the distribution.
+Beta distribution 是 most common conjugate prior 在 practice. Beta(, b) represents your belief about 概率 参数. mean 是 /(+b). larger +b, more concentrated (confident) distribution.
 
-Special cases of the Beta prior:
-- Beta(1, 1) = uniform. You have no opinion about the parameter.
-- Beta(10, 10) = peaked at 0.5. You strongly believe the parameter is near 0.5.
-- Beta(1, 10) = skewed toward 0. You believe the parameter is small.
+Special cases 的 Beta prior:
+- Beta(1, 1) = uniform. You have no opinion about 参数.
+- Beta(10, 10) = peaked 在 0.5. You strongly believe 参数 是 near 0.5.
+- Beta(1, 10) = skewed toward 0. You believe 参数 是 small.
 
-The update rule is dead simple:
+update rule 是 dead simple:
 
 ```
 Prior:     Beta(a, b)
@@ -365,27 +365,27 @@ Posterior: Beta(a + s, b + f)
 
 No integrals. No sampling. Just addition.
 
-### Sequential 贝叶斯ian Updating
+### Sequential Bayesian Updating
 
-贝叶斯ian inference is naturally sequential. Today's posterior becomes tomorrow's prior. This is how real systems learn incrementally without reprocessing all historical data.
+Bayesian inference 是 naturally sequential. Today's posterior becomes tomorrow's prior. 这是 how real systems learn incrementally without reprocessing all historical 数据.
 
-Concrete example: estimating whether a coin is fair.
+Concrete example: estimating whether coin 是 fair.
 
-**Day 1: No data yet.**
-Start with Beta(1, 1) -- a uniform prior. You have no opinion.
+**Day 1: No 数据 yet.**
+Start 使用 Beta(1, 1) -- uniform prior. You have no opinion.
 - Prior mean: 0.5
-- Prior is flat across [0, 1]
+- Prior 是 flat across [0, 1]
 
 **Day 2: Observe 7 heads, 3 tails.**
 Posterior = Beta(1 + 7, 1 + 3) = Beta(8, 4)
 - Posterior mean: 8/12 = 0.667
-- Evidence suggests the coin is biased toward heads
+- Evidence suggests coin 是 biased toward heads
 
 **Day 3: Observe 5 more heads, 5 more tails.**
-Use yesterday's posterior as today's prior.
+Use yesterday's posterior 作为 today's prior.
 Posterior = Beta(8 + 5, 4 + 5) = Beta(13, 9)
 - Posterior mean: 13/22 = 0.591
-- The balanced new data pulled the estimate back toward 0.5
+- balanced new 数据 pulled estimate back toward 0.5
 
 ```mermaid
 graph LR
@@ -394,26 +394,26 @@ graph LR
     C -->|"5H, 5T"| D["Posterior 2<br/>Beta(13,9)<br/>mean = 0.59"]
 ```
 
-The order of observations does not matter. Beta(1,1) updated with all 12 heads and 8 tails at once gives Beta(13, 9) -- the same result. Sequential updating and batch updating are mathematically equivalent. But sequential updating lets you make decisions at each step without storing raw data.
+order 的 observations does not matter. Beta(1,1) updated 使用 all 12 heads 和 8 tails 在 once gives Beta(13, 9) -- same result. Sequential updating 和 批次 updating 是 mathematically equivalent. But sequential updating lets you make decisions 在 each step without storing raw 数据.
 
-This is the foundation of online learning in production ML systems. Thompson sampling for bandits, incremental recommendation systems, and streaming anomaly detectors all use this pattern.
+这是 foundation 的 online learning 在 production ML systems. Thompson sampling 为了 bandits, incremental recommendation systems, 和 streaming anomaly detectors all use 这个 pattern.
 
-### Connection to A/B Testing
+### Connection 到 /B 测试
 
-A/B testing is 贝叶斯ian inference in disguise.
+/B 测试 是 Bayesian inference 在 disguise.
 
-Setup: you are testing two button colors. Variant A (blue) and variant B (green). You want to know which one gets more clicks.
+Setup: you 是 测试 two button colors. Variant (blue) 和 variant B (green). You want 到 know which one gets more clicks.
 
-The 贝叶斯ian A/B test:
+Bayesian /B test:
 
-1. **Prior.** Start with Beta(1, 1) for both variants. No prior preference.
-2. **Data.** Variant A: 50 clicks out of 1000 views. Variant B: 65 clicks out of 1000 views.
+1. **Prior.** Start 使用 Beta(1, 1) 为了 both variants. No prior preference.
+2. **数据.** Variant : 50 clicks out 的 1000 views. Variant B: 65 clicks out 的 1000 views.
 3. **Posteriors.**
-   - A: Beta(1 + 50, 1 + 950) = Beta(51, 951). Mean = 0.051
-   - B: Beta(1 + 65, 1 + 935) = Beta(66, 936). Mean = 0.066
-4. **Decision.** Compute P(B > A) -- the probability that B's true conversion rate is higher than A's.
+- : Beta(1 + 50, 1 + 950) = Beta(51, 951). Mean = 0.051
+- B: Beta(1 + 65, 1 + 935) = Beta(66, 936). Mean = 0.066
+4. **Decision.** Compute P(B > ) -- 概率 B's true conversion rate 是 higher than 's.
 
-Computing P(B > A) analytically is hard. But Monte Carlo makes it trivial:
+Computing P(B > ) analytically 是 hard. But Monte Carlo makes it trivial:
 
 ```
 1. Draw 100,000 samples from Beta(51, 951)  -> samples_A
@@ -421,50 +421,50 @@ Computing P(B > A) analytically is hard. But Monte Carlo makes it trivial:
 3. P(B > A) = fraction of samples where B > A
 ```
 
-If P(B > A) > 0.95, you ship variant B. If it is between 0.05 and 0.95, you keep collecting data. If P(B > A) < 0.05, you ship variant A.
+If P(B > ) > 0.95, you ship variant B. If it 是 between 0.05 和 0.95, you keep collecting 数据. If P(B > ) < 0.05, you ship variant .
 
-Advantages over frequentist A/B testing:
-- You get a direct probability statement: "there is a 97% chance B is better"
-- No p-value confusion. No "fail to reject the null hypothesis" hedging.
-- You can check results at any time without inflating false positive rates (no "peeking problem")
-- You can incorporate prior knowledge (e.g., previous tests suggest conversion rates are usually 3-8%)
+Advantages over frequentist /B 测试:
+- You get direct 概率 statement: "there 是 97% chance B 是 better"
+- No p-value confusion. No "fail 到 reject null hypothesis" hedging.
+- 你可以 check results 在 any time without inflating false positive rates (no "peeking problem")
+- 你可以 incorporate prior knowledge (e.g., previous tests suggest conversion rates 是 usually 3-8%)
 
-| Aspect | Frequentist A/B | 贝叶斯ian A/B |
+| Aspect | Frequentist /B | Bayesian /B |
 |--------|----------------|--------------|
-| Output | p-value | P(B > A) |
-| Interpretation | "How surprising is this data if A=B?" | "How likely is B better than A?" |
-| Early stopping | Inflates false positives | Safe at any point (given a well-chosen prior and correctly specified model) |
-| Prior knowledge | Not used | Encoded as Beta prior |
-| Decision rule | p < 0.05 | P(B > A) > threshold |
+| 输出 | p-value | P(B > ) |
+| Interpretation | "How surprising 是 这个 数据 if =B?" | "How likely 是 B better than ?" |
+| Early stopping | Inflates false positives | Safe 在 any point (given well-chosen prior 和 correctly specified 模型) |
+| Prior knowledge | Not used | Encoded 作为 Beta prior |
+| Decision rule | p < 0.05 | P(B > ) > threshold |
 
-## 练习
+## Exercises
 
-1. **Multiple tests.** A patient tests positive twice on independent tests (both 99% accurate, disease prevalence 1 in 10,000). What is P(sick) after both tests? Use the posterior from the first test as the prior for the second.
+1. **Multiple tests.** patient tests positive twice 在 independent tests (both 99% accurate, disease prevalence 1 在 10,000). What 是 P(sick) after both tests? Use posterior 从 first test 作为 prior 为了 second.
 
-2. **Smoothing impact.** Run the spam classifier with smoothing values of 0.01, 0.1, 1.0, and 10.0. How do the top word probabilities change? What happens with smoothing=0 and a word that appears only in ham?
+2. **Smoothing impact.** Run spam classifier 使用 smoothing values 的 0.01, 0.1, 1.0, 和 10.0. How do top word probabilities change? What happens 使用 smoothing=0 和 word appears only 在 ham?
 
-3. **Add features.** Extend the Naive贝叶斯 class to also use message length (short/long) as a feature alongside word counts. Estimate P(short|spam) and P(short|ham) from the training data and fold it into the prediction score.
+3. **Add 特征.** Extend NaiveBayes class 到 also use message length (short/long) 作为 特征 alongside word counts. Estimate P(short|spam) 和 P(short|ham) 从 训练 数据 和 fold it into prediction score.
 
-4. **MAP by hand.** Given observed data (7 heads in 10 coin flips), compute the MAP estimate of the bias using a Beta(2,2) prior. Compare it to the MLE estimate (7/10).
+4. **MAP 通过 hand.** Given observed 数据 (7 heads 在 10 coin flips), compute MAP estimate 的 偏置 using Beta(2,2) prior. Compare it 到 MLE estimate (7/10).
 
-## 关键术语
+## Key Terms
 
-| Term | 通俗说法 | 实际含义 |
+| Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| Prior | "My initial guess" | P(hypothesis) before observing evidence. In ML: the regularization term. |
-| Likelihood | "How well the data fits" | P(evidence\|hypothesis). How probable the observed data is under a specific hypothesis. |
-| Posterior | "My updated belief" | P(hypothesis\|evidence). The prior multiplied by the likelihood, then normalized. |
-| Evidence | "The normalizing constant" | P(data) across all hypotheses. Ensures the posterior sums to 1. |
-| Naive 贝叶斯 | "That simple text classifier" | A classifier that assumes features are independent given the class. Works well despite the false assumption. |
-| Laplace smoothing | "Add-one smoothing" | Adding a small count to every feature to prevent zero probabilities from unseen data. |
-| MLE | "Just use the frequencies" | Choose parameters that maximize P(data\|parameters). No prior. Can overfit with small data. |
-| MAP | "MLE with a prior" | Choose parameters that maximize P(data\|parameters) * P(parameters). Equivalent to regularized MLE. |
-| Log-probability | "Work in log space" | Using log(P) instead of P to avoid floating-point underflow when multiplying many small numbers. |
-| False positive | "A wrong alarm" | The test says positive, but the true state is negative. Drives the base rate fallacy. |
+| Prior | "My initial guess" | P(hypothesis) before observing evidence. In ML: 正则化 term. |
+| Likelihood | "How well 数据 fits" | P(evidence\|hypothesis). How probable observed 数据 是 under specific hypothesis. |
+| Posterior | "My updated belief" | P(hypothesis\|evidence). prior multiplied 通过 likelihood, then normalized. |
+| Evidence | " normalizing constant" | P(数据) across all hypotheses. Ensures posterior sums 到 1. |
+| Naive Bayes | "That simple text classifier" | classifier assumes 特征 是 independent given class. Works well despite false assumption. |
+| Laplace smoothing | "Add-one smoothing" | Adding small count 到 every 特征 到 prevent zero probabilities 从 unseen 数据. |
+| MLE | "Just use frequencies" | Choose 参数 maximize P(数据\|参数). No prior. Can overfit 使用 small 数据. |
+| MAP | "MLE 使用 prior" | Choose 参数 maximize P(数据\|参数) * P(参数). Equivalent 到 regularized MLE. |
+| Log-概率 | "Work 在 log space" | Using log(P) instead 的 P 到 avoid floating-point underflow when multiplying many small numbers. |
+| False positive | " wrong alarm" | test says positive, but true state 是 negative. Drives base rate fallacy. |
 
 ## Further Reading
 
-- [3Blue1Brown: 贝叶斯' theorem](https://www.youtube.com/watch?v=HZGCoVF3YvM) - visual explanation with the medical test example
-- [Stanford CS229: Generative Learning Algorithms](https://cs229.stanford.edu/notes2022fall/cs229-notes2.pdf) - naive 贝叶斯 and its connection to discriminative models
-- [Think 贝叶斯](https://greenteapress.com/wp/think-bayes/) - free book, 贝叶斯ian statistics with Python code
-- [scikit-learn Naive 贝叶斯](https://scikit-learn.org/stable/modules/naive_bayes.html) - production implementations and when to use each variant
+- [3Blue1Brown: Bayes' theorem](https://www.youtube.com/watch?v=HZGCoVF3YvM) - visual explanation 使用 medical test example
+- [Stanford CS229: Generative Learning Algorithms](https://cs229.stanford.edu/notes2022fall/cs229-notes2.pdf) - naive Bayes 和 its connection 到 discriminative 模型
+- [Think Bayes](https://greenteapress.com/wp/think-bayes/) - free book, Bayesian 统计学 使用 Python 代码
+- [scikit-learn Naive Bayes](https://scikit-learn.org/stable/modules/naive_bayes.html) - production implementations 和 when 到 use each variant

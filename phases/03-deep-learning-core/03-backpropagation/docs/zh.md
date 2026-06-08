@@ -1,38 +1,38 @@
-# 反向传播 from Scratch
+# 反向传播 从 Scratch
 
-> 反向传播 is the algorithm that makes learning possible. Without it, 神经网络s are just expensive random number generators.
+> 反向传播 是 算法 makes learning possible. Without it, 神经网络 是 just expensive random number generators.
 
-**类型:** 实现
-**语言:** Python
+**Type:** Build
+**Languages:** Python
 **Prerequisites:** Lesson 03.02 (Multi-层 Networks)
 **Time:** ~120 minutes
 
-## 学习目标
+## Learning Objectives
 
-- Implement a Value-based 自动微分 engine that builds a 计算图 and computes 梯度s via topological sort
-- Derive the backward pass for addition, multiplication, and sigmoid using the 链式法则
-- Train a multi-层 network on XOR and circle classification using only your from-scratch 反向传播 engine
-- Identify the vanishing 梯度 problem in deep sigmoid networks and explain why 梯度s shrink exponentially
+- Implement Value-based autograd engine builds computational graph 和 computes gradients via topological sort
+- Derive backward pass 为了 addition, multiplication, 和 sigmoid using chain rule
+- Train multi-层 network 在 XOR 和 circle 分类 using only your 从-scratch 反向传播 engine
+- Identify vanishing gradient problem 在 deep sigmoid networks 和 explain why gradients shrink exponentially
 
-## The Problem
+## Problem
 
-Your network has a single hidden 层 with 768 inputs and 3072 outputs. That's 2,359,296 权重s. It made a wrong prediction. Which 权重s caused the error? Testing each 权重 individually means 2.3 million forward passes. 反向传播 computes all 2.3 million 梯度s in a single backward pass. That's not an optimization. That's the difference between trainable and impossible.
+Your network has single hidden 层 使用 768 输入 和 3072 输出. That's 2,359,296 权重. It made wrong prediction. Which 权重 caused error? 测试 each 权重 individually means 2.3 million forward passes. 反向传播 computes all 2.3 million gradients 在 single backward pass. That's not optimization. That's difference between trainable 和 impossible.
 
-The naive approach: take one 权重, nudge it by a tiny amount, run the forward pass again, measure whether the loss went up or down. That gives you the 梯度 for that 权重. Now do it for every 权重 in the network. Multiply by thousands of training steps and millions of data points. You'd need geological time to train anything useful.
+naive approach: take one 权重, nudge it 通过 tiny amount, run forward pass again, measure whether loss went up 或 down. That gives you gradient 为了 权重. Now do it 为了 every 权重 在 network. Multiply 通过 thousands 的 训练 steps 和 millions 的 数据 points. You'd need geological time 到 train anything useful.
 
-反向传播 solves this. One forward pass, one backward pass, all 梯度s computed. The trick is the 链式法则 from calculus, applied systematically to a 计算图. This is the algorithm that made deep learning practical. Without it, we'd still be stuck on toy problems.
+反向传播 solves 这个. One forward pass, one backward pass, all gradients computed. trick 是 chain rule 从 微积分, applied systematically 到 computational graph. 这是 算法 made deep learning practical. Without it, we'd still be stuck 在 toy problems.
 
-## The Concept
+## Concept
 
-### The 链式法则, Applied to Networks
+### Chain Rule, Applied 到 Networks
 
-You saw the 链式法则 in Phase 01, Lesson 05. Quick recap: if y = f(g(x)), then dy/dx = f'(g(x)) * g'(x). You multiply derivatives along the chain.
+You saw chain rule 在 Phase 01, Lesson 05. Quick recap: if y = f(g(x)), then dy/dx = f'(g(x)) * g'(x). You multiply derivatives along chain.
 
-In a 神经网络, the "chain" is the sequence of operations from input to loss. Each 层 applies 权重s, adds 偏置es, passes through an activation. The 损失函数 compares the final output to the target. 反向传播 traces this chain backward, computing how each operation contributed to the error.
+In 神经网络, "chain" 是 sequence 的 operations 从 输入 到 loss. Each 层 applies 权重, adds 偏置, passes through activation. 损失函数 compares final 输出 到 target. 反向传播 traces 这个 chain backward, computing how each operation contributed 到 error.
 
-### 计算图s
+### Computational Graphs
 
-Every forward pass builds a graph. Each node is an operation (multiply, add, sigmoid). Each edge carries a value forward and a 梯度 backward.
+Every forward pass builds graph. Each 节点 是 operation (multiply, add, sigmoid). Each edge carries value forward 和 gradient backward.
 
 ```mermaid
 graph LR
@@ -45,11 +45,11 @@ graph LR
     y["target"] --> loss
 ```
 
-Forward pass: values flow left to right. x and w produce z1 = w*x. Add b to get z2. Sigmoid gives activation a. Compare a to target y using the 损失函数.
+Forward pass: values flow left 到 right. x 和 w produce z1 = w*x. Add b 到 get z2. Sigmoid gives activation . Compare 到 target y using 损失函数.
 
-Backward pass: 梯度s flow right to left. Start with dL/da (how loss changes with the activation). Multiply by da/dz2 (sigmoid derivative). That gives dL/dz2. Split into dL/db (which equals dL/dz2, since z2 = z1 + b) and dL/dz1. Then dL/dw = dL/dz1 * x and dL/dx = dL/dz1 * w.
+Backward pass: gradients flow right 到 left. Start 使用 dL/da (how loss changes 使用 activation). Multiply 通过 da/dz2 (sigmoid derivative). That gives dL/dz2. Split into dL/db (which equals dL/dz2, since z2 = z1 + b) 和 dL/dz1. Then dL/dw = dL/dz1 * x 和 dL/dx = dL/dz1 * w.
 
-Every node in the graph has one job during the backward pass: take the 梯度 coming from above, multiply by its local derivative, and pass it down.
+Every 节点 在 graph has one job during backward pass: take gradient coming 从 above, multiply 通过 its local derivative, 和 pass it down.
 
 ### Forward vs Backward
 
@@ -70,39 +70,39 @@ graph TB
     Forward --> Backward
 ```
 
-The forward pass stores every intermediate value: z, a, the inputs to each 层. The backward pass needs these stored values to compute 梯度s. This is the memory-computation tradeoff at the heart of backprop. You trade memory (storing activations) for speed (one pass instead of millions).
+forward pass stores every intermediate value: z, , 输入 到 each 层. backward pass needs 这些 stored values 到 compute gradients. 这是 memory-computation tradeoff 在 heart 的 backprop. You trade memory (storing activations) 为了 speed (one pass instead 的 millions).
 
-### 梯度 Flow Through a Network
+### Gradient Flow Through Network
 
-For a 3-层 network, 梯度s chain through every 层:
+For 3-层 network, gradients chain through every 层:
 
 ```mermaid
 graph RL
-    L["Loss"] -- "dL/da3" --> L3["层 3\na3 = sigmoid(z3)"]
-    L3 -- "dL/dz3 = dL/da3 * sigmoid'(z3)" --> L2["层 2\na2 = sigmoid(z2)"]
-    L2 -- "dL/dz2 = dL/da2 * sigmoid'(z2)" --> L1["层 1\na1 = sigmoid(z1)"]
+    L["Loss"] -- "dL/da3" --> L3["Layer 3\na3 = sigmoid(z3)"]
+    L3 -- "dL/dz3 = dL/da3 * sigmoid'(z3)" --> L2["Layer 2\na2 = sigmoid(z2)"]
+    L2 -- "dL/dz2 = dL/da2 * sigmoid'(z2)" --> L1["Layer 1\na1 = sigmoid(z1)"]
     L1 -- "dL/dz1 = dL/da1 * sigmoid'(z1)" --> I["Input"]
 ```
 
-At each 层, the 梯度 gets multiplied by the sigmoid derivative. The sigmoid derivative is a * (1 - a), which maxes out at 0.25 (when a = 0.5). Three 层s deep, the 梯度 has been multiplied by at most 0.25^3 = 0.0156. Ten 层s deep: 0.25^10 = 0.000001.
+At each 层, gradient gets multiplied 通过 sigmoid derivative. sigmoid derivative 是 * (1 - ), which maxes out 在 0.25 (when = 0.5). Three 层 deep, gradient has been multiplied 通过 在 most 0.25^3 = 0.0156. Ten 层 deep: 0.25^10 = 0.000001.
 
-### Vanishing 梯度s
+### Vanishing Gradients
 
-This is the vanishing 梯度 problem. Sigmoid squashes its output between 0 and 1. Its derivative is always less than 0.25. Stack enough sigmoid 层s and 梯度s shrink to nothing. Early 层s barely learn because they receive near-zero 梯度s.
+这是 vanishing gradient problem. Sigmoid squashes its 输出 between 0 和 1. Its derivative 是 always less than 0.25. Stack enough sigmoid 层 和 gradients shrink 到 nothing. Early 层 barely learn because they receive near-zero gradients.
 
 ```
 sigmoid(z):     Output range [0, 1]
 sigmoid'(z):    Max value 0.25 (at z = 0)
 
-After 5 层s:   梯度 * 0.25^5 = 0.001x original
-After 10 层s:  梯度 * 0.25^10 = 0.000001x original
+After 5 layers:   gradient * 0.25^5 = 0.001x original
+After 10 layers:  gradient * 0.25^10 = 0.000001x original
 ```
 
-This is why deep sigmoid networks are nearly impossible to train. The fix -- ReLU and its variants -- is the subject of Lesson 04. For now, understand that backprop works perfectly. The problem is what it's working through.
+这是 why deep sigmoid networks 是 nearly impossible 到 train. fix -- ReLU 和 its variants -- 是 subject 的 Lesson 04. For now, understand backprop works perfectly. problem 是 what it's working through.
 
-### Deriving 梯度s for a 2-层 Network
+### Deriving Gradients 为了 2-层 Network
 
-Concrete math for a network with input x, hidden 层 with sigmoid, output 层 with sigmoid, and 均方误差 loss.
+Concrete math 为了 network 使用 输入 x, hidden 层 使用 sigmoid, 输出 层 使用 sigmoid, 和 MSE loss.
 
 Forward pass:
 ```
@@ -113,7 +113,7 @@ a2 = sigmoid(z2)
 L = (a2 - y)^2
 ```
 
-Backward pass (applying 链式法则 step by step):
+Backward pass (applying chain rule step 通过 step):
 ```
 dL/da2 = 2(a2 - y)
 da2/dz2 = a2 * (1 - a2)
@@ -130,13 +130,13 @@ dL/dW1 = dL/dz1 * x
 dL/db1 = dL/dz1
 ```
 
-Every 梯度 is a product of local derivatives traced back from the loss. That's all 反向传播 is.
+Every gradient 是 product 的 local derivatives traced back 从 loss. That's all 反向传播 是.
 
 ## Build It
 
-### Step 1: The Value Node
+### Step 1: Value 节点
 
-Every number in our computation becomes a Value. It stores its data, its 梯度, and how it was created (so it knows how to compute 梯度s backward).
+Every number 在 our computation becomes Value. It stores its 数据, its gradient, 和 how it was created (so it knows how 到 compute gradients backward).
 
 ```python
 class Value:
@@ -151,11 +151,11 @@ class Value:
         return f"Value(data={self.data:.4f}, grad={self.grad:.4f})"
 ```
 
-No 梯度 yet (0.0). No backward function yet (no-op). The `_children` track which Values produced this one, so we can topologically sort the graph later.
+No gradient yet (0.0). No backward 函数 yet (no-op). `_children` track which Values produced 这个 one, so we can topologically sort graph later.
 
-### Step 2: Operations with Backward Functions
+### Step 2: Operations 使用 Backward Functions
 
-Each operation creates a new Value and defines how 梯度s flow backward through it.
+Each operation creates new Value 和 defines how gradients flow backward through it.
 
 ```python
 def __add__(self, other):
@@ -181,13 +181,13 @@ def __mul__(self, other):
     return out
 ```
 
-For addition: d(a+b)/da = 1, d(a+b)/db = 1. So both inputs get the output's 梯度 directly.
+For addition: d(+b)/da = 1, d(+b)/db = 1. So both 输入 get 输出's gradient directly.
 
-For multiplication: d(a*b)/da = b, d(a*b)/db = a. Each input gets the other's value times the output 梯度.
+For multiplication: d(*b)/da = b, d(*b)/db = . Each 输入 gets other's value times 输出 gradient.
 
-The `+=` is critical. A Value might be used in multiple operations. Its 梯度 is the sum of 梯度s from all paths.
+`+=` 是 critical. Value might be used 在 multiple operations. Its gradient 是 sum 的 gradients 从 all paths.
 
-### Step 3: Sigmoid and Loss
+### Step 3: Sigmoid 和 Loss
 
 ```python
 import math
@@ -205,7 +205,7 @@ def sigmoid(self):
     return out
 ```
 
-Sigmoid derivative: sigmoid(x) * (1 - sigmoid(x)). We computed sigmoid(x) = s during the forward pass. Reuse it. No extra work.
+Sigmoid derivative: sigmoid(x) * (1 - sigmoid(x)). We computed sigmoid(x) = s during forward pass. Reuse it. No extra work.
 
 ```python
 def mse_loss(predicted, target):
@@ -213,11 +213,11 @@ def mse_loss(predicted, target):
     return diff * diff
 ```
 
-均方误差 for a single output: (predicted - target)^2. We express subtraction as addition with a negated Value.
+MSE 为了 single 输出: (predicted - target)^2. We express subtraction 作为 addition 使用 negated Value.
 
 ### Step 4: Backward Pass
 
-Topological sort ensures we process nodes in the right order -- a node's 梯度 is fully accumulated before we propagate through it.
+Topological sort ensures we process 节点 在 right order -- 节点's gradient 是 fully accumulated before we propagate through it.
 
 ```python
 def backward(self):
@@ -237,9 +237,9 @@ def backward(self):
         v._backward()
 ```
 
-Start at the loss (梯度 = 1.0, since dL/dL = 1). Walk backward through the sorted graph. Each node's `_backward` pushes 梯度s to its children.
+Start 在 loss (gradient = 1.0, since dL/dL = 1). Walk backward through sorted graph. Each 节点's `_backward` pushes gradients 到 its children.
 
-### Step 5: 层 and Network
+### Step 5: 层 和 Network
 
 ```python
 import random
@@ -247,18 +247,18 @@ import random
 class Neuron:
     def __init__(self, n_inputs):
         scale = (2.0 / n_inputs) ** 0.5
-        self.权重s = [Value(random.uniform(-scale, scale)) for _ in range(n_inputs)]
-        self.偏置 = Value(0.0)
+        self.weights = [Value(random.uniform(-scale, scale)) for _ in range(n_inputs)]
+        self.bias = Value(0.0)
 
     def __call__(self, x):
-        act = sum((wi * xi for wi, xi in zip(self.权重s, x)), self.偏置)
+        act = sum((wi * xi for wi, xi in zip(self.weights, x)), self.bias)
         return act.sigmoid()
 
     def parameters(self):
-        return self.权重s + [self.偏置]
+        return self.weights + [self.bias]
 
 
-class 层:
+class Layer:
     def __init__(self, n_inputs, n_outputs):
         self.neurons = [Neuron(n_inputs) for _ in range(n_outputs)]
 
@@ -275,21 +275,21 @@ class 层:
 
 class Network:
     def __init__(self, sizes):
-        self.层s = []
+        self.layers = []
         for i in range(len(sizes) - 1):
-            self.层s.append(层(sizes[i], sizes[i + 1]))
+            self.layers.append(Layer(sizes[i], sizes[i + 1]))
 
     def __call__(self, x):
-        for 层 in self.层s:
-            x = 层(x)
+        for layer in self.layers:
+            x = layer(x)
             if not isinstance(x, list):
                 x = [x]
         return x[0] if len(x) == 1 else x
 
     def parameters(self):
         params = []
-        for 层 in self.层s:
-            params.extend(层.parameters())
+        for layer in self.layers:
+            params.extend(layer.parameters())
         return params
 
     def zero_grad(self):
@@ -297,9 +297,9 @@ class Network:
             p.grad = 0.0
 ```
 
-A Neuron takes inputs, computes 权重ed sum + 偏置, and applies sigmoid. 权重 initialization scales by sqrt(2/n_inputs) to prevent sigmoid saturation in deeper networks. A 层 is a list of Neurons. A Network is a list of 层s. The `parameters()` method collects all learnable Values so we can update them.
+神经元 takes 输入, computes weighted sum + 偏置, 和 applies sigmoid. 权重 initialization scales 通过 sqrt(2/n_inputs) 到 prevent sigmoid saturation 在 deeper networks. 层 是 list 的 Neurons. Network 是 list 的 Layers. `参数()` method collects all learnable Values so we can update them.
 
-### Step 6: Train on XOR
+### Step 6: Train 在 XOR
 
 ```python
 random.seed(42)
@@ -338,11 +338,11 @@ for inputs, target in xor_data:
     print(f"  {inputs} -> {pred.data:.4f} (expected {target})")
 ```
 
-Watch the loss decrease. From random predictions to correct XOR outputs, driven entirely by 反向传播 computing 梯度s and nudging 权重s in the right direction.
+Watch loss decrease. From random predictions 到 correct XOR 输出, driven entirely 通过 反向传播 computing gradients 和 nudging 权重 在 right direction.
 
-### Step 7: Circle Classification
+### Step 7: Circle 分类
 
-In Lesson 02, you hand-tuned 权重s for circle classification. Now let the network learn them.
+In Lesson 02, you hand-tuned 权重 为了 circle 分类. Now let network learn them.
 
 ```python
 random.seed(7)
@@ -386,13 +386,13 @@ for epoch in range(2000):
         print(f"Epoch {epoch:4d} | Loss: {total_loss_val:.4f} | Accuracy: {accuracy:.1f}%")
 ```
 
-We use online SGD here -- update 权重s after each sample instead of accumulating the full 批次. This breaks symmetry faster and avoids sigmoid saturation on the full loss landscape. Shuffling the data each epoch prevents the network from memorizing the order.
+We use online SGD here -- update 权重 after each sample instead 的 accumulating full 批次. This breaks symmetry faster 和 avoids sigmoid saturation 在 full loss landscape. Shuffling 数据 each 轮次 prevents network 从 memorizing order.
 
-No hand-tuning. The network discovers the circular decision boundary on its own. That's the power of 反向传播: you define the architecture, the 损失函数, and the data. The algorithm figures out the 权重s.
+No hand-tuning. network discovers circular decision boundary 在 its own. That's power 的 反向传播: you define architecture, 损失函数, 和 数据. 算法 figures out 权重.
 
 ## Use It
 
-PyTorch does everything above in a few lines. The core idea is identical -- 自动微分 builds a 计算图 during the forward pass and traces it backward to compute 梯度s.
+PyTorch does everything above 在 few lines. core idea 是 identical -- autograd builds computational graph during forward pass 和 traces it backward 到 compute gradients.
 
 ```python
 import torch
@@ -404,8 +404,8 @@ model = nn.Sequential(
     nn.Linear(4, 1),
     nn.Sigmoid(),
 )
-优化器 = torch.optim.SGD(model.parameters(), lr=1.0)
-criterion = nn.均方误差Loss()
+optimizer = torch.optim.SGD(model.parameters(), lr=1.0)
+criterion = nn.MSELoss()
 
 X = torch.tensor([[0,0],[0,1],[1,0],[1,1]], dtype=torch.float32)
 y = torch.tensor([[0],[1],[1],[0]], dtype=torch.float32)
@@ -413,9 +413,9 @@ y = torch.tensor([[0],[1],[1],[0]], dtype=torch.float32)
 for epoch in range(1000):
     pred = model(X)
     loss = criterion(pred, y)
-    优化器.zero_grad()
+    optimizer.zero_grad()
     loss.backward()
-    优化器.step()
+    optimizer.step()
 
 print("PyTorch XOR Results:")
 with torch.no_grad():
@@ -424,43 +424,43 @@ with torch.no_grad():
         print(f"  {X[i].tolist()} -> {pred.item():.4f} (expected {y[i].item()})")
 ```
 
-`loss.backward()` is your `total_loss.backward()`. `优化器.step()` is your manual `p.data -= lr * p.grad`. `优化器.zero_grad()` is your `net.zero_grad()`. Same algorithm, industrial-strength implementation. PyTorch handles GPU acceleration, mixed precision, 梯度 checkpointing, and hundreds of 层 types. But the backward pass is the same 链式法则 applied to the same 计算图.
+`loss.backward()` 是 your `total_loss.backward()`. `优化器.step()` 是 your manual `p.数据 -= lr * p.grad`. `优化器.zero_grad()` 是 your `net.zero_grad()`. Same 算法, industrial-strength implementation. PyTorch handles GPU acceleration, mixed 精确率, gradient checkpointing, 和 hundreds 的 层 types. But backward pass 是 same chain rule applied 到 same computational graph.
 
-Training runs the forward pass, then the backward pass, then updates 权重s. Inference runs only the forward pass. No 梯度s, no updates. This distinction matters because inference is what happens in production. When you call an API like Claude or GPT, you're running inference -- your prompt flows forward through the network, and tokens come out the other end. No 权重s change. Understanding backprop matters because it shaped every 权重 in that network.
+训练 runs forward pass, then backward pass, then updates 权重. Inference runs only forward pass. No gradients, no updates. This distinction matters because inference 是 what happens 在 production. When you call API like Claude 或 GPT, you're running inference -- your prompt flows forward through network, 和 tokens come out other end. No 权重 change. Understanding backprop matters because it shaped every 权重 在 network.
 
 ## Ship It
 
 This lesson produces:
-- `outputs/prompt-梯度-debugger.md` -- a reusable prompt for diagnosing 梯度 problems (vanishing, exploding, NaN) in any 神经网络
+- `输出/prompt-gradient-debugger.md` -- reusable prompt 为了 diagnosing gradient problems (vanishing, exploding, NaN) 在 any 神经网络
 
 ## Exercises
 
-1. Add a `__sub__` method to the Value class (a - b = a + (-1 * b)). Then implement a `__neg__` method. Verify that the 梯度s are correct by comparing with manual calculation for a simple expression like (a - b)^2.
+1. Add `__sub__` method 到 Value class ( - b = + (-1 * b)). Then implement `__neg__` method. Verify gradients 是 correct 通过 comparing 使用 manual calculation 为了 simple expression like ( - b)^2.
 
-2. Add a `relu` method to Value (output max(0, x), derivative is 1 if x > 0, else 0). Replace sigmoid with relu in the hidden 层s and train on XOR again. Compare 收敛 speed. You should see faster training -- this previews Lesson 04.
+2. Add `relu` method 到 Value (输出 max(0, x), derivative 是 1 if x > 0, else 0). Replace sigmoid 使用 relu 在 hidden 层 和 train 在 XOR again. Compare 收敛 speed. 你应该 see faster 训练 -- 这个 previews Lesson 04.
 
-3. Implement a `__pow__` method on Value for integer powers. Use it to replace `mse_loss` with a proper `(predicted - target) ** 2` expression. Verify 梯度s match the original implementation.
+3. Implement `__pow__` method 在 Value 为了 integer powers. Use it 到 replace `mse_loss` 使用 proper `(predicted - target) ** 2` expression. Verify gradients match original implementation.
 
-4. Add 梯度 clipping to the training loop: after calling `backward()`, clip all 梯度s to [-1, 1]. Train a deeper network (4+ 层s with sigmoid) and compare loss curves with and without clipping. This is your first defense against exploding 梯度s.
+4. Add gradient clipping 到 训练 loop: after calling `backward()`, clip all gradients 到 [-1, 1]. Train deeper network (4+ 层 使用 sigmoid) 和 compare loss curves 使用 和 without clipping. 这是 your first defense against exploding gradients.
 
-5. Build a visualization: after training on XOR, print the 梯度 of every parameter in the network. Identify which 层 has the smallest 梯度s. This demonstrates the vanishing 梯度 problem you read about in the Concept section.
+5. Build visualization: after 训练 在 XOR, print gradient 的 every 参数 在 network. Identify which 层 has smallest gradients. This demonstrates vanishing gradient problem you read about 在 Concept section.
 
 ## Key Terms
 
 | Term | What people say | What it actually means |
 |------|----------------|----------------------|
-| 反向传播 | "The network learns" | An algorithm that computes dL/dw for every 权重 by applying the 链式法则 backward through the 计算图 |
-| Computational graph | "The network structure" | A directed acyclic graph where nodes are operations and edges carry values (forward) and 梯度s (backward) |
-| Chain rule | "Multiply the derivatives" | If y = f(g(x)), then dy/dx = f'(g(x)) * g'(x) -- the mathematical foundation of 反向传播 |
-| 梯度 | "The direction of steepest ascent" | The partial derivative of the loss with respect to a parameter -- tells you how to change that parameter to reduce the loss |
-| Vanishing 梯度 | "Deep networks don't learn" | 梯度s shrink exponentially as they propagate through 层s with saturating activations like sigmoid |
-| Forward pass | "Running the network" | Computing the output from inputs by sequentially applying each 层's operations and storing intermediate values |
-| Backward pass | "Computing 梯度s" | Traversing the 计算图 in reverse, accumulating 梯度s at each node using the 链式法则 |
-| Learning rate | "How fast it learns" | A scalar that controls the step size when updating 权重s: w_new = w_old - lr * 梯度 |
-| Topological sort | "The right order" | An ordering of graph nodes where each node appears after all nodes it depends on -- ensures 梯度s are fully accumulated before propagation |
-| 自动微分 | "Automatic differentiation" | A system that builds 计算图s during forward computation and automatically computes 梯度s -- what PyTorch's engine does |
+| 反向传播 | " network learns" | 算法 computes dL/dw 为了 every 权重 通过 applying chain rule backward through computational graph |
+| Computational graph | " network structure" | directed acyclic graph where 节点 是 operations 和 edges carry values (forward) 和 gradients (backward) |
+| Chain rule | "Multiply derivatives" | If y = f(g(x)), then dy/dx = f'(g(x)) * g'(x) -- mathematical foundation 的 反向传播 |
+| Gradient | " direction 的 steepest ascent" | partial derivative 的 loss 使用 respect 到 参数 -- tells you how 到 change 参数 到 reduce loss |
+| Vanishing gradient | "Deep networks don't learn" | Gradients shrink exponentially 作为 they propagate through 层 使用 saturating activations like sigmoid |
+| Forward pass | "Running network" | Computing 输出 从 输入 通过 sequentially applying each 层's operations 和 storing intermediate values |
+| Backward pass | "Computing gradients" | Traversing computational graph 在 reverse, accumulating gradients 在 each 节点 using chain rule |
+| Learning rate | "How fast it learns" | scalar controls step size when updating 权重: w_new = w_old - lr * gradient |
+| Topological sort | " right order" | ordering 的 graph 节点 where each 节点 appears after all 节点 it depends 在 -- ensures gradients 是 fully accumulated before propagation |
+| Autograd | "Automatic differentiation" | system builds computational graphs during forward computation 和 automatically computes gradients -- what PyTorch's engine does |
 
 ## Further Reading
 
-- Rumelhart, Hinton & Williams, "Learning representations by back-propagating errors" (1986) -- the paper that made 反向传播 mainstream and unlocked multi-层 network training
-- 3Blue1Brown, "神经网络s" series (https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) -- the best visual explanation of 反向传播 and 梯度 flow through networks
+- Rumelhart, Hinton & Williams, "Learning representations 通过 back-propagating errors" (1986) -- paper made 反向传播 mainstream 和 unlocked multi-层 network 训练
+- 3Blue1Brown, "Neural Networks" series (https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) -- best visual explanation 的 反向传播 和 gradient flow through networks
