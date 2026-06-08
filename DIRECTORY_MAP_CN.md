@@ -237,3 +237,26 @@
 | `15-streaming-speech-to-speech-moshi-hibiki` | 15 流式语音转语音Moshi/Hibiki |
 | `16-anti-spoofing-audio-watermarking` | 16 反欺骗与音频水印 |
 | `17-audio-evaluation-metrics` | 17 音频评估指标 |
+
+---
+
+## 阶段7：Transformers深度解析 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-why-transformers` | 01 为什么需要Transformer |
+| `02-self-attention-from-scratch` | 02 从零实现自注意力 |
+| `03-multi-head-attention` | 03 多头注意力 |
+| `04-positional-encoding` | 04 位置编码 |
+| `05-full-transformer` | 05 完整Transformer |
+| `06-bert-masked-language-modeling` | 06 BERT掩码语言建模 |
+| `07-gpt-causal-language-modeling` | 07 GPT因果语言建模 |
+| `08-t5-bart-encoder-decoder` | 08 T5/BART编码器-解码器 |
+| `09-vision-transformers` | 09 视觉Transformer |
+| `10-audio-transformers-whisper` | 10 音频Transformer与Whisper |
+| `11-mixture-of-experts` | 11 专家混合MoE |
+| `12-kv-cache-flash-attention` | 12 KV Cache与Flash Attention |
+| `13-scaling-laws` | 13 缩放定律 |
+| `14-build-a-transformer-capstone` | 14 构建Transformer顶点项目 |
+| `15-attention-variants` | 15 注意力变体 |
+| `16-speculative-decoding` | 16 推测解码 |

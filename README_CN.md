@@ -178,6 +178,27 @@
 | 16 反欺骗与音频水印 (16-anti-spoofing-audio-watermarking) | [📄 中文文档](phases/06-speech-and-audio/16-anti-spoofing-audio-watermarking/docs/zh.md) |
 | 17 音频评估指标 (17-audio-evaluation-metrics) | [📄 中文文档](phases/06-speech-and-audio/17-audio-evaluation-metrics/docs/zh.md) |
 
+### ✅ 阶段7：Transformers深度解析（16门课程全部完成）
+
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 为什么需要Transformer (01-why-transformers) | [📄 中文文档](phases/07-transformers-deep-dive/01-why-transformers/docs/zh.md) |
+| 02 从零实现自注意力 (02-self-attention-from-scratch) | [📄 中文文档](phases/07-transformers-deep-dive/02-self-attention-from-scratch/docs/zh.md) |
+| 03 多头注意力 (03-multi-head-attention) | [📄 中文文档](phases/07-transformers-deep-dive/03-multi-head-attention/docs/zh.md) |
+| 04 位置编码 (04-positional-encoding) | [📄 中文文档](phases/07-transformers-deep-dive/04-positional-encoding/docs/zh.md) |
+| 05 完整Transformer (05-full-transformer) | [📄 中文文档](phases/07-transformers-deep-dive/05-full-transformer/docs/zh.md) |
+| 06 BERT掩码语言建模 (06-bert-masked-language-modeling) | [📄 中文文档](phases/07-transformers-deep-dive/06-bert-masked-language-modeling/docs/zh.md) |
+| 07 GPT因果语言建模 (07-gpt-causal-language-modeling) | [📄 中文文档](phases/07-transformers-deep-dive/07-gpt-causal-language-modeling/docs/zh.md) |
+| 08 T5/BART编码器-解码器 (08-t5-bart-encoder-decoder) | [📄 中文文档](phases/07-transformers-deep-dive/08-t5-bart-encoder-decoder/docs/zh.md) |
+| 09 视觉Transformer (09-vision-transformers) | [📄 中文文档](phases/07-transformers-deep-dive/09-vision-transformers/docs/zh.md) |
+| 10 音频Transformer与Whisper (10-audio-transformers-whisper) | [📄 中文文档](phases/07-transformers-deep-dive/10-audio-transformers-whisper/docs/zh.md) |
+| 11 专家混合MoE (11-mixture-of-experts) | [📄 中文文档](phases/07-transformers-deep-dive/11-mixture-of-experts/docs/zh.md) |
+| 12 KV Cache与Flash Attention (12-kv-cache-flash-attention) | [📄 中文文档](phases/07-transformers-deep-dive/12-kv-cache-flash-attention/docs/zh.md) |
+| 13 缩放定律 (13-scaling-laws) | [📄 中文文档](phases/07-transformers-deep-dive/13-scaling-laws/docs/zh.md) |
+| 14 构建Transformer顶点项目 (14-build-a-transformer-capstone) | [📄 中文文档](phases/07-transformers-deep-dive/14-build-a-transformer-capstone/docs/zh.md) |
+| 15 注意力变体 (15-attention-variants) | [📄 中文文档](phases/07-transformers-deep-dive/15-attention-variants/docs/zh.md) |
+| 16 推测解码 (16-speculative-decoding) | [📄 中文文档](phases/07-transformers-deep-dive/16-speculative-decoding/docs/zh.md) |
+
 ---
 
 <p align="center">
