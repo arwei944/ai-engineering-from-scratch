@@ -213,3 +213,27 @@
 ✅ **原仓库结构100%兼容**：不修改任何文件夹/文件名
 ✅ **零破坏风险**：原项目所有功能、脚本、链接完全正常工作
 ✅ **全中文体验**：通过映射表实现友好的中文显示
+
+---
+
+## 阶段6：语音与音频 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-audio-fundamentals` | 01 音频基础 |
+| `02-spectrograms-mel-features` | 02 语谱图与梅尔特征 |
+| `03-audio-classification` | 03 音频分类 |
+| `04-speech-recognition-asr` | 04 语音识别ASR |
+| `05-whisper-architecture-finetuning` | 05 Whisper架构与微调 |
+| `06-speaker-recognition-verification` | 06 说话人识别与验证 |
+| `07-text-to-speech` | 07 文本转语音TTS |
+| `08-voice-cloning-conversion` | 08 声音克隆与转换 |
+| `09-music-generation` | 09 音乐生成 |
+| `10-audio-language-models` | 10 音频语言模型 |
+| `11-real-time-audio-processing` | 11 实时音频处理 |
+| `12-voice-assistant-pipeline` | 12 语音助手流水线 |
+| `13-neural-audio-codecs` | 13 神经音频编解码器 |
+| `14-voice-activity-detection-turn-taking` | 14 语音活动检测与话轮转换 |
+| `15-streaming-speech-to-speech-moshi-hibiki` | 15 流式语音转语音Moshi/Hibiki |
+| `16-anti-spoofing-audio-watermarking` | 16 反欺骗与音频水印 |
+| `17-audio-evaluation-metrics` | 17 音频评估指标 |

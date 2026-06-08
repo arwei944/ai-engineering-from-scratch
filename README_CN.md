@@ -156,6 +156,28 @@
 | 28 长上下文评估 (28-long-context-evaluation) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/28-long-context-evaluation/docs/zh.md) |
 | 29 对话状态跟踪 (29-dialogue-state-tracking) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/29-dialogue-state-tracking/docs/zh.md) |
 
+### ✅ 阶段6：语音与音频（17门课程全部完成）
+
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 音频基础 (01-audio-fundamentals) | [📄 中文文档](phases/06-speech-and-audio/01-audio-fundamentals/docs/zh.md) |
+| 02 语谱图与梅尔特征 (02-spectrograms-mel-features) | [📄 中文文档](phases/06-speech-and-audio/02-spectrograms-mel-features/docs/zh.md) |
+| 03 音频分类 (03-audio-classification) | [📄 中文文档](phases/06-speech-and-audio/03-audio-classification/docs/zh.md) |
+| 04 语音识别ASR (04-speech-recognition-asr) | [📄 中文文档](phases/06-speech-and-audio/04-speech-recognition-asr/docs/zh.md) |
+| 05 Whisper架构与微调 (05-whisper-architecture-finetuning) | [📄 中文文档](phases/06-speech-and-audio/05-whisper-architecture-finetuning/docs/zh.md) |
+| 06 说话人识别与验证 (06-speaker-recognition-verification) | [📄 中文文档](phases/06-speech-and-audio/06-speaker-recognition-verification/docs/zh.md) |
+| 07 文本转语音TTS (07-text-to-speech) | [📄 中文文档](phases/06-speech-and-audio/07-text-to-speech/docs/zh.md) |
+| 08 声音克隆与转换 (08-voice-cloning-conversion) | [📄 中文文档](phases/06-speech-and-audio/08-voice-cloning-conversion/docs/zh.md) |
+| 09 音乐生成 (09-music-generation) | [📄 中文文档](phases/06-speech-and-audio/09-music-generation/docs/zh.md) |
+| 10 音频语言模型 (10-audio-language-models) | [📄 中文文档](phases/06-speech-and-audio/10-audio-language-models/docs/zh.md) |
+| 11 实时音频处理 (11-real-time-audio-processing) | [📄 中文文档](phases/06-speech-and-audio/11-real-time-audio-processing/docs/zh.md) |
+| 12 语音助手流水线 (12-voice-assistant-pipeline) | [📄 中文文档](phases/06-speech-and-audio/12-voice-assistant-pipeline/docs/zh.md) |
+| 13 神经音频编解码器 (13-neural-audio-codecs) | [📄 中文文档](phases/06-speech-and-audio/13-neural-audio-codecs/docs/zh.md) |
+| 14 语音活动检测与话轮转换 (14-voice-activity-detection-turn-taking) | [📄 中文文档](phases/06-speech-and-audio/14-voice-activity-detection-turn-taking/docs/zh.md) |
+| 15 流式语音转语音Moshi/Hibiki (15-streaming-speech-to-speech-moshi-hibiki) | [📄 中文文档](phases/06-speech-and-audio/15-streaming-speech-to-speech-moshi-hibiki/docs/zh.md) |
+| 16 反欺骗与音频水印 (16-anti-spoofing-audio-watermarking) | [📄 中文文档](phases/06-speech-and-audio/16-anti-spoofing-audio-watermarking/docs/zh.md) |
+| 17 音频评估指标 (17-audio-evaluation-metrics) | [📄 中文文档](phases/06-speech-and-audio/17-audio-evaluation-metrics/docs/zh.md) |
+
 ---
 
 <p align="center">
