@@ -12,8 +12,8 @@
 | `01-math-foundations` | 阶段1：数学基础 |
 | `02-ml-fundamentals` | 阶段2：机器学习基础 |
 | `03-deep-learning-core` | 阶段3：深度学习核心 |
-| `04-vision` | 阶段4：计算机视觉 |
-| `05-nlp` | 阶段5：自然语言处理 |
+| `04-computer-vision` | 阶段4：计算机视觉 |
+| `05-nlp-foundations-to-advanced` | 阶段5：NLP自然语言处理 |
 | `06-speech-and-audio` | 阶段6：语音与音频 |
 | `07-transformers` | 阶段7：Transformer架构 |
 | `08-genai` | 阶段8：生成式AI |
@@ -79,25 +79,7 @@
 
 ---
 
-## 阶段3：深度学习核心 课程映射
-
-| 原英文目录名 | 中文显示名称 |
-|-------------|-------------|
-| `01-the-perceptron` | 01 感知机 |
-| `02-multi-layer-networks` | 02 多层神经网络 |
-| `03-backpropagation` | 03 反向传播 |
-| `04-activation-functions` | 04 激活函数 |
-| `05-loss-functions` | 05 损失函数 |
-| `06-optimizers` | 06 优化器 |
-| `07-regularization` | 07 深度学习正则化 |
-| `08-weight-initialization` | 08 权重初始化 |
-| `09-learning-rate-schedules` | 09 学习率调度 |
-| `10-mini-framework` | 10 构建迷你框架 |
-| `11-intro-to-pytorch` | 11 PyTorch入门 |
-| `12-intro-to-jax` | 12 JAX入门 |
-| `13-debugging-neural-networks` | 13 神经网络调试 |
-
----
+## 阶段2：机器学习基础 课程映射
 
 | 原英文目录名 | 中文显示名称 |
 |-------------|-------------|
@@ -119,6 +101,97 @@
 | `16-anomaly-detection` | 16 异常检测 |
 | `17-imbalanced-data` | 17 不平衡数据处理 |
 | `18-feature-selection` | 18 特征选择 |
+
+---
+
+## 阶段3：深度学习核心 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-the-perceptron` | 01 感知机 |
+| `02-multi-layer-networks` | 02 多层神经网络 |
+| `03-backpropagation` | 03 反向传播 |
+| `04-activation-functions` | 04 激活函数 |
+| `05-loss-functions` | 05 损失函数 |
+| `06-optimizers` | 06 优化器 |
+| `07-regularization` | 07 深度学习正则化 |
+| `08-weight-initialization` | 08 权重初始化 |
+| `09-learning-rate-schedules` | 09 学习率调度 |
+| `10-mini-framework` | 10 构建迷你框架 |
+| `11-intro-to-pytorch` | 11 PyTorch入门 |
+| `12-intro-to-jax` | 12 JAX入门 |
+| `13-debugging-neural-networks` | 13 神经网络调试 |
+
+---
+
+## 阶段4：计算机视觉 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-image-fundamentals` | 01 图像基础 |
+| `02-convolutions-from-scratch` | 02 从零实现卷积 |
+| `03-cnns-lenet-to-resnet` | 03 CNN从LeNet到ResNet |
+| `04-image-classification` | 04 图像分类 |
+| `05-transfer-learning` | 05 迁移学习 |
+| `06-object-detection-yolo` | 06 目标检测YOLO |
+| `07-semantic-segmentation-unet` | 07 语义分割U-Net |
+| `08-instance-segmentation-mask-rcnn` | 08 实例分割Mask R-CNN |
+| `09-image-generation-gans` | 09 图像生成GAN |
+| `10-image-generation-diffusion` | 10 图像生成扩散模型 |
+| `11-stable-diffusion` | 11 Stable Diffusion |
+| `12-video-understanding` | 12 视频理解 |
+| `13-3d-vision-nerf` | 13 3D视觉NeRF |
+| `14-vision-transformers` | 14 视觉Transformer |
+| `15-real-time-edge` | 15 实时边缘计算 |
+| `16-vision-pipeline-capstone` | 16 视觉流水线顶点项目 |
+| `17-self-supervised-vision` | 17 自监督视觉 |
+| `18-open-vocab-clip` | 18 开放词汇CLIP |
+| `19-ocr-document-understanding` | 19 OCR文档理解 |
+| `20-image-retrieval-metric` | 20 图像检索度量学习 |
+| `21-keypoint-pose` | 21 关键点姿态估计 |
+| `22-3d-gaussian-splatting` | 22 3D高斯溅射 |
+| `23-diffusion-transformers-rectified-flow` | 23 扩散Transformer整流流 |
+| `24-sam3-open-vocab-segmentation` | 24 SAM3开放词汇分割 |
+| `25-vision-language-models` | 25 视觉语言模型 |
+| `26-monocular-depth` | 26 单目深度估计 |
+| `27-multi-object-tracking` | 27 多目标跟踪 |
+| `28-world-models-video-diffusion` | 28 世界模型视频扩散 |
+
+---
+
+## 阶段5：NLP自然语言处理 课程映射
+
+| 原英文目录名 | 中文显示名称 |
+|-------------|-------------|
+| `01-text-processing` | 01 文本处理 |
+| `02-bag-of-words-tfidf` | 02 词袋模型与TF-IDF |
+| `03-word-embeddings-word2vec` | 03 词嵌入Word2Vec |
+| `04-glove-fasttext-subword` | 04 GloVe与FastText子词 |
+| `05-sentiment-analysis` | 05 情感分析 |
+| `06-named-entity-recognition` | 06 命名实体识别 |
+| `07-pos-tagging-parsing` | 07 词性标注与句法分析 |
+| `08-cnns-rnns-for-text` | 08 文本CNN与RNN |
+| `09-sequence-to-sequence` | 09 序列到序列 |
+| `10-attention-mechanism` | 10 注意力机制 |
+| `11-machine-translation` | 11 机器翻译 |
+| `12-text-summarization` | 12 文本摘要 |
+| `13-question-answering` | 13 问答系统 |
+| `14-information-retrieval-search` | 14 信息检索与搜索 |
+| `15-topic-modeling` | 15 主题建模 |
+| `16-text-generation-pre-transformer` | 16 Transformer前文本生成 |
+| `17-chatbots-rule-to-neural` | 17 聊天机器人从规则到神经网络 |
+| `18-multilingual-nlp` | 18 多语言NLP |
+| `19-subword-tokenization` | 19 子词分词 |
+| `20-structured-outputs-constrained-decoding` | 20 结构化输出与约束解码 |
+| `21-nli-textual-entailment` | 21 自然语言推理与文本蕴含 |
+| `22-embedding-models-deep-dive` | 22 嵌入模型深度解析 |
+| `23-chunking-strategies-rag` | 23 RAG分块策略 |
+| `24-coreference-resolution` | 24 共指消解 |
+| `25-entity-linking` | 25 实体链接 |
+| `26-relation-extraction-kg` | 26 关系抽取与知识图谱 |
+| `27-llm-evaluation-frameworks` | 27 LLM评估框架 |
+| `28-long-context-evaluation` | 28 长上下文评估 |
+| `29-dialogue-state-tracking` | 29 对话状态跟踪 |
 
 ---
 

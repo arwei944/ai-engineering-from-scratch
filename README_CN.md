@@ -123,6 +123,39 @@
 | 27 多目标跟踪 (27-multi-object-tracking) | [📄 中文文档](phases/04-computer-vision/27-multi-object-tracking/docs/zh.md) |
 | 28 世界模型视频扩散 (28-world-models-video-diffusion) | [📄 中文文档](phases/04-computer-vision/28-world-models-video-diffusion/docs/zh.md) |
 
+### ✅ 阶段5：NLP自然语言处理（29门课程全部完成）
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 文本处理 (01-text-processing) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/01-text-processing/docs/zh.md) |
+| 02 词袋模型与TF-IDF (02-bag-of-words-tfidf) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/02-bag-of-words-tfidf/docs/zh.md) |
+| 03 词嵌入Word2Vec (03-word-embeddings-word2vec) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/03-word-embeddings-word2vec/docs/zh.md) |
+| 04 GloVe与FastText子词 (04-glove-fasttext-subword) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/04-glove-fasttext-subword/docs/zh.md) |
+| 05 情感分析 (05-sentiment-analysis) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/05-sentiment-analysis/docs/zh.md) |
+| 06 命名实体识别 (06-named-entity-recognition) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/06-named-entity-recognition/docs/zh.md) |
+| 07 词性标注与句法分析 (07-pos-tagging-parsing) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/07-pos-tagging-parsing/docs/zh.md) |
+| 08 文本CNN与RNN (08-cnns-rnns-for-text) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/08-cnns-rnns-for-text/docs/zh.md) |
+| 09 序列到序列 (09-sequence-to-sequence) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/09-sequence-to-sequence/docs/zh.md) |
+| 10 注意力机制 (10-attention-mechanism) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/10-attention-mechanism/docs/zh.md) |
+| 11 机器翻译 (11-machine-translation) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/11-machine-translation/docs/zh.md) |
+| 12 文本摘要 (12-text-summarization) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/12-text-summarization/docs/zh.md) |
+| 13 问答系统 (13-question-answering) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/13-question-answering/docs/zh.md) |
+| 14 信息检索与搜索 (14-information-retrieval-search) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/14-information-retrieval-search/docs/zh.md) |
+| 15 主题建模 (15-topic-modeling) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/15-topic-modeling/docs/zh.md) |
+| 16 Transformer前文本生成 (16-text-generation-pre-transformer) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/16-text-generation-pre-transformer/docs/zh.md) |
+| 17 聊天机器人从规则到神经网络 (17-chatbots-rule-to-neural) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/17-chatbots-rule-to-neural/docs/zh.md) |
+| 18 多语言NLP (18-multilingual-nlp) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/18-multilingual-nlp/docs/zh.md) |
+| 19 子词分词 (19-subword-tokenization) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/19-subword-tokenization/docs/zh.md) |
+| 20 结构化输出与约束解码 (20-structured-outputs-constrained-decoding) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/20-structured-outputs-constrained-decoding/docs/zh.md) |
+| 21 自然语言推理与文本蕴含 (21-nli-textual-entailment) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/21-nli-textual-entailment/docs/zh.md) |
+| 22 嵌入模型深度解析 (22-embedding-models-deep-dive) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/22-embedding-models-deep-dive/docs/zh.md) |
+| 23 RAG分块策略 (23-chunking-strategies-rag) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/23-chunking-strategies-rag/docs/zh.md) |
+| 24 共指消解 (24-coreference-resolution) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/24-coreference-resolution/docs/zh.md) |
+| 25 实体链接 (25-entity-linking) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/25-entity-linking/docs/zh.md) |
+| 26 关系抽取与知识图谱 (26-relation-extraction-kg) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/26-relation-extraction-kg/docs/zh.md) |
+| 27 LLM评估框架 (27-llm-evaluation-frameworks) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/27-llm-evaluation-frameworks/docs/zh.md) |
+| 28 长上下文评估 (28-long-context-evaluation) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/28-long-context-evaluation/docs/zh.md) |
+| 29 对话状态跟踪 (29-dialogue-state-tracking) | [📄 中文文档](phases/05-nlp-foundations-to-advanced/29-dialogue-state-tracking/docs/zh.md) |
+
 ---
 
 <p align="center">
