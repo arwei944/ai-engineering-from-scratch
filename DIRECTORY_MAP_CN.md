@@ -301,3 +301,32 @@
 | `10-multi-agent-rl` | 10 多智能体强化学习 |
 | `11-sim-to-real-transfer` | 11 仿真到现实迁移 |
 | `12-rl-for-games` | 12 游戏强化学习 |
+
+## 阶段10：从零构建LLM（10-llms-from-scratch）
+
+| 英文目录名 | 中文名称 |
+|-----------|---------|
+| 01-tokenizers | 分词器 |
+| 02-building-a-tokenizer | 构建分词器 |
+| 03-data-pipelines | 数据流水线 |
+| 04-pre-training-mini-gpt | Mini-GPT预训练 |
+| 05-scaling-distributed | 缩放与分布式训练 |
+| 06-instruction-tuning-sft | 指令微调SFT |
+| 07-rlhf | RLHF基于人类反馈的强化学习 |
+| 08-dpo | DPO直接偏好优化 |
+| 09-constitutional-ai-self-improvement | 宪法AI与自我改进 |
+| 10-evaluation | LLM评估 |
+| 11-quantization | 量化 |
+| 12-inference-optimization | 推理优化 |
+| 13-building-complete-llm-pipeline | 构建完整LLM流水线 |
+| 14-open-models-architecture-walkthroughs | 开源模型架构解析 |
+| 15-speculative-decoding-eagle3 | 推测解码EAGLE3 |
+| 16-differential-attention-v2 | 差分注意力V2 |
+| 17-native-sparse-attention | 原生稀疏注意力 |
+| 18-multi-token-prediction | 多词元预测 |
+| 19-dualpipe-parallelism | DualPipe并行 |
+| 20-deepseek-v3-walkthrough | DeepSeek V3架构解析 |
+| 21-jamba-hybrid-ssm-transformer | Jamba混合SSM-Transformer |
+| 22-async-hogwild-inference | 异步Hogwild推理 |
+| 25-speculative-decoding | 推测解码 |
+| 34-gradient-checkpointing | 梯度检查点 |

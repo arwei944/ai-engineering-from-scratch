@@ -236,6 +236,35 @@
 | 11 仿真到现实迁移 (11-sim-to-real-transfer) | [📄 中文文档](phases/09-reinforcement-learning/11-sim-to-real-transfer/docs/zh.md) |
 | 12 游戏强化学习 (12-rl-for-games) | [📄 中文文档](phases/09-reinforcement-learning/12-rl-for-games/docs/zh.md) |
 
+### ✅ 阶段10：从零构建LLM（24门课程全部完成）
+
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 分词器 (01-tokenizers) | [📄 中文文档](phases/10-llms-from-scratch/01-tokenizers/docs/zh.md) |
+| 02 构建分词器 (02-building-a-tokenizer) | [📄 中文文档](phases/10-llms-from-scratch/02-building-a-tokenizer/docs/zh.md) |
+| 03 数据流水线 (03-data-pipelines) | [📄 中文文档](phases/10-llms-from-scratch/03-data-pipelines/docs/zh.md) |
+| 04 Mini-GPT预训练 (04-pre-training-mini-gpt) | [📄 中文文档](phases/10-llms-from-scratch/04-pre-training-mini-gpt/docs/zh.md) |
+| 05 缩放与分布式训练 (05-scaling-distributed) | [📄 中文文档](phases/10-llms-from-scratch/05-scaling-distributed/docs/zh.md) |
+| 06 指令微调SFT (06-instruction-tuning-sft) | [📄 中文文档](phases/10-llms-from-scratch/06-instruction-tuning-sft/docs/zh.md) |
+| 07 RLHF基于人类反馈的强化学习 (07-rlhf) | [📄 中文文档](phases/10-llms-from-scratch/07-rlhf/docs/zh.md) |
+| 08 DPO直接偏好优化 (08-dpo) | [📄 中文文档](phases/10-llms-from-scratch/08-dpo/docs/zh.md) |
+| 09 宪法AI与自我改进 (09-constitutional-ai-self-improvement) | [📄 中文文档](phases/10-llms-from-scratch/09-constitutional-ai-self-improvement/docs/zh.md) |
+| 10 LLM评估 (10-evaluation) | [📄 中文文档](phases/10-llms-from-scratch/10-evaluation/docs/zh.md) |
+| 11 量化 (11-quantization) | [📄 中文文档](phases/10-llms-from-scratch/11-quantization/docs/zh.md) |
+| 12 推理优化 (12-inference-optimization) | [📄 中文文档](phases/10-llms-from-scratch/12-inference-optimization/docs/zh.md) |
+| 13 构建完整LLM流水线 (13-building-complete-llm-pipeline) | [📄 中文文档](phases/10-llms-from-scratch/13-building-complete-llm-pipeline/docs/zh.md) |
+| 14 开源模型架构解析 (14-open-models-architecture-walkthroughs) | [📄 中文文档](phases/10-llms-from-scratch/14-open-models-architecture-walkthroughs/docs/zh.md) |
+| 15 推测解码EAGLE3 (15-speculative-decoding-eagle3) | [📄 中文文档](phases/10-llms-from-scratch/15-speculative-decoding-eagle3/docs/zh.md) |
+| 16 差分注意力V2 (16-differential-attention-v2) | [📄 中文文档](phases/10-llms-from-scratch/16-differential-attention-v2/docs/zh.md) |
+| 17 原生稀疏注意力 (17-native-sparse-attention) | [📄 中文文档](phases/10-llms-from-scratch/17-native-sparse-attention/docs/zh.md) |
+| 18 多词元预测 (18-multi-token-prediction) | [📄 中文文档](phases/10-llms-from-scratch/18-multi-token-prediction/docs/zh.md) |
+| 19 DualPipe并行 (19-dualpipe-parallelism) | [📄 中文文档](phases/10-llms-from-scratch/19-dualpipe-parallelism/docs/zh.md) |
+| 20 DeepSeek V3架构解析 (20-deepseek-v3-walkthrough) | [📄 中文文档](phases/10-llms-from-scratch/20-deepseek-v3-walkthrough/docs/zh.md) |
+| 21 Jamba混合SSM-Transformer (21-jamba-hybrid-ssm-transformer) | [📄 中文文档](phases/10-llms-from-scratch/21-jamba-hybrid-ssm-transformer/docs/zh.md) |
+| 22 异步Hogwild推理 (22-async-hogwild-inference) | [📄 中文文档](phases/10-llms-from-scratch/22-async-hogwild-inference/docs/zh.md) |
+| 23 推测解码 (25-speculative-decoding) | [📄 中文文档](phases/10-llms-from-scratch/25-speculative-decoding/docs/zh.md) |
+| 24 梯度检查点 (34-gradient-checkpointing) | [📄 中文文档](phases/10-llms-from-scratch/34-gradient-checkpointing/docs/zh.md) |
+
 ---
 
 <p align="center">
