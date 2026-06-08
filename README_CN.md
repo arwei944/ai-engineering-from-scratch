@@ -4,7 +4,7 @@
 
 ---
 
-## 🇨🇳 中文翻译导航（已完成34门课程）
+## 🇨🇳 中文翻译导航（已完成93门课程）
 
 > **文件结构说明**：本项目采用"原英文完整保留，新增独立中文文件"的汉化策略
 > - 原英文文件：`docs/en.md`（完整保留，便于对照学习）
@@ -52,22 +52,7 @@
 | 21 图论 (21-graph-theory) | [📄 中文文档](phases/01-math-foundations/21-graph-theory/docs/zh.md) |
 | 22 随机过程 (22-stochastic-processes) | [📄 中文文档](phases/01-math-foundations/22-stochastic-processes/docs/zh.md) |
 
-### ✅ 阶段3：深度学习核心（13门课程全部完成）
-| 课程 | 中文文档链接 |
-|------|-------------|
-| 01 感知机 (01-the-perceptron) | [📄 中文文档](phases/03-deep-learning-core/01-the-perceptron/docs/zh.md) |
-| 02 多层神经网络 (02-multi-layer-networks) | [📄 中文文档](phases/03-deep-learning-core/02-multi-layer-networks/docs/zh.md) |
-| 03 反向传播 (03-backpropagation) | [📄 中文文档](phases/03-deep-learning-core/03-backpropagation/docs/zh.md) |
-| 04 激活函数 (04-activation-functions) | [📄 中文文档](phases/03-deep-learning-core/04-activation-functions/docs/zh.md) |
-| 05 损失函数 (05-loss-functions) | [📄 中文文档](phases/03-deep-learning-core/05-loss-functions/docs/zh.md) |
-| 06 优化器 (06-optimizers) | [📄 中文文档](phases/03-deep-learning-core/06-optimizers/docs/zh.md) |
-| 07 深度学习正则化 (07-regularization) | [📄 中文文档](phases/03-deep-learning-core/07-regularization/docs/zh.md) |
-| 08 权重初始化 (08-weight-initialization) | [📄 中文文档](phases/03-deep-learning-core/08-weight-initialization/docs/zh.md) |
-| 09 学习率调度 (09-learning-rate-schedules) | [📄 中文文档](phases/03-deep-learning-core/09-learning-rate-schedules/docs/zh.md) |
-| 10 构建迷你框架 (10-mini-framework) | [📄 中文文档](phases/03-deep-learning-core/10-mini-framework/docs/zh.md) |
-| 11 PyTorch入门 (11-intro-to-pytorch) | [📄 中文文档](phases/03-deep-learning-core/11-intro-to-pytorch/docs/zh.md) |
-| 12 JAX入门 (12-intro-to-jax) | [📄 中文文档](phases/03-deep-learning-core/12-intro-to-jax/docs/zh.md) |
-| 13 神经网络调试 (13-debugging-neural-networks) | [📄 中文文档](phases/03-deep-learning-core/13-debugging-neural-networks/docs/zh.md) |
+### ✅ 阶段2：机器学习基础（18门课程全部完成）
 | 课程 | 中文文档链接 |
 |------|-------------|
 | 01 什么是机器学习 (01-what-is-machine-learning) | [📄 中文文档](phases/02-ml-fundamentals/01-what-is-machine-learning/docs/zh.md) |
@@ -88,6 +73,55 @@
 | 16 异常检测 (16-anomaly-detection) | [📄 中文文档](phases/02-ml-fundamentals/16-anomaly-detection/docs/zh.md) |
 | 17 不平衡数据处理 (17-imbalanced-data) | [📄 中文文档](phases/02-ml-fundamentals/17-imbalanced-data/docs/zh.md) |
 | 18 特征选择 (18-feature-selection) | [📄 中文文档](phases/02-ml-fundamentals/18-feature-selection/docs/zh.md) |
+
+### ✅ 阶段3：深度学习核心（13门课程全部完成）
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 感知机 (01-the-perceptron) | [📄 中文文档](phases/03-deep-learning-core/01-the-perceptron/docs/zh.md) |
+| 02 多层神经网络 (02-multi-layer-networks) | [📄 中文文档](phases/03-deep-learning-core/02-multi-layer-networks/docs/zh.md) |
+| 03 反向传播 (03-backpropagation) | [📄 中文文档](phases/03-deep-learning-core/03-backpropagation/docs/zh.md) |
+| 04 激活函数 (04-activation-functions) | [📄 中文文档](phases/03-deep-learning-core/04-activation-functions/docs/zh.md) |
+| 05 损失函数 (05-loss-functions) | [📄 中文文档](phases/03-deep-learning-core/05-loss-functions/docs/zh.md) |
+| 06 优化器 (06-optimizers) | [📄 中文文档](phases/03-deep-learning-core/06-optimizers/docs/zh.md) |
+| 07 深度学习正则化 (07-regularization) | [📄 中文文档](phases/03-deep-learning-core/07-regularization/docs/zh.md) |
+| 08 权重初始化 (08-weight-initialization) | [📄 中文文档](phases/03-deep-learning-core/08-weight-initialization/docs/zh.md) |
+| 09 学习率调度 (09-learning-rate-schedules) | [📄 中文文档](phases/03-deep-learning-core/09-learning-rate-schedules/docs/zh.md) |
+| 10 构建迷你框架 (10-mini-framework) | [📄 中文文档](phases/03-deep-learning-core/10-mini-framework/docs/zh.md) |
+| 11 PyTorch入门 (11-intro-to-pytorch) | [📄 中文文档](phases/03-deep-learning-core/11-intro-to-pytorch/docs/zh.md) |
+| 12 JAX入门 (12-intro-to-jax) | [📄 中文文档](phases/03-deep-learning-core/12-intro-to-jax/docs/zh.md) |
+| 13 神经网络调试 (13-debugging-neural-networks) | [📄 中文文档](phases/03-deep-learning-core/13-debugging-neural-networks/docs/zh.md) |
+
+### ✅ 阶段4：计算机视觉（28门课程全部完成）
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 图像基础 (01-image-fundamentals) | [📄 中文文档](phases/04-computer-vision/01-image-fundamentals/docs/zh.md) |
+| 02 从零实现卷积 (02-convolutions-from-scratch) | [📄 中文文档](phases/04-computer-vision/02-convolutions-from-scratch/docs/zh.md) |
+| 03 CNN从LeNet到ResNet (03-cnns-lenet-to-resnet) | [📄 中文文档](phases/04-computer-vision/03-cnns-lenet-to-resnet/docs/zh.md) |
+| 04 图像分类 (04-image-classification) | [📄 中文文档](phases/04-computer-vision/04-image-classification/docs/zh.md) |
+| 05 迁移学习 (05-transfer-learning) | [📄 中文文档](phases/04-computer-vision/05-transfer-learning/docs/zh.md) |
+| 06 目标检测YOLO (06-object-detection-yolo) | [📄 中文文档](phases/04-computer-vision/06-object-detection-yolo/docs/zh.md) |
+| 07 语义分割U-Net (07-semantic-segmentation-unet) | [📄 中文文档](phases/04-computer-vision/07-semantic-segmentation-unet/docs/zh.md) |
+| 08 实例分割Mask R-CNN (08-instance-segmentation-mask-rcnn) | [📄 中文文档](phases/04-computer-vision/08-instance-segmentation-mask-rcnn/docs/zh.md) |
+| 09 图像生成GAN (09-image-generation-gans) | [📄 中文文档](phases/04-computer-vision/09-image-generation-gans/docs/zh.md) |
+| 10 图像生成扩散模型 (10-image-generation-diffusion) | [📄 中文文档](phases/04-computer-vision/10-image-generation-diffusion/docs/zh.md) |
+| 11 Stable Diffusion (11-stable-diffusion) | [📄 中文文档](phases/04-computer-vision/11-stable-diffusion/docs/zh.md) |
+| 12 视频理解 (12-video-understanding) | [📄 中文文档](phases/04-computer-vision/12-video-understanding/docs/zh.md) |
+| 13 3D视觉NeRF (13-3d-vision-nerf) | [📄 中文文档](phases/04-computer-vision/13-3d-vision-nerf/docs/zh.md) |
+| 14 视觉Transformer (14-vision-transformers) | [📄 中文文档](phases/04-computer-vision/14-vision-transformers/docs/zh.md) |
+| 15 实时边缘计算 (15-real-time-edge) | [📄 中文文档](phases/04-computer-vision/15-real-time-edge/docs/zh.md) |
+| 16 视觉流水线顶点项目 (16-vision-pipeline-capstone) | [📄 中文文档](phases/04-computer-vision/16-vision-pipeline-capstone/docs/zh.md) |
+| 17 自监督视觉 (17-self-supervised-vision) | [📄 中文文档](phases/04-computer-vision/17-self-supervised-vision/docs/zh.md) |
+| 18 开放词汇CLIP (18-open-vocab-clip) | [📄 中文文档](phases/04-computer-vision/18-open-vocab-clip/docs/zh.md) |
+| 19 OCR文档理解 (19-ocr-document-understanding) | [📄 中文文档](phases/04-computer-vision/19-ocr-document-understanding/docs/zh.md) |
+| 20 图像检索度量学习 (20-image-retrieval-metric) | [📄 中文文档](phases/04-computer-vision/20-image-retrieval-metric/docs/zh.md) |
+| 21 关键点姿态估计 (21-keypoint-pose) | [📄 中文文档](phases/04-computer-vision/21-keypoint-pose/docs/zh.md) |
+| 22 3D高斯溅射 (22-3d-gaussian-splatting) | [📄 中文文档](phases/04-computer-vision/22-3d-gaussian-splatting/docs/zh.md) |
+| 23 扩散Transformer整流流 (23-diffusion-transformers-rectified-flow) | [📄 中文文档](phases/04-computer-vision/23-diffusion-transformers-rectified-flow/docs/zh.md) |
+| 24 SAM3开放词汇分割 (24-sam3-open-vocab-segmentation) | [📄 中文文档](phases/04-computer-vision/24-sam3-open-vocab-segmentation/docs/zh.md) |
+| 25 视觉语言模型 (25-vision-language-models) | [📄 中文文档](phases/04-computer-vision/25-vision-language-models/docs/zh.md) |
+| 26 单目深度估计 (26-monocular-depth) | [📄 中文文档](phases/04-computer-vision/26-monocular-depth/docs/zh.md) |
+| 27 多目标跟踪 (27-multi-object-tracking) | [📄 中文文档](phases/04-computer-vision/27-multi-object-tracking/docs/zh.md) |
+| 28 世界模型视频扩散 (28-world-models-video-diffusion) | [📄 中文文档](phases/04-computer-vision/28-world-models-video-diffusion/docs/zh.md) |
 
 ---
 
