@@ -13,44 +13,66 @@
 ### ✅ 阶段0：环境配置与工具（12门课程全部完成）
 | 课程 | 中文文档链接 |
 |------|-------------|
-| 01 开发环境 | [📄 中文文档](phases/00-setup-and-tooling/01-dev-environment/docs/zh.md) |
-| 02 Git与协作 | [📄 中文文档](phases/00-setup-and-tooling/02-git-and-collaboration/docs/zh.md) |
-| 03 GPU配置与云服务 | [📄 中文文档](phases/00-setup-and-tooling/03-gpu-setup-and-cloud/docs/zh.md) |
-| 04 API与密钥管理 | [📄 中文文档](phases/00-setup-and-tooling/04-apis-and-keys/docs/zh.md) |
-| 05 Jupyter笔记本 | [📄 中文文档](phases/00-setup-and-tooling/05-jupyter-notebooks/docs/zh.md) |
-| 06 Python环境管理 | [📄 中文文档](phases/00-setup-and-tooling/06-python-environments/docs/zh.md) |
-| 07 AI开发Docker | [📄 中文文档](phases/00-setup-and-tooling/07-docker-for-ai/docs/zh.md) |
-| 08 编辑器配置 | [📄 中文文档](phases/00-setup-and-tooling/08-editor-setup/docs/zh.md) |
-| 09 数据管理 | [📄 中文文档](phases/00-setup-and-tooling/09-data-management/docs/zh.md) |
-| 10 终端与Shell | [📄 中文文档](phases/00-setup-and-tooling/10-terminal-and-shell/docs/zh.md) |
-| 11 AI开发Linux | [📄 中文文档](phases/00-setup-and-tooling/11-linux-for-ai/docs/zh.md) |
-| 12 调试与性能分析 | [📄 中文文档](phases/00-setup-and-tooling/12-debugging-and-profiling/docs/zh.md) |
+| 01 开发环境配置 (01-dev-environment) | [📄 中文文档](phases/00-setup-and-tooling/01-dev-environment/docs/zh.md) |
+| 02 Git与协作 (02-git-and-collaboration) | [📄 中文文档](phases/00-setup-and-tooling/02-git-and-collaboration/docs/zh.md) |
+| 03 GPU配置与云服务 (03-gpu-setup-and-cloud) | [📄 中文文档](phases/00-setup-and-tooling/03-gpu-setup-and-cloud/docs/zh.md) |
+| 04 API与密钥管理 (04-apis-and-keys) | [📄 中文文档](phases/00-setup-and-tooling/04-apis-and-keys/docs/zh.md) |
+| 05 Jupyter笔记本 (05-jupyter-notebooks) | [📄 中文文档](phases/00-setup-and-tooling/05-jupyter-notebooks/docs/zh.md) |
+| 06 Python环境管理 (06-python-environments) | [📄 中文文档](phases/00-setup-and-tooling/06-python-environments/docs/zh.md) |
+| 07 AI开发Docker (07-docker-for-ai) | [📄 中文文档](phases/00-setup-and-tooling/07-docker-for-ai/docs/zh.md) |
+| 08 编辑器配置 (08-editor-setup) | [📄 中文文档](phases/00-setup-and-tooling/08-editor-setup/docs/zh.md) |
+| 09 数据管理 (09-data-management) | [📄 中文文档](phases/00-setup-and-tooling/09-data-management/docs/zh.md) |
+| 10 终端与Shell (10-terminal-and-shell) | [📄 中文文档](phases/00-setup-and-tooling/10-terminal-and-shell/docs/zh.md) |
+| 11 AI开发Linux (11-linux-for-ai) | [📄 中文文档](phases/00-setup-and-tooling/11-linux-for-ai/docs/zh.md) |
+| 12 调试与性能分析 (12-debugging-and-profiling) | [📄 中文文档](phases/00-setup-and-tooling/12-debugging-and-profiling/docs/zh.md) |
 
 ### ✅ 阶段1：数学基础（22门课程全部完成）
 | 课程 | 中文文档链接 |
 |------|-------------|
-| 01 线性代数直觉 | [📄 中文文档](phases/01-math-foundations/01-linear-algebra-intuition/docs/zh.md) |
-| 02 向量矩阵运算 | [📄 中文文档](phases/01-math-foundations/02-vectors-matrices-operations/docs/zh.md) |
-| 03 矩阵变换 | [📄 中文文档](phases/01-math-foundations/03-matrix-transformations/docs/zh.md) |
-| 04 ML微积分 | [📄 中文文档](phases/01-math-foundations/04-calculus-for-ml/docs/zh.md) |
-| 05 链式法则与自动微分 | [📄 中文文档](phases/01-math-foundations/05-chain-rule-and-autodiff/docs/zh.md) |
-| 06 概率与分布 | [📄 中文文档](phases/01-math-foundations/06-probability-and-distributions/docs/zh.md) |
-| 07 贝叶斯定理 | [📄 中文文档](phases/01-math-foundations/07-bayes-theorem/docs/zh.md) |
-| 08 优化算法 | [📄 中文文档](phases/01-math-foundations/08-optimization/docs/zh.md) |
-| 09 信息论 | [📄 中文文档](phases/01-math-foundations/09-information-theory/docs/zh.md) |
-| 10 降维算法 | [📄 中文文档](phases/01-math-foundations/10-dimensionality-reduction/docs/zh.md) |
-| 11 奇异值分解 | [📄 中文文档](phases/01-math-foundations/11-singular-value-decomposition/docs/zh.md) |
-| 12 张量运算 | [📄 中文文档](phases/01-math-foundations/12-tensor-operations/docs/zh.md) |
-| 13 数值稳定性 | [📄 中文文档](phases/01-math-foundations/13-numerical-stability/docs/zh.md) |
-| 14 范数与距离 | [📄 中文文档](phases/01-math-foundations/14-norms-and-distances/docs/zh.md) |
-| 15 ML统计学 | [📄 中文文档](phases/01-math-foundations/15-statistics-for-ml/docs/zh.md) |
-| 16 采样方法 | [📄 中文文档](phases/01-math-foundations/16-sampling-methods/docs/zh.md) |
-| 17 线性方程组 | [📄 中文文档](phases/01-math-foundations/17-linear-systems/docs/zh.md) |
-| 18 凸优化 | [📄 中文文档](phases/01-math-foundations/18-convex-optimization/docs/zh.md) |
-| 19 复数 | [📄 中文文档](phases/01-math-foundations/19-complex-numbers/docs/zh.md) |
-| 20 傅里叶变换 | [📄 中文文档](phases/01-math-foundations/20-fourier-transform/docs/zh.md) |
-| 21 图论 | [📄 中文文档](phases/01-math-foundations/21-graph-theory/docs/zh.md) |
-| 22 随机过程 | [📄 中文文档](phases/01-math-foundations/22-stochastic-processes/docs/zh.md) |
+| 01 线性代数直觉 (01-linear-algebra-intuition) | [📄 中文文档](phases/01-math-foundations/01-linear-algebra-intuition/docs/zh.md) |
+| 02 向量与矩阵运算 (02-vectors-matrices-operations) | [📄 中文文档](phases/01-math-foundations/02-vectors-matrices-operations/docs/zh.md) |
+| 03 矩阵变换 (03-matrix-transformations) | [📄 中文文档](phases/01-math-foundations/03-matrix-transformations/docs/zh.md) |
+| 04 机器学习微积分 (04-calculus-for-ml) | [📄 中文文档](phases/01-math-foundations/04-calculus-for-ml/docs/zh.md) |
+| 05 链式法则与自动微分 (05-chain-rule-and-autodiff) | [📄 中文文档](phases/01-math-foundations/05-chain-rule-and-autodiff/docs/zh.md) |
+| 06 概率与分布 (06-probability-and-distributions) | [📄 中文文档](phases/01-math-foundations/06-probability-and-distributions/docs/zh.md) |
+| 07 贝叶斯定理 (07-bayes-theorem) | [📄 中文文档](phases/01-math-foundations/07-bayes-theorem/docs/zh.md) |
+| 08 优化算法 (08-optimization) | [📄 中文文档](phases/01-math-foundations/08-optimization/docs/zh.md) |
+| 09 信息论 (09-information-theory) | [📄 中文文档](phases/01-math-foundations/09-information-theory/docs/zh.md) |
+| 10 降维算法 (10-dimensionality-reduction) | [📄 中文文档](phases/01-math-foundations/10-dimensionality-reduction/docs/zh.md) |
+| 11 奇异值分解 (11-singular-value-decomposition) | [📄 中文文档](phases/01-math-foundations/11-singular-value-decomposition/docs/zh.md) |
+| 12 张量运算 (12-tensor-operations) | [📄 中文文档](phases/01-math-foundations/12-tensor-operations/docs/zh.md) |
+| 13 数值稳定性 (13-numerical-stability) | [📄 中文文档](phases/01-math-foundations/13-numerical-stability/docs/zh.md) |
+| 14 范数与距离 (14-norms-and-distances) | [📄 中文文档](phases/01-math-foundations/14-norms-and-distances/docs/zh.md) |
+| 15 机器学习统计学 (15-statistics-for-ml) | [📄 中文文档](phases/01-math-foundations/15-statistics-for-ml/docs/zh.md) |
+| 16 采样方法 (16-sampling-methods) | [📄 中文文档](phases/01-math-foundations/16-sampling-methods/docs/zh.md) |
+| 17 线性方程组 (17-linear-systems) | [📄 中文文档](phases/01-math-foundations/17-linear-systems/docs/zh.md) |
+| 18 凸优化 (18-convex-optimization) | [📄 中文文档](phases/01-math-foundations/18-convex-optimization/docs/zh.md) |
+| 19 复数 (19-complex-numbers) | [📄 中文文档](phases/01-math-foundations/19-complex-numbers/docs/zh.md) |
+| 20 傅里叶变换 (20-fourier-transform) | [📄 中文文档](phases/01-math-foundations/20-fourier-transform/docs/zh.md) |
+| 21 图论 (21-graph-theory) | [📄 中文文档](phases/01-math-foundations/21-graph-theory/docs/zh.md) |
+| 22 随机过程 (22-stochastic-processes) | [📄 中文文档](phases/01-math-foundations/22-stochastic-processes/docs/zh.md) |
+
+### ✅ 阶段2：机器学习基础（18门课程全部完成）
+| 课程 | 中文文档链接 |
+|------|-------------|
+| 01 什么是机器学习 (01-what-is-machine-learning) | [📄 中文文档](phases/02-ml-fundamentals/01-what-is-machine-learning/docs/zh.md) |
+| 02 线性回归 (02-linear-regression) | [📄 中文文档](phases/02-ml-fundamentals/02-linear-regression/docs/zh.md) |
+| 03 逻辑回归 (03-logistic-regression) | [📄 中文文档](phases/02-ml-fundamentals/03-logistic-regression/docs/zh.md) |
+| 04 决策树 (04-decision-trees) | [📄 中文文档](phases/02-ml-fundamentals/04-decision-trees/docs/zh.md) |
+| 05 支持向量机 (05-support-vector-machines) | [📄 中文文档](phases/02-ml-fundamentals/05-support-vector-machines/docs/zh.md) |
+| 06 K近邻与距离度量 (06-knn-and-distances) | [📄 中文文档](phases/02-ml-fundamentals/06-knn-and-distances/docs/zh.md) |
+| 07 无监督学习 (07-unsupervised-learning) | [📄 中文文档](phases/02-ml-fundamentals/07-unsupervised-learning/docs/zh.md) |
+| 08 特征工程 (08-feature-engineering) | [📄 中文文档](phases/02-ml-fundamentals/08-feature-engineering/docs/zh.md) |
+| 09 模型评估 (09-model-evaluation) | [📄 中文文档](phases/02-ml-fundamentals/09-model-evaluation/docs/zh.md) |
+| 10 偏差与方差 (10-bias-variance) | [📄 中文文档](phases/02-ml-fundamentals/10-bias-variance/docs/zh.md) |
+| 11 集成学习方法 (11-ensemble-methods) | [📄 中文文档](phases/02-ml-fundamentals/11-ensemble-methods/docs/zh.md) |
+| 12 超参数调优 (12-hyperparameter-tuning) | [📄 中文文档](phases/02-ml-fundamentals/12-hyperparameter-tuning/docs/zh.md) |
+| 13 ML流水线与实验追踪 (13-ml-pipelines) | [📄 中文文档](phases/02-ml-fundamentals/13-ml-pipelines/docs/zh.md) |
+| 14 朴素贝叶斯 (14-naive-bayes) | [📄 中文文档](phases/02-ml-fundamentals/14-naive-bayes/docs/zh.md) |
+| 15 时间序列基础 (15-time-series) | [📄 中文文档](phases/02-ml-fundamentals/15-time-series/docs/zh.md) |
+| 16 异常检测 (16-anomaly-detection) | [📄 中文文档](phases/02-ml-fundamentals/16-anomaly-detection/docs/zh.md) |
+| 17 不平衡数据处理 (17-imbalanced-data) | [📄 中文文档](phases/02-ml-fundamentals/17-imbalanced-data/docs/zh.md) |
+| 18 特征选择 (18-feature-selection) | [📄 中文文档](phases/02-ml-fundamentals/18-feature-selection/docs/zh.md) |
 
 ---
 
